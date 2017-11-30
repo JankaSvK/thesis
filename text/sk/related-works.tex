@@ -1,0 +1,56 @@
+%%% Súvisiace práce
+
+\chapter{Súvisiace práce}
+
+%%%\section{Úprava práce}
+
+Problematike získavaniu polohy objektu v priestore sa venuje mnoho práci.
+Tomuto rozšírenému záujmu vďačíme nzvýšenému záujmu o virtuálnu realitu ako aj
+stále sa zvyšujúce požiadavky robotiky, či vyhľadávaním takejto pomoci pri
+športe.
+
+\section{Systémy priestorového videnia}
+
+V článku \citet*{zheng2010study} sa autori zaoberajú otázkou priestorového
+videnia. Jednou z podmienok systému je vzájomne rovnobežné postavenie kamier a
+taktiež rovnobežné postavenie k podlahe. Okrem toho predpokláda taktiež, že
+súradnice v priestore sú dobre zarovnané s optickými osami. Autori okrem
+navrhnutého systému skúmali presnosť systému v hĺbke videnia a prezentovali
+niekoľko experimentov v rôznych vzdialenostiach s dobre odlíšiteľným pozadím.
+
+Experimenty s predikciou polohy objektu napriek jeho strate z obrazu sa venuje
+článok \citet*{black2002multi}. Autori \citet*{yonemoto1998tracking} riešia
+problém komplexných objektov pozostávajúcich z niekoľkých častí. Takéto objekty
+sa častokrát pri mapovaní do virtuálnej reality rozpadajú. Navrhovaný systém
+odhaduje parametry a body sledovania samostatne na každej časti, pričom
+následne hľadá korešpondujuce dvojice.
+
+Systém pre sledovanie a lokalizáciu objektov v garážiach bol navrhnutý v článku
+\citet*{ibisch2015arbitrary}. Tento systém pozostáva z niekoľkých čiastočne sa
+prekrývajúcich pohľadov kamier. K detekcii objektov využíva metódu s
+porovnávaním pozadia.  Vzhľadom na to, že navrhovaný systém bol použitý do
+garáži k predchádzaniu zrážok, tak je taktiež navrhnutá metóda k rozpoznávaniu
+objektov rozšírená o redukciu šumu spôsobeného odrazom svetla. Tieto odrazy --
+a teda presvetlené miesta spôsobujú hlavne svetlá vozidiel.
+
+\section{Využitie v športe}
+
+Systémy na získavanie polohy v priestore pomocou viacerých kamier sú dnes bežne
+používané pri športoch. Systém Hawk Eye (stručne popísaný v
+\citet*{owens2003hawk}) nielenže ponúka možnosť spracovanie súradníc, umožňuje
+ale aj spätné prehranie situácie zo záznamu. Tento systém vyžaduje
+vysokorýchlostné nákladné kamery a samotný softvér, ktorý nie je voľne
+prístupný.
+
+\section{Využitie v robotike}
+
+Táto problematika je častokrát spomínaná aj so súvislosťou robotiky. Pre učely
+súťaže RoboCup -- kategórie Soccer bolo vyvinutých niekoľko systémov pre
+získavanie polohy lopty z obrazu kamery. Tieto roboty sú častokrát vybavené
+všesmerovou kamerou (omnidirectional), ktorá poskytuje pohľad o zrkadlo a teda
+zachytáva 360° obraz. Pre zlepšenie presnosti tohto systému bola všesmerová
+kamera doplnená o obyčajnú kameru. Tento systém sa ale nachádza na pohyblivom
+robotovi, narozdiel od nášho problému statických kamier.  Taktiež využíva
+znalosť parametrov objektu. Hľadaným objektom je farebne odlišná lopta s vopred
+známou veľkosťou. Tento systém je podrobnejšie popísaný v článku
+\citet*{kappeler20103d}.
