@@ -1,13 +1,12 @@
 import numpy as np
 import cv2
 import time
-from multiprocessing import Process
+from multiprocessing import Process, Queue
 
 
 class VideoProvider(object):
     def __init__(self, cam_index):
         print("Initializing video provider")
-        self.images = []
         self.cam_index = cam_index
 
     def setup_camera(self, width, height):
@@ -19,30 +18,51 @@ class VideoProvider(object):
 
     def start_capturing(self):
         self.work = True
-        process = Process(target = self.capturing)
-        process.daemon = True
-        print("Starting process")
-        process.start()
+        self.capturing()
 
     def stop_capturing(self):
         self.work = False
 
     def capturing(self):
         while self.work:
-            print("Capturing")
             ret, frame = self.capture.read()
             if ret:
-                self.images.append(frame)
+                print("Adding image")
+                images.put(frame)
 
+class CameraWrapper(object):
+    def __init__(self, camera_index):
+        self.camera_index = camera_index
+        process = Process(target=self.run_camera)
+        process.daemon = True
+        process.start()
+
+    def run_camera(self):
+        provider = VideoProvider(self.camera_index)
+        provider.setup_camera(640,480)
+        self.running = True
+        provider.start_capturing()
 
 cameras = [1]
-providers = [ VideoProvider(camera) for camera in cameras ]
+images = SimpleQueue()
+if __name__ == '__main__':
+    # spominane, ze len problem windowsov
+    ## https://stackoverflow.com/questions/18204782/runtimeerror-on-windows-trying-python-multiprocessing
 
-for provider in providers:
-    provider.setup_camera(640, 480)
-    provider.start_capturing()
-    provider.stop_capturing()
+    wrap = CameraWrapper(cameras[0])
 
-print("Stopping")
+    time.sleep(2)
+
+    print(images.empty())
+    time.sleep(1)
+    print(images.empty())
+
+    time.sleep(1)
+    CameraWrapper.running = False
+
+    time.sleep(5)
+    print(images.qsize())
+
+    print("Stopping")
 
 
