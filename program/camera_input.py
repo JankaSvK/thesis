@@ -13,13 +13,14 @@ class VideoProvider(object):
         assert self.capture.isOpened()
 
     def setup_camera(self, width, height):
-        self.capture.set(3,640)
-        self.capture.set(4,480)
+        self.capture.set(cv2.CAP_PROP_FRAME_WIDTH,640)
+        self.capture.set(cv2.CAP_PROP_FRAME_HEIGHT,480)
+        # not working yer...self.capture.set(cv2.CAP_PROP_FPS,30)
 
     def capturing(self, images):
         ret, frame = self.capture.read()
         if ret:
-            images.put(frame, False)
+            images.put((time.time(), frame), False)
 
 class CameraWrapper(object):
     def __init__(self, camera_index, images):
@@ -34,17 +35,14 @@ class CameraWrapper(object):
         self.thread.join()
 
     def run_camera(self, stop_event, images):
-        print("Here1")
         provider = VideoProvider(self.camera_index)
         provider.setup_camera(640,480)
-        print("Here2")
         while not stop_event.is_set():
             provider.capturing(images)
-        print("Here3")
         provider.capture.release()
 
 def skip_first_images(images, count):
-    [ images.get() for i in range(count) ]
+    [ images.get() for _ in range(count) ]
 
 cameras = [0,1]
 images = [q.Queue() for camera in cameras]
@@ -64,7 +62,7 @@ for i, _ in enumerate(cameras):
     print(i, " ", images[i].qsize())
     skip_first_images(images[i], 3)
     image = images[i].get()
-    cv2.imshow('Image'+str(i), image)
+    cv2.imshow('Image'+str(i)+' '+str(image[0]), image[1])
 
 cv2.waitKey(0)
 cv2.destroyAllWindows()
