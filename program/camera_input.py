@@ -44,27 +44,25 @@ class CameraWrapper(object):
         print("Here3")
         provider.capture.release()
 
-if __name__ == '__main__':
-    ## https://stackoverflow.com/questions/18204782/runtimeerror-on-windows-trying-python-multiprocessing
-    cameras = [0,1,2]
-    images = [q.Queue() for camera in cameras]
+cameras = [0,1,2]
+images = [q.Queue() for camera in cameras]
 
-    wrappers = []
-    for i, camera in enumerate(cameras):
-        wrappers.append(CameraWrapper(camera, images[i]))
+wrappers = []
+for i, camera in enumerate(cameras):
+    wrappers.append(CameraWrapper(camera, images[i]))
 
-    time.sleep(5)
+time.sleep(5)
 
-    for wrap in wrappers:
-        wrap.stop_camera()
+for wrap in wrappers:
+    wrap.stop_camera()
 
-    for wrap in wrappers:
-        print(wrap.thread.isAlive())
+for wrap in wrappers:
+    print(wrap.thread.isAlive())
 
-    for i, camera in enumerate(cameras):
-        print(i, " ", images[i].qsize())
+for i, camera in enumerate(cameras):
+    print(i, " ", images[i].qsize())
 
-    for wrap in wrappers:
-        print(wrap.thread.isAlive())
+for wrap in wrappers:
+    print(wrap.thread.isAlive())
 
-    print("Stopping")
+print("Stopping")
