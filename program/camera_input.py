@@ -1,73 +1,70 @@
 import numpy as np
 import cv2
 import time
-from multiprocessing import Process, Queue
-
+import queue as q
+import threading as t
 
 class VideoProvider(object):
     def __init__(self, cam_index):
         print("Initializing video provider")
         self.cam_index = cam_index
-
-    def setup_camera(self, width, height):
         self.capture = cv2.VideoCapture(self.cam_index)
+        time.sleep(1)
         assert self.capture.isOpened()
 
+    def setup_camera(self, width, height):
         self.capture.set(3,640)
         self.capture.set(4,480)
-
-    def start_capturing(self):
-        self.work = True
-        self.capturing()
-
-    def stop_capturing(self):
-        self.work = False
 
     def capturing(self, images):
         ret, frame = self.capture.read()
         if ret:
             print("Adding image")
             images.put(frame, False)
-            #print(images.qsize())
-
 
 class CameraWrapper(object):
     def __init__(self, camera_index, images):
         self.camera_index = camera_index
-        process = Process(target=self.run_camera, args=(images,))
-        process.daemon = True
-        process.start()
+        self.stop_event = t.Event()
+        self.thread = t.Thread(target=self.run_camera, args=(self.stop_event,images))
+        self.thread.setDaemon(True)
+        self.thread.start()
 
+    def stop_camera(self):
+        self.stop_event.set()
+        self.thread.join()
 
-    def run_camera(self, images):
+    def run_camera(self, stop_event, images):
+        print("Here1")
         provider = VideoProvider(self.camera_index)
-        provider.setup_camera(640,480)
-        self.running = True
-        while self.running:
+        #provider.setup_camera(640,480)
+        print("Here2")
+        while not stop_event.is_set():
             provider.capturing(images)
-        print("Am I running", self.running)
+        print("Here3")
+        provider.capture.release()
 
-cameras = [0]
-images = Queue()
 if __name__ == '__main__':
-    # spominane, ze len problem windowsov
     ## https://stackoverflow.com/questions/18204782/runtimeerror-on-windows-trying-python-multiprocessing
+    cameras = [0,1,2]
+    images = [q.Queue() for camera in cameras]
 
-    wrap = CameraWrapper(cameras[0], images)
-
-    time.sleep(2)
-
-    print(images.empty())
-    time.sleep(1)
-    print(images.empty())
-
-    time.sleep(1)
-    print("setting false")
-    CameraWrapper.running = False
+    wrappers = []
+    for i, camera in enumerate(cameras):
+        wrappers.append(CameraWrapper(camera, images[i]))
 
     time.sleep(5)
-    print(images.empty())
+
+    for wrap in wrappers:
+        wrap.stop_camera()
+
+    for wrap in wrappers:
+        print(wrap.thread.isAlive())
+
+    for i, camera in enumerate(cameras):
+        print(i, " ", images[i].qsize())
+
+    for wrap in wrappers:
+        print(wrap.thread.isAlive())
 
     print("Stopping")
-
-
