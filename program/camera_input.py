@@ -19,7 +19,6 @@ class VideoProvider(object):
     def capturing(self, images):
         ret, frame = self.capture.read()
         if ret:
-            print("Adding image")
             images.put(frame, False)
 
 class CameraWrapper(object):
@@ -37,14 +36,17 @@ class CameraWrapper(object):
     def run_camera(self, stop_event, images):
         print("Here1")
         provider = VideoProvider(self.camera_index)
-        #provider.setup_camera(640,480)
+        provider.setup_camera(640,480)
         print("Here2")
         while not stop_event.is_set():
             provider.capturing(images)
         print("Here3")
         provider.capture.release()
 
-cameras = [0,1,2]
+def skip_first_images(images, count):
+    [ images.get() for i in range(count) ]
+
+cameras = [0,1]
 images = [q.Queue() for camera in cameras]
 
 wrappers = []
@@ -56,13 +58,14 @@ time.sleep(5)
 for wrap in wrappers:
     wrap.stop_camera()
 
-for wrap in wrappers:
-    print(wrap.thread.isAlive())
+print("Stopping cameras")
 
-for i, camera in enumerate(cameras):
+for i, _ in enumerate(cameras):
     print(i, " ", images[i].qsize())
+    skip_first_images(images[i], 3)
+    image = images[i].get()
+    cv2.imshow('Image'+str(i), image)
 
-for wrap in wrappers:
-    print(wrap.thread.isAlive())
-
-print("Stopping")
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+print("Closing windows")
