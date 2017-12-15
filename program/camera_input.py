@@ -9,12 +9,11 @@ class VideoProvider(object):
         print("Initializing video provider")
         self.cam_index = cam_index
         self.capture = cv2.VideoCapture(self.cam_index)
-        time.sleep(1)
         assert self.capture.isOpened()
 
     def setup_camera(self, width, height):
-        self.capture.set(cv2.CAP_PROP_FRAME_WIDTH,640)
-        self.capture.set(cv2.CAP_PROP_FRAME_HEIGHT,480)
+        self.capture.set(cv2.CAP_PROP_FRAME_WIDTH,width)
+        self.capture.set(cv2.CAP_PROP_FRAME_HEIGHT,height)
         # not working yer...self.capture.set(cv2.CAP_PROP_FPS,30)
 
     def capturing(self, images):
@@ -44,7 +43,7 @@ class CameraWrapper(object):
 def skip_first_images(images, count):
     [ images.get() for _ in range(count) ]
 
-cameras = [0,1]
+cameras = [0]
 images = [q.Queue() for camera in cameras]
 
 wrappers = []
