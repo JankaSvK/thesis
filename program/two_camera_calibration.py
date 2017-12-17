@@ -170,3 +170,8 @@ cv2.destroyAllWindows()
 ### nazbieravanie snimkov
 ### kalibracia stereo a mono na rovnakych snimkoch alebo roznych
 
+# 1 . zmysluplne data
+# 2 . "rozhranie" k pristupu datam
+# 3 . spracovavanie z kamier
+
+# 4 . GUI, opravit

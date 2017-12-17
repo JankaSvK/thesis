@@ -1,7 +1,7 @@
 import numpy as np
 import cv2
 import time
-import queue as q
+from queue import Queue
 import threading as t
 
 class VideoProvider(object):
@@ -12,8 +12,8 @@ class VideoProvider(object):
         assert self.capture.isOpened()
 
     def setup_camera(self, width, height):
-        self.capture.set(cv2.CAP_PROP_FRAME_WIDTH,width)
-        self.capture.set(cv2.CAP_PROP_FRAME_HEIGHT,height)
+        self.capture.set(cv2.CAP_PROP_FRAME_WIDTH, width)
+        self.capture.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
         # not working yer...self.capture.set(cv2.CAP_PROP_FPS,30)
 
     def capturing(self, images):
@@ -44,7 +44,7 @@ def skip_first_images(images, count):
     [ images.get() for _ in range(count) ]
 
 cameras = [0]
-images = [q.Queue() for camera in cameras]
+images = [Queue() for camera in cameras]
 
 wrappers = []
 for i, camera in enumerate(cameras):
