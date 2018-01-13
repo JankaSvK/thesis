@@ -1,9 +1,8 @@
 import numpy as np
 import cv2
 
+import ChessboardPattern
 from CalibrationResults import MonoCameraCalibrationResults, StereoCameraCalibrationResults
-from ChessboardPattern import ChessboardPattern
-
 
 class MonoCameraCalibration(object):
     def __init__(self, images, chessboard_size, image_size):
@@ -17,8 +16,7 @@ class MonoCameraCalibration(object):
         self.corners_criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 
     def find_chessboad(self):
-        objp = np.zeros((self.chessboard_size[0] * self.chessboard_size[1], 3), np.float32)
-        objp[:, :2] = np.mgrid[0:self.chessboard_size[0], 0:self.chessboard_size[1]].T.reshape(-1, 2)
+        objp = ChessboardPattern.get_object_points()
 
         for i, record in enumerate(self.images):
             img = record[1]
@@ -55,9 +53,7 @@ class StereoCameraCalibration(object):
     def __init__(self, mono_calibrations: [MonoCameraCalibration]):
         self.imgpoints = [] # TODO, ma to byt list listov. na [0] maju byt imgpoints prvej kamery a [1] druhej
         self.mono_calibrations = mono_calibrations
-
-        pattern = ChessboardPattern((6, 9), 30)
-        self.object_points = pattern.get_object_points()
+        self.object_points = ChessboardPattern.get_object_points()
 
     def stereo_calibrate(self):
         results1 = self.mono_calibrations[0].calibration_results
