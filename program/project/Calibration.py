@@ -1,24 +1,24 @@
-import numpy as np
+import logging
 import cv2
 
 import ChessboardPattern
 from CalibrationResults import MonoCameraCalibrationResults, StereoCameraCalibrationResults
 
 class MonoCameraCalibration(object):
-    def __init__(self, images, chessboard_size, image_size):
+    def __init__(self, chessboard_size, image_size):
         self.chessboard_size = chessboard_size
-        self.images = images
+        self.image_size = image_size
         self.objpoints = []
         self.imgpoints = []
         self.successful = []
-        self.image_size = image_size
 
         self.corners_criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 
-    def find_chessboad(self):
+    def find_chessboad(self, images):
+        successful = 0
         objp = ChessboardPattern.get_object_points()
 
-        for i, record in enumerate(self.images):
+        for i, record in enumerate(images):
             img = record[1]
             self.h, self.w = img.shape[:2]
             gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -26,28 +26,25 @@ class MonoCameraCalibration(object):
             ret, corners = cv2.findChessboardCorners(gray, self.chessboard_size, flags=cv2.CALIB_CB_FAST_CHECK)
 
             if ret:
+                successful += 1
                 ret, corners = cv2.findChessboardCorners(gray, self.chessboard_size)
                 self.successful.append(i)
                 self.objpoints.append(objp)
                 corners2 = cv2.cornerSubPix(gray, corners, (5, 5), (-1, -1), self.corners_criteria)
                 self.imgpoints.append(corners2)
+        logging.info("Chessboard found on {} out of {} images.".format(successful, len(images)))
 
-    def calibrate(self):
-        ret, mtx, dist, rvecs, tvecs =\
+    def calibrate(self, images):
+        self.find_chessboad(images)
+
+        if self.imgpoints == []:
+            return False
+        error, mtx, dist, rvecs, tvecs =\
             cv2.calibrateCamera(self.objpoints, self.imgpoints, self.image_size, None, None)
-        if ret:
+        if error:
             self.calibration_results = MonoCameraCalibrationResults(mtx, dist, rvecs, tvecs)
-        return ret
-
-    def compute_error(self):
-        mean_error = 0
-        c = self.calibration_results
-        for point, rvec, tvec, imgpoint in zip(self.objpoints, c.rotation_vec, c.translation_vec, self.imgpoints):
-            imgpoints2, _ = cv2.projectPoints(point, rvec, tvec, c.camera_matrix, c.distortion_coeffs)
-            error = cv2.norm(imgpoint, imgpoints2, cv2.NORM_L2) / len(imgpoints2)
-            mean_error += error
-        return mean_error / len(self.objpoints)
-
+            logging.info("\nCamera matrix\n{}\nDistortion coefficients\n{}".format(mtx, dist))
+        return error
 
 class StereoCameraCalibration(object):
     def __init__(self, mono_calibrations: [MonoCameraCalibration]):

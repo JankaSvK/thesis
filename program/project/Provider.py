@@ -1,10 +1,10 @@
 import logging
+import time
 from collections import deque
 
-import time
-
+import ChessboardPattern
+from Calibration import MonoCameraCalibration
 from CameraProvider import CameraProvider
-
 
 class Provider(object):
     def __init__(self, camera_indexes, camera_names = None):
@@ -35,9 +35,19 @@ class Provider(object):
     def stop_capturing(self):
         [ p.stop_capturing() for p in self.camera_providers ]
 
+    def calibrate_cameras(self):
+        for camera in self.camera_indexes:
+            # mas images pre kazdu kameru
+            calib = MonoCameraCalibration(chessboard_size=ChessboardPattern.chessboard_size ,image_size=(640, 480))
+            minimum = min(len(self.images[camera]), 50)
+            images = [self.images[camera][i] for i in range(minimum)]
+            print(len(images))
+            error = calib.calibrate(images) # malo by ist viac sucasne aby sa necakalo
+            logging.info("Calibration end up with {}".format(error))
+
 if __name__ == '__main__':
     logging.getLogger().setLevel(logging.INFO)
-    provider = Provider([1])
+    provider = Provider([0])
     provider.initialize_cameras()
     provider.start_capturing()
     time.sleep(5)
@@ -45,3 +55,4 @@ if __name__ == '__main__':
 
     for i in provider.images:
         print(len(i))
+    provider.calibrate_cameras()
