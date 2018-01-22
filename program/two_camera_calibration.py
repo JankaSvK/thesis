@@ -1,3 +1,6 @@
+#https://forums.ni.com/t5/Machine-Vision/3D-position-from-from-stereo-x-y-and-disparity/td-p/2530840
+#
+
 import numpy as np
 import cv2
 import glob
@@ -6,10 +9,8 @@ chessboard_size = (7, 9)
 image_size =  (640,480)
 
 class MonoCameraCalibration(object):
-
-    def __init__(self, chessboard_image):
-        self.name = chessboard_image
-        self.images = glob.glob(chessboard_image)
+    def __init__(self, images):
+        self.images = images
         self.objpoints = []
         self.imgpoints = []
         self.successful = []
@@ -20,8 +21,9 @@ class MonoCameraCalibration(object):
         objp = np.zeros((chessboard_size[0] * chessboard_size[1], 3), np.float32)
         objp[:, :2] = np.mgrid[0:chessboard_size[0], 0:chessboard_size[1]].T.reshape(-1, 2)
 
-        for i, fname in enumerate(self.images):
-            img = cv2.imread(fname)
+        for i, record in enumerate(self.images):
+            img = record[1]
+            #img = cv2.imread(fname)
             self.h, self.w = img.shape[:2]
             gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
@@ -40,8 +42,9 @@ class MonoCameraCalibration(object):
                 #cv2.waitKey(00)
 
     def calibrate(self):
-        self.ret, self.mtx, self.dist, self.rvecs, self.tvecs =\
+        ret, self.mtx, self.dist, self.rvecs, self.tvecs =\
             cv2.calibrateCamera(self.objpoints, self.imgpoints, image_size, None, None)
+        return ret
         #self.mtx, self.roi =\
         #    cv2.getOptimalNewCameraMatrix(self.mtx, self.dist, image_size, 1, image_size)
 
@@ -114,64 +117,63 @@ class StereoCameraCalibration(object):
 #########################################################################
 ###########################  Program  ###################################
 #########################################################################
+if __name__ == '__main__':
+    path_to_images = 'images/two_camera_calibration/'
 
-path_to_images = 'images/two_camera_calibration/'
+    finders = [
+        MonoCameraCalibration(path_to_images + 'left/*.jpg'),
+        MonoCameraCalibration(path_to_images + 'right/*.jpg'),
+    ]
 
-finders = [
-    MonoCameraCalibration(path_to_images + 'left/*.jpg'),
-    MonoCameraCalibration(path_to_images + 'right/*.jpg'),
-]
+    for finder in finders:
+        finder.find_chessboad()
+        finder.calibrate()
+        print(finder.successful)
+        print(finder.compute_error())
 
-for finder in finders:
-    print(finder.name)
-    finder.find_chessboad()
-    finder.calibrate()
-    print(finder.successful)
-    print(finder.compute_error())
+    cv2.imshow('Undistort', finders[0].undistort(path_to_images + 'left/6.jpg'))
 
-cv2.imshow('Undistort', finders[0].undistort(path_to_images + 'left/6.jpg'))
+    stereo_calibration = StereoCameraCalibration(finders)
+    stereo_calibration.combine()
+    stereo_calibration.stereo_calibrate()
+    stereo_calibration.init_undistort()
+    img1, img2, img1original, img2original = stereo_calibration.undistort(path_to_images + 'left/6.jpg', path_to_images + 'right/6.jpg')
+    cv2.imshow('img', img1)
+    cv2.imshow('img2', img2)
+    cv2.imshow('imgO', img1original)
+    cv2.imshow('img2O', img2original)
 
-stereo_calibration = StereoCameraCalibration(finders)
-stereo_calibration.combine()
-stereo_calibration.stereo_calibrate()
-stereo_calibration.init_undistort()
-img1, img2, img1original, img2original = stereo_calibration.undistort(path_to_images + 'left/6.jpg', path_to_images + 'right/6.jpg')
-cv2.imshow('img', img1)
-cv2.imshow('img2', img2)
-cv2.imshow('imgO', img1original)
-cv2.imshow('img2O', img2original)
-
-cv2.waitKey(00)
+    cv2.waitKey(00)
 
 
-cv2.destroyAllWindows()
+    cv2.destroyAllWindows()
 
-# Kolko obrazkov je dostatok?
-### porovnat rotacnu matiacu a translacny vektor so skutocnostou (zmerat si o kolko sa to posunulo)
+    # Kolko obrazkov je dostatok?
+    ### porovnat rotacnu matiacu a translacny vektor so skutocnostou (zmerat si o kolko sa to posunulo)
 
-## Chcem vobec pouzivat rectify? Bude nutne?
-## Pozriet sa na cisla z toho lezu, preco t v prehodenych kamera nema rovnaku normu
-## Dava zmysel R, t? Distortion coeff. by mali byt blizke nule
-## norma t by mala odpovedat vzdialenosti kamier
-## ujasnit si suradnice
+    ## Chcem vobec pouzivat rectify? Bude nutne?
+    ## Pozriet sa na cisla z toho lezu, preco t v prehodenych kamera nema rovnaku normu
+    ## Dava zmysel R, t? Distortion coeff. by mali byt blizke nule
+    ## norma t by mala odpovedat vzdialenosti kamier
+    ## ujasnit si suradnice
 
-# Co je maly reprojection error u stereocalibration
+    # Co je maly reprojection error u stereocalibration
 
-# Nemam rovnaku velkost image z kamier, mam zjednotit?
-# - zatial ano
+    # Nemam rovnaku velkost image z kamier, mam zjednotit?
+    # - zatial ano
 
-# Ten vysledok asi nerobi nic dobreho.
+    # Ten vysledok asi nerobi nic dobreho.
 
-# mozno pouzit tu vec s new optimal matrix
+    # mozno pouzit tu vec s new optimal matrix
 
-# pouzit fast na findchessboardcorners a v druhej vrstve hladat poriadne
+    # pouzit fast na findchessboardcorners a v druhej vrstve hladat poriadne
 
-# skusit na kamery
-### nazbieravanie snimkov
-### kalibracia stereo a mono na rovnakych snimkoch alebo roznych
+    # skusit na kamery
+    ### nazbieravanie snimkov
+    ### kalibracia stereo a mono na rovnakych snimkoch alebo roznych
 
-# 1 . zmysluplne data
-# 2 . "rozhranie" k pristupu datam
-# 3 . spracovavanie z kamier
+    # 1 . zmysluplne data
+    # 2 . "rozhranie" k pristupu datam
+    # 3 . spracovavanie z kamier
 
-# 4 . GUI, opravit
+    # 4 . GUI, opravit

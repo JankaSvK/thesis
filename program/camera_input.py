@@ -1,12 +1,12 @@
 import numpy as np
 import cv2
 import time
-from queue import Queue
+from collections import deque
 import threading as t
 
 class VideoProvider(object):
     def __init__(self, cam_index):
-        print("Initializing video provider")
+        print("Initializing video provider on camera ", cam_index)
         self.cam_index = cam_index
         self.capture = cv2.VideoCapture(self.cam_index)
         assert self.capture.isOpened()
@@ -14,18 +14,20 @@ class VideoProvider(object):
     def setup_camera(self, width, height):
         self.capture.set(cv2.CAP_PROP_FRAME_WIDTH, width)
         self.capture.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
-        # not working yer...self.capture.set(cv2.CAP_PROP_FPS,30)
 
     def capturing(self, images):
         ret, frame = self.capture.read()
         if ret:
-            images.put((time.time(), frame), False)
+            images.append((time.time(), frame))
 
 class CameraWrapper(object):
     def __init__(self, camera_index, images):
         self.camera_index = camera_index
+        self.images = images
+
+    def start_camera(self):
         self.stop_event = t.Event()
-        self.thread = t.Thread(target=self.run_camera, args=(self.stop_event,images))
+        self.thread = t.Thread(target=self.run_camera, args=(self.stop_event, self.images))
         self.thread.setDaemon(True)
         self.thread.start()
 
@@ -40,29 +42,38 @@ class CameraWrapper(object):
             provider.capturing(images)
         provider.capture.release()
 
+    def get_images(self, count):
+        return [self.images[i] for i in range(-count, 0)]
+
 def skip_first_images(images, count):
-    [ images.get() for _ in range(count) ]
+    [ images.popleft() for _ in range(count) ]
 
-cameras = [0]
-images = [Queue() for camera in cameras]
+#################################################
+################ Program ########################
+#################################################
 
-wrappers = []
-for i, camera in enumerate(cameras):
-    wrappers.append(CameraWrapper(camera, images[i]))
+if __name__ == '__main__':
+    cameras = [0]
+    images = [deque([], maxlen=500) for camera in cameras]
 
-time.sleep(5)
+    wrappers = []
+    for i, camera in enumerate(cameras):
+        wrappers.append(CameraWrapper(camera, images[i]))
+        wrappers[i].start_camera(images[i])
 
-for wrap in wrappers:
-    wrap.stop_camera()
+    time.sleep(5)
 
-print("Stopping cameras")
+    for wrap in wrappers:
+        wrap.stop_capturing()
 
-for i, _ in enumerate(cameras):
-    print(i, " ", images[i].qsize())
-    skip_first_images(images[i], 3)
-    image = images[i].get()
-    cv2.imshow('Image'+str(i)+' '+str(image[0]), image[1])
+    print("Stopping cameras")
 
-cv2.waitKey(0)
-cv2.destroyAllWindows()
-print("Closing windows")
+    for i, _ in enumerate(cameras):
+        print(i, " ", len(images[i]))
+        skip_first_images(images[i], 3)
+        image = images[i].popleft()
+        cv2.imshow('Image'+str(i)+' '+str(image[0]), image[1])
+
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    print("Closing windows")
