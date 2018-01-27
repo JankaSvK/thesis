@@ -1,0 +1,82 @@
+\chapter{Tracker}
+
+We considerate tracker as an algorithm used to detect a position of the object in
+an image. We will present few tested trackers and their results in this task.
+Firstly we provide a short description of simple straightforward tracker and
+then we will describe more complicated trackers.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Simple Background Tracker}
+
+This tracker takes a photo of the background at the beginning and calls it
+\emph{pattern}. In order to detect an object in \emph{image} is taken a
+comparison of the \emph{image} and \emph{pattern}. A Comparison is done by
+taking a sum of an absolute difference for each colour (Red, Green, Blue) in
+the images. 
+
+As result, we get a map, where higher values mean bigger difference between the
+colors of the \emph{pattern} and \emph{image} at given point. We will assume it
+is caused by an object in front of the camera at given point.  As the next step
+we will binarize the map with a given \emph{treshold}. At this point we will
+find a countour with biggest area using OpenCV library. Centerpoint of the
+rectangle of this contour will be estimated position of our object in the
+image..
+
+TODO: Pomôže práve popísaný postup zapísať v niekoľkých riadkoch pseudokódu? Bolo
+by to prehľadnejšie (na jedno pozretie jasné, bez čítania odstavca, ak čitateľ
+vie, čo očakávať)
+
+TODO: Fotka vzoru (farebne), fotka s objektom, absolute\_diff, výsledok po rôznych tresholdoch
+
+TODO: Nájdenie contúr na obrázku, zobrazenie najväčšej, bod ako stred
+
+\subsubsection{Advantages}
+\begin{itemize}
+\item Quite straight-forward implementation
+\item Ability to recognise variate object without having specific color or pattern.
+\end{itemize}
+
+\subsubsection{Disadvantages}
+\begin{itemize}
+\item Cannot recover from even small movement of the camera.
+\item Moving object with a hand will cause recognizing the hand also as an object and will result wrongly estimated center of the moving object. Same problems cause shadows.
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Adaptive Background Tracker}
+
+In order to make our background tracker robust to small movement of camera we
+are going to update our \emph{pattern}. This could be simply done by defining \emph{pattern}
+as the mean of last \emph{n} images.
+
+\subsubsection{Advantages}
+\begin{itemize}
+\item Robust against movements of the camera
+\end{itemize}
+
+\subsubsection{Disadvantages}
+\begin{itemize}
+\item If the object is not moving it will disappear as becoming a part of the background. After moving it will recover correctly.
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{More advanced trackers}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Comparison of trackers}
+
+\subsubsection{Experiment with simplyfied environment}
+
+Given a video sequence XYZ second long we studied an accuracy of trackers. The background is one colored and moving object is a red circle.
+
+TODO: Robot sledujúci čiaru do štvorca s červeným kruhom z vrchu (kamery sa dívajú zvrchu). Porovnanie bude uvedené ako čiary, ktoré sú nakreslené pomocou zachytených bodov.
+
+\subsubsection{Experiment in complex environment}
+
+Background consistsed of many colors and patterns. Moving object has a pattern and is partially colored as the background.
+
+TODO: Vyskytli sa veci, ako, že stratil polohu? V akom percente? Mám ako rozumne vyjadriť presnosť tých súradníc lepšie než od oka?
