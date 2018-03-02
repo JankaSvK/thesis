@@ -18,7 +18,7 @@ class CameraProvider(object):
         self.video_capture = cv2.VideoCapture(self.camera_index)
 
         #TODO: not to assert, but throw an exception and handle it
-        assert self.video_capture.isOpened()
+        #assert self.video_capture.isOpened()
         logging.info("Camera `{}` on index `{}` initialized successfully".format(self.camera_name, self.camera_index))
 
     def setup_camera(self, width, height):
