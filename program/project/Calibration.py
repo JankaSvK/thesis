@@ -17,7 +17,7 @@ class MonoCameraCalibration(object):
         self.chessboard_size = chessboard_size
         self.image_size = image_size
         self.corners_criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
-
+        self.calibration_results = None
 
     def find_chessboad(self, images):
         successful = 0
@@ -46,12 +46,12 @@ class MonoCameraCalibration(object):
 
         if imgpoints == []:
             return False
-        error, mtx, dist, rvecs, tvecs =\
+        success, mtx, dist, rvecs, tvecs =\
             cv2.calibrateCamera(objpoints, imgpoints, self.image_size, None, None)
-        if error:
+        if success:
             self.calibration_results = MonoCameraCalibrationResults(mtx, dist, rvecs, tvecs)
             logging.info("\nCamera matrix\n{}\nDistortion coefficients\n{}".format(mtx, dist))
-        return error
+        return success
 
 class StereoCameraCalibration(object):
     def __init__(self, mono_calibrations: [MonoCameraCalibration], imgpoint1, imgpoints2, objpoints):

@@ -1,6 +1,6 @@
 import numpy as np
 
-chessboard_size = (7,9)
+chessboard_size = (6,9)
 square_size = 30
 
 def get_object_points():

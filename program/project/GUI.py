@@ -7,12 +7,21 @@ from PIL import Image, ImageTk
 from Provider import Provider
 
 class GUI(object):
-    def __init__(self, image_streams):
+    def __init__(self):
+        pass
+
+    def start(self, image_streams):
         self.root = tk.Tk()
         self.streams = image_streams
 
         count = len(self.streams)
         self.create_labels_for_streams(count)
+
+        thread = threading.Thread(target=self.start_streaming, args=())
+        thread.start()
+        self.root.mainloop()
+  #      self.root.mainloop()
+
 
     def start_streaming(self):
         while True:
@@ -55,10 +64,8 @@ if __name__ == '__main__':
     provider.start_capturing()
 
     gui = GUI(provider.images)
+    gui.start()
 
-    thread = threading.Thread(target = gui.start_streaming, args = ())
-    thread.start()
-    gui.root.mainloop()
 
     provider.stop_capturing()
     gui.root.quit()

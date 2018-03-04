@@ -37,12 +37,23 @@ class Provider(object):
         [ p.stop_capturing() for p in self.camera_providers ]
 
     def calibrate_cameras(self):
+        success = True
+
+        for calib in self.calibs:
+            if calib.calibration_results is None:
+                #calibrate concrete
+                pass
+
+
+
         for camera in self.camera_indexes: # TODO: should be done in parallel way
             self.calibs.append(MonoCameraCalibration(chessboard_size=ChessboardPattern.chessboard_size ,image_size=(640, 480)))
             minimum = min(len(self.images[camera]), 200)
-            images = [self.images[camera][i] for i in range(minimum)]
+            images = [self.images[camera][-i] for i in range(minimum)]
             error = self.calibs[-1].calibrate(images)
             logging.info("Calibration end up with {}".format(error))
+            if not error: success = False
+        return success
 
     def get_times_with_chessboard(self):
         for camera in self.camera_indexes:
