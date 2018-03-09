@@ -13,3 +13,11 @@ class StereoCameraCalibrationResults(object):
         self.fundamental_matrix = fundamental_matrix
 
         self.reprojection_error = reprojection_error
+
+    def __str__(self):
+        output = "Rotation matrix\n" + str(self.rotation_matrix)
+        output += "\nTranslation matrix\n" + str(self.translation_matrix)
+        output += "\nEnssential matrix\n" + str(self.essential_matrix)
+        output += "\nFundamental matrix\n" + str(self.fundamental_matrix)
+        output += "\nReprojection error\n" + str(self.reprojection_error)
+        return output

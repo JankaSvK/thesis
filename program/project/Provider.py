@@ -38,22 +38,30 @@ class Provider(object):
 
     def calibrate_cameras(self):
         success = True
+        if len(self.calibs) != len(self.camera_providers):
+            self.calibs = []
+            for _ in self.camera_providers:
+                self.calibs.append(MonoCameraCalibration(chessboard_size=ChessboardPattern.chessboard_size ,image_size=(640, 480)))
 
-        for calib in self.calibs:
+        for cam_ind, calib in enumerate(self.calibs):
             if calib.calibration_results is None:
-                #calibrate concrete
-                pass
+                minimum = min(len(self.images[cam_ind]), 200)
+                images = [self.images[cam_ind][-i] for i in range(minimum)]
+
+                calib_error = self.calibs[cam_ind].calibrate(images)
+                logging.info("Calibration end up with {}".format(calib_error))
 
 
+        uncalibrated = []
+        for i, calib in enumerate(self.calibs):
+            if calib.calibration_results is None:
+                success = False
+                uncalibrated.append(i)
 
-        for camera in self.camera_indexes: # TODO: should be done in parallel way
-            self.calibs.append(MonoCameraCalibration(chessboard_size=ChessboardPattern.chessboard_size ,image_size=(640, 480)))
-            minimum = min(len(self.images[camera]), 200)
-            images = [self.images[camera][-i] for i in range(minimum)]
-            error = self.calibs[-1].calibrate(images)
-            logging.info("Calibration end up with {}".format(error))
-            if not error: success = False
+        print("Cameras", uncalibrated, "not calibrated successfully")
+
         return success
+
 
     def get_times_with_chessboard(self):
         for camera in self.camera_indexes:
@@ -80,32 +88,42 @@ class Provider(object):
         j = 0
         images_for_stereo1 = []
         images_for_stereo2 = []
-        for i, (time, image) in enumerate(self.images[smaller]):
+
+        smallerList = list(self.images[smaller])
+        biggerList = list(self.images[bigger])
+
+        for i, (time, image) in enumerate(smallerList):
             ret, corners, gray = check_chessboard(image)
             if ret:
                 #najdi adekvatny a aplikuj ich
-                while self.images[bigger][j][0] <= time - threshold:
+                while j < len(biggerList) and biggerList[j][0] <= time - threshold:
                     j += 1
 
-                while self.images[bigger][j][0] <= time + threshold:
-                    image2 = self.images[bigger][j][1]
+                while j < len(biggerList) and biggerList[j][0] <= time + threshold:
+                    image2 = biggerList[j][1]
                     ret2, corners, gray = check_chessboard(image2)
                     if ret2:
-                        images_for_stereo1.append(image)
-                        images_for_stereo2.append(image2)
+                        images_for_stereo1.append((time, image))
+                        images_for_stereo2.append((biggerList[j][0], image2))
 
-                        print("First {}, second {}".format(time, self.images[bigger][j][0]))
+                        print("First {}, second {}".format(time, biggerList[j][0]))
                         break
                     j += 1
         assert(len(images_for_stereo1) == len(images_for_stereo2))
 
-        #(imgpoint1, objpoints1) = self.calibs[0].find_chessboad(images_for_stereo1)
-        #(imgpoint2, objpoints2) = self.calibs[1].find_chessboad(images_for_stereo2)
+        if len(images_for_stereo1) == 0:
+            print("Did not found images for stereo calibration")
+            return
+
+        (imgpoint1, objpoints1) = self.calibs[0].find_chessboad(images_for_stereo1, fastCheck=True)
+        (imgpoint2, objpoints2) = self.calibs[1].find_chessboad(images_for_stereo2, fastCheck=True)
 
         print("Initializing stereo calibration")
-        #self.stereo_calibration = StereoCameraCalibration(self.calibs, imgpoint1, imgpoint2, objpoints1)
-        #self.stereo_calibration.stereo_calibrate()
+        self.stereo_calibration = StereoCameraCalibration(self.calibs, imgpoint1, imgpoint2, objpoints1)
+        self.stereo_calibration.stereo_calibrate()
 
+
+        print(self.stereo_calibration.calibration_results)
         print("Stereo calibration finished")
 
     def get_images_same_time(self):
@@ -114,7 +132,7 @@ class Provider(object):
 
 if __name__ == '__main__':
     logging.getLogger().setLevel(logging.INFO)
-    provider = Provider([0, 1])
+    provider = Provider([2])
     provider.initialize_cameras()
     provider.start_capturing()
     time.sleep(10)

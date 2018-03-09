@@ -6,6 +6,9 @@ from CalibrationResults import MonoCameraCalibrationResults, StereoCameraCalibra
 
 
 def check_chessboard(image, chessboard_size = None):
+    # je image obrakzkom?
+
+
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     if chessboard_size is None:
         chessboard_size = ChessboardPattern.chessboard_size
@@ -19,7 +22,7 @@ class MonoCameraCalibration(object):
         self.corners_criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
         self.calibration_results = None
 
-    def find_chessboad(self, images):
+    def find_chessboad(self, images, fastCheck = False):
         successful = 0
         objp = ChessboardPattern.get_object_points()
 
@@ -33,7 +36,14 @@ class MonoCameraCalibration(object):
 
             if ret:
                 successful += 1
-                ret, corners = cv2.findChessboardCorners(gray, self.chessboard_size)
+                if fastCheck:
+                    ret, corners = cv2.findChessboardCorners(gray, self.chessboard_size, flags=cv2.CALIB_CB_FAST_CHECK)
+                else:
+                    ret, corners = cv2.findChessboardCorners(gray, self.chessboard_size)
+
+                if not ret or len(corners) != len(objp):
+                    continue
+
                 objpoints.append(objp)
                 corners2 = cv2.cornerSubPix(gray, corners, (5, 5), (-1, -1), self.corners_criteria)
                 imgpoints.append(corners2)
@@ -44,8 +54,15 @@ class MonoCameraCalibration(object):
     def calibrate(self, images):
         (imgpoints, objpoints) = self.find_chessboad(images)
 
-        if imgpoints == []:
+
+
+        if imgpoints == [] or len(imgpoints) != len(objpoints) or len(imgpoints) < 20:
             return False
+
+        for i in range(len(imgpoints)):
+            if len(imgpoints[i]) != len(objpoints[i]):
+                pass
+
         success, mtx, dist, rvecs, tvecs =\
             cv2.calibrateCamera(objpoints, imgpoints, self.image_size, None, None)
         if success:
