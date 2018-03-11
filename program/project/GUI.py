@@ -4,15 +4,25 @@ import tkinter as tk
 import logging
 import cv2
 from PIL import Image, ImageTk
+
 from Provider import Provider
 
 class GUI(object):
-    def __init__(self):
+    def __init__(self, gui_actions_queue):
+        self.queue = gui_actions_queue
         pass
+
+    #@staticmethod
+    def click_callback(self, event, id):
+        print ("clicked at", id,'-', event.x, event.y)
+        self.queue.put((id, event.x, event.y))
+      #  waitForTwoClicks()
+
 
     def start(self, image_streams):
         self.root = tk.Tk()
         self.streams = image_streams
+
 
         count = len(self.streams)
         self.create_labels_for_streams(count)
@@ -42,9 +52,12 @@ class GUI(object):
 
     def create_labels_for_streams(self, count):
         self.video_labels = []
+        import functools
         for i in range(count):
-            self.video_labels.append(tk.Label(self.root))
-
+            label = tk.Label(self.root)
+            bind = functools.partial(self.click_callback, id=i)
+            label.bind("<Button-1>", bind)
+            self.video_labels.append(label)
         self.organize_labels()
 
     def organize_labels(self):
