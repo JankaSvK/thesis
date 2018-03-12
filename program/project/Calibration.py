@@ -54,14 +54,17 @@ class MonoCameraCalibration(object):
     def calibrate(self, images):
         (imgpoints, objpoints) = self.find_chessboad(images)
 
-
-
         if imgpoints == [] or len(imgpoints) != len(objpoints) or len(imgpoints) < 20:
             return False
 
-        for i in range(len(imgpoints)):
+        if len(imgpoints) > 50 and len(objpoints) > 50:
+            imgpoints = imgpoints[0:50]
+            objpoints = objpoints[0:50]
+
+        for i in range(len(imgpoints)): # to je ze sa zle nacita
             if len(imgpoints[i]) != len(objpoints[i]):
-                pass
+                del(imgpoints[i])
+                del(objpoints[i])
 
         success, mtx, dist, rvecs, tvecs =\
             cv2.calibrateCamera(objpoints, imgpoints, self.image_size, None, None)

@@ -1,7 +1,13 @@
 import threading
 import logging
 from collections import Set
+import time
 from queue import Queue
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+
+import sys
+
 from ComplexTracker import ComplexTracker
 import cv2
 
@@ -42,14 +48,14 @@ gui = GUI(gui_actions_queue)
 guiThread = threading.Thread(target=gui.start, args=(provider.images,), name="GUI")
 guiThread.start()
 
-#while not provider.calibrate_cameras():
+while not provider.calibrate_cameras():
     #print("New calibration")
-#    pass
+    pass
 
-#print("!!! Cameras calibrated")
+print("!!! Cameras calibrated")
 
 
-#provider.calibrate_pairs()
+provider.calibrate_pairs()
 
 #### One small step further
 
@@ -60,35 +66,34 @@ bboxes = clickCounter(gui_actions_queue, 2, provider.images, coords)
 
 print("Got here")
 
-while True:
-    print(coords[0][-1])
-#Draw them
-
 #while True:
-#    if not gui_actions_queue.empty():
-#        print(gui_actions_queue.get())
-
-
-# Initializing tracking on both cameras
-#click on both twice
-
-
-
+#    print(coords[0][-1][0] - provider.images[0][-1][0])
+#Draw them
 
 
 #
 # # Getting projection matrices
 #
-# firstCameraResults = provider.calibs[0].calibration_results
-# secondCameraResults = provider.calibs[1].calibration_results
-# stereoResults = provider.stereo_calibration.calibration_results
-#
-# RL, RR, PL, PR, _, _, _ = cv2.stereoRectify(
-#     firstCameraResults.camera_matrix, firstCameraResults.distortion_coeffs,
-#     secondCameraResults.camera_matrix, secondCameraResults.distortion_coeffs,
-#     (640, 480), stereoResults.rotation_matrix, stereoResults.translation_matrix, alpha=0)
-#
+firstCameraResults = provider.calibs[0].calibration_results
+secondCameraResults = provider.calibs[1].calibration_results
+stereoResults = provider.stereo_calibration.calibration_results
+
+RL, RR, PL, PR, _, _, _ = cv2.stereoRectify(
+    firstCameraResults.camera_matrix, firstCameraResults.distortion_coeffs,
+    secondCameraResults.camera_matrix, secondCameraResults.distortion_coeffs,
+    (640, 480), stereoResults.rotation_matrix, stereoResults.translation_matrix, alpha=0)
+
+print("here")
+
+time.sleep(1)
+
+
 # # Getting points
-#
-#
-# locatedPoints = cv2.triangulatePoints(PL, PR, [], []) #TODO add coordinates
+while True:
+    locatedPointsHom = cv2.triangulatePoints(projMatr1=PL, projMatr2=PR, projPoints1=coords[0][-1][1], projPoints2=coords[1][-1][1]) #TODO add coordinates
+    locatedPoint = [i / locatedPointsHom[3] for i in locatedPointsHom[0:3]]
+    print(locatedPoint)
+
+    
+
+#plt.show(block=True)

@@ -5,6 +5,14 @@ class MonoCameraCalibrationResults(object):
         self.rotation_vec = rotation_vecs
         self.translation_vec = translation_vecs
 
+    def __str__(self):
+        output = "Camera matrix\n" + str(self.camera_matrix)
+        output += "\nDistortion coeffs\n" + str(self.distortion_coeffs)
+        output += "\nRotation vector\n" + str(self.rotation_vec)
+        output += "\nTranslation vector\n" + str(self.translation_vec)
+        return output
+
+
 class StereoCameraCalibrationResults(object):
     def __init__(self, rotation_matrix, translation_matrix, essential_matrix, fundamental_matrix, reprojection_error):
         self.rotation_matrix = rotation_matrix
