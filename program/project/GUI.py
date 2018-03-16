@@ -27,7 +27,7 @@ class GUI(object):
       #  waitForTwoClicks()
 
 
-    def start(self, image_streams, localization_data = None):
+    def start(self, image_streams, localization_data = []):
         self.root = tk.Tk()
         self.streams = image_streams
         self.localization_data = localization_data
@@ -66,8 +66,8 @@ class GUI(object):
                 self.video_labels[i].configure(image = image)
                 self.video_labels[i].image = image
             #configure graph label
-            if self.localization_data is not None and not self.localization_data.empty():
-                point = self.localization_data.get(False)
+            if len(self.localization_data) != 0:
+                point = self.localization_data[-1]
                 self.subplot.scatter(point[0], point[1], point[2])
 
                 self.graph.show()

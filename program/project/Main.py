@@ -47,7 +47,7 @@ provider.initialize_cameras()
 provider.start_capturing()
 
 gui_actions_queue = Queue()
-located_points = Queue()
+located_points = []
 gui = GUI(gui_actions_queue, coords)
 guiThread = threading.Thread(target=gui.start, args=(provider.images, located_points), name="GUI")
 guiThread.start()
@@ -97,5 +97,5 @@ while True:
     #print(locatedPoint)
 
     if coords[0][-1][0] - lastAddedTime > 1/10:
-        located_points.put([locatedPoint[0][0], locatedPoint[1][0], locatedPoint[2][0]])
+        located_points.append([locatedPoint[0][0], locatedPoint[1][0], locatedPoint[2][0]])
         lastAddedTime = coords[0][-1][0]
