@@ -15,7 +15,7 @@ class ComplexTracker:
         (x1, y1) = left_upper_corner
         (x2, y2) = right_bottom_corner
 
-        self.initial_position = (x1, y1, x2, y2)
+        self.initial_position = (x1, y1, x2 - x1, y2 - y1)
 
         print("Init called")
         if len(self.input) == 0:
@@ -61,8 +61,11 @@ class ComplexTracker:
 
     def find_object(self, image):
         ok, bbox = self.tracker.update(image)
+        x, y = int(bbox[0] + bbox[2] / 2), int(bbox[1] + bbox[3] / 2)
 
         if ok:
-            return (int(bbox[0] + bbox[2] / 2), int(bbox[1] + bbox[3] / 2))
+            return (x, y)
         else:
             return None
+
+

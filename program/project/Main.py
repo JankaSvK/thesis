@@ -38,14 +38,18 @@ def clickCounter(queue, number_of_cameras, image_streams, output_streams):
 
     return (bboxes, trackers)
 #logging.getLogger().setLevel(logging.INFO)
+coords = []
+for i in range(2):
+    coords.append([])
 
 provider = Provider([0, 1])
 provider.initialize_cameras()
 provider.start_capturing()
 
 gui_actions_queue = Queue()
-gui = GUI(gui_actions_queue)
-guiThread = threading.Thread(target=gui.start, args=(provider.images,), name="GUI")
+located_points = Queue()
+gui = GUI(gui_actions_queue, coords)
+guiThread = threading.Thread(target=gui.start, args=(provider.images, located_points), name="GUI")
 guiThread.start()
 
 while not provider.calibrate_cameras():
@@ -59,9 +63,6 @@ provider.calibrate_pairs()
 
 #### One small step further
 
-coords = []
-for i in range(2):
-    coords.append([])
 bboxes = clickCounter(gui_actions_queue, 2, provider.images, coords)
 
 print("Got here")
@@ -71,9 +72,9 @@ print("Got here")
 #Draw them
 
 
-#
-# # Getting projection matrices
-#
+
+# Getting projection matrices
+
 firstCameraResults = provider.calibs[0].calibration_results
 secondCameraResults = provider.calibs[1].calibration_results
 stereoResults = provider.stereo_calibration.calibration_results
@@ -89,11 +90,12 @@ time.sleep(1)
 
 
 # # Getting points
+lastAddedTime = 0
 while True:
     locatedPointsHom = cv2.triangulatePoints(projMatr1=PL, projMatr2=PR, projPoints1=coords[0][-1][1], projPoints2=coords[1][-1][1]) #TODO add coordinates
     locatedPoint = [i / locatedPointsHom[3] for i in locatedPointsHom[0:3]]
-    print(locatedPoint)
+    #print(locatedPoint)
 
-    
-
-#plt.show(block=True)
+    if coords[0][-1][0] - lastAddedTime > 1/10:
+        located_points.put([locatedPoint[0][0], locatedPoint[1][0], locatedPoint[2][0]])
+        lastAddedTime = coords[0][-1][0]
