@@ -5,6 +5,8 @@ import time
 from queue import Queue
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+
+from Localization import Localization
 from QueuesProvider import *
 import sys
 
@@ -39,13 +41,13 @@ provider = Provider([0, 1])
 provider.initialize_cameras()
 provider.start_capturing()
 
-located_points = []
 gui = GUI(coords)
-guiThread = threading.Thread(target=gui.start, args=(provider.images, located_points), name="GUI")
+guiThread = threading.Thread(target=gui.start, args=(provider.images, QueuesProvider.LocalizatedPoints3D), name="GUI")
 guiThread.start()
 
-calibration = False
+calibration = True
 trackers_initialization = True
+localization = True
 
 if calibration:
     while not provider.calibrate_cameras():
@@ -56,29 +58,19 @@ if calibration:
 if trackers_initialization:
     initialize_trackers(provider.images, coords)
 
-# Getting projection matrices
+if localization:
+    Localization.compute_projection_matrices(
+        provider.calibs[0].calibration_results,
+        provider.calibs[1].calibration_results,
+        provider.stereo_calibration.calibration_results
+    )
 
-firstCameraResults = provider.calibs[0].calibration_results
-secondCameraResults = provider.calibs[1].calibration_results
-stereoResults = provider.stereo_calibration.calibration_results
+time.sleep(1) #
 
-RL, RR, PL, PR, _, _, _ = cv2.stereoRectify(
-    firstCameraResults.camera_matrix, firstCameraResults.distortion_coeffs,
-    secondCameraResults.camera_matrix, secondCameraResults.distortion_coeffs,
-    (640, 480), stereoResults.rotation_matrix, stereoResults.translation_matrix, alpha=0)
-
-print("here")
-
-time.sleep(1)
-
-
-# # Getting points
 lastAddedTime = 0
 while True:
-    locatedPointsHom = cv2.triangulatePoints(projMatr1=PL, projMatr2=PR, projPoints1=coords[0][-1][1], projPoints2=coords[1][-1][1]) #TODO add coordinates
-    locatedPoint = [i / locatedPointsHom[3] for i in locatedPointsHom[0:3]]
-    #print(locatedPoint)
+    located_point = Localization.get_3d_coordinates(coords[0][-1][1], coords[1][ -1][ 1]) # TODO: trebalo by skontrolovat ci cas sedi
 
     if coords[0][-1][0] - lastAddedTime > 1/10:
-        located_points.append([locatedPoint[0][0], locatedPoint[1][0], locatedPoint[2][0]])
+        QueuesProvider.LocalizatedPoints3D.append((located_point[0], located_point[1], located_point[2]))
         lastAddedTime = coords[0][-1][0]

@@ -91,6 +91,6 @@ class StereoCameraCalibration(object):
                 cameraMatrix1=results1.camera_matrix, distCoeffs1=results1.distortion_coeffs,
                 cameraMatrix2=results2.camera_matrix, distCoeffs2=results2.distortion_coeffs,
                 imageSize=(1,1), #should not be used, because intristic matrix is fixed
-                criteria = (cv2.TERM_CRITERIA_MAX_ITER + cv2.TERM_CRITERIA_EPS, 100, 1e-5)
+                criteria = (cv2.TERM_CRITERIA_MAX_ITER + cv2.TERM_CRITERIA_EPS, 30, 1e-5)
             )
         self.calibration_results = StereoCameraCalibrationResults(r, t, e, f, reprerror)

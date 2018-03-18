@@ -129,7 +129,6 @@ class Provider(object):
         for i, (time, image) in enumerate(smallerList):
             ret, corners, gray = check_chessboard(image)
             if ret:
-                #najdi adekvatny a aplikuj ich
                 while j < len(biggerList) and biggerList[j][0] <= time - threshold:
                     j += 1
 
@@ -141,6 +140,7 @@ class Provider(object):
                         images_for_stereo2.append((biggerList[j][0], image2))
 
                         print("First {}, second {}".format(time, biggerList[j][0]))
+                        j += 1
                         break
                     j += 1
         assert(len(images_for_stereo1) == len(images_for_stereo2))
