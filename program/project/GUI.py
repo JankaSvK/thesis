@@ -1,31 +1,26 @@
 import threading
 import tkinter as tk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
-# implement the default mpl key bindings
 from matplotlib.backend_bases import key_press_handler
 import logging
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from mpl_toolkits.mplot3d import Axes3D
 from queue import Queue
-
 import cv2
 from PIL import Image, ImageTk
-
 from Provider import Provider
+from QueuesProvider import QueuesProvider
+
 
 class GUI(object):
-    def __init__(self, gui_actions_queue, tracked_points):
-        self.mouse_clicks = gui_actions_queue
+    def __init__(self, tracked_points):
         self.tracked_points = tracked_points
-        pass
 
     #@staticmethod
     def click_callback(self, event, id):
         print ("clicked at", id,'-', event.x, event.y)
-        self.mouse_clicks.put((id, event.x, event.y))
-      #  waitForTwoClicks()
-
+        QueuesProvider.add_mouse_click(window_index=id, x=event.x, y=event.y)
 
     def start(self, image_streams, localization_data = []):
         self.root = tk.Tk()

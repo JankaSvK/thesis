@@ -5,38 +5,31 @@ import time
 from queue import Queue
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
-
+from QueuesProvider import *
 import sys
 
+import Config
 from ComplexTracker import ComplexTracker
 import cv2
 
 from GUI import GUI
 from Provider import Provider
 
-def clickCounter(queue, number_of_cameras, image_streams, output_streams):
-    bboxes = []
+def initialize_trackers(input, output):
     trackers = []
+    for cam_ind in Config.camera_indexes:
+        trackers.append(ComplexTracker(cam_ind, #image_stream=Camera[cam_ind].images, tracked_points=Camera[cam_ind].tracked_points))
+            input[cam_ind], output[cam_ind]))
+    not_initialized_cameras = list(Config.camera_indexes)
+    while not_initialized_cameras != []:
+        for cam_ind in not_initialized_cameras:
+            mouse_clicks = Camera[cam_ind].mouse_clicks
+            if len(mouse_clicks) >= 2:
+                not_initialized_cameras.remove(cam_ind)
+                trackers[cam_ind].set_initial_position(mouse_clicks[-2], mouse_clicks[-1])
+                trackers[cam_ind].start_tracking()
 
-    for i in range(number_of_cameras):
-        bboxes.append([])
-        trackers.append(ComplexTracker(i,image_stream=image_streams[i], output_stream=output_streams[i]))
 
-    bboxes_created = set()
-
-    while len(bboxes_created) != number_of_cameras:
-        (id, x, y) = queue.get()
-        if len(bboxes[id]) < 2:
-            bboxes[id].append((x, y))
-        if len(bboxes[id]) == 2:
-            bboxes_created.add(id)
-            trackers[id].set_initial_position(bboxes[id][0], bboxes[id][1])
-            trackers[id].start_tracking()
-
-            # start tracking
-    print("Got all bounding box")
-
-    return (bboxes, trackers)
 #logging.getLogger().setLevel(logging.INFO)
 coords = []
 for i in range(2):
@@ -46,32 +39,22 @@ provider = Provider([0, 1])
 provider.initialize_cameras()
 provider.start_capturing()
 
-gui_actions_queue = Queue()
 located_points = []
-gui = GUI(gui_actions_queue, coords)
+gui = GUI(coords)
 guiThread = threading.Thread(target=gui.start, args=(provider.images, located_points), name="GUI")
 guiThread.start()
 
-while not provider.calibrate_cameras():
-    #print("New calibration")
-    pass
+calibration = False
+trackers_initialization = True
 
-print("!!! Cameras calibrated")
+if calibration:
+    while not provider.calibrate_cameras():
+        pass
 
+    provider.calibrate_pairs()
 
-provider.calibrate_pairs()
-
-#### One small step further
-
-bboxes = clickCounter(gui_actions_queue, 2, provider.images, coords)
-
-print("Got here")
-
-#while True:
-#    print(coords[0][-1][0] - provider.images[0][-1][0])
-#Draw them
-
-
+if trackers_initialization:
+    initialize_trackers(provider.images, coords)
 
 # Getting projection matrices
 

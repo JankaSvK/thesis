@@ -4,16 +4,16 @@ import cv2
 import sys
 
 class ComplexTracker:
-    def __init__(self, camera_index, image_stream, output_stream, tracker_type = 'KCF'):
+    def __init__(self, camera_index, image_stream, tracked_points, tracker_type ='KCF'):
         self.tracker = self.create_tracker(tracker_type)
         self.tracking_history = []
         self.input = image_stream
-        self.output = output_stream
+        self.output = tracked_points
         self.camera_index = camera_index
 
     def set_initial_position(self, left_upper_corner, right_bottom_corner):
-        (x1, y1) = left_upper_corner
-        (x2, y2) = right_bottom_corner
+        x1, y1 = left_upper_corner['x'], left_upper_corner['y']
+        x2, y2 = right_bottom_corner['x'], right_bottom_corner['y']
 
         self.initial_position = (x1, y1, x2 - x1, y2 - y1)
 
