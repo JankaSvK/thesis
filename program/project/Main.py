@@ -50,10 +50,10 @@ trackers_initialization = True
 localization = True
 
 if calibration:
-    while not provider.calibrate_cameras():
+    while not provider.calibrate_cameras(use_saved=['calib_results/0/2018-03-21-at-15-21.json', 'calib_results/1/2018-03-21-at-15-21.json']):
         pass
 
-    provider.calibrate_pairs()
+    provider.calibrate_pairs(use_saved='calib_results/stereo_calib_results/2018-03-21-at-15-34.json') # TODO: necheckuje ci je hotovy
 
 if trackers_initialization:
     initialize_trackers(provider.images, coords)

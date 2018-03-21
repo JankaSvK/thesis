@@ -70,15 +70,20 @@ class MonoCameraCalibration(object):
             cv2.calibrateCamera(objpoints, imgpoints, self.image_size, None, None)
         if success:
             self.calibration_results = MonoCameraCalibrationResults(mtx, dist, rvecs, tvecs)
+
             logging.info("\nCamera matrix\n{}\nDistortion coefficients\n{}".format(mtx, dist))
         return success
 
 class StereoCameraCalibration(object):
-    def __init__(self, mono_calibrations: [MonoCameraCalibration], imgpoint1, imgpoints2, objpoints):
-        self.imgpoints = [] # TODO, ma to byt list listov. na [0] maju byt imgpoints prvej kamery a [1] druhej
-        self.mono_calibrations = mono_calibrations
-        self.object_points = objpoints
-        self.imgpoints = (imgpoint1, imgpoints2)
+    def __init__(self, mono_calibrations: [MonoCameraCalibration] = [], imgpoint1 = None, imgpoints2 = None, objpoints = None, jsonFile = None):
+        if jsonFile is not None:
+            self.calibration_results = StereoCameraCalibrationResults(jsonFile = jsonFile)
+            return
+        else:
+            #self.imgpoints = [] # TODO, ma to byt list listov. na [0] maju byt imgpoints prvej kamery a [1] druhej
+            self.mono_calibrations = mono_calibrations
+            self.object_points = objpoints
+            self.imgpoints = (imgpoint1, imgpoints2)
 
     def stereo_calibrate(self):
         results1 = self.mono_calibrations[0].calibration_results
@@ -91,6 +96,6 @@ class StereoCameraCalibration(object):
                 cameraMatrix1=results1.camera_matrix, distCoeffs1=results1.distortion_coeffs,
                 cameraMatrix2=results2.camera_matrix, distCoeffs2=results2.distortion_coeffs,
                 imageSize=(1,1), #should not be used, because intristic matrix is fixed
-                criteria = (cv2.TERM_CRITERIA_MAX_ITER + cv2.TERM_CRITERIA_EPS, 30, 1e-5)
+                criteria = (cv2.TERM_CRITERIA_MAX_ITER + cv2.TERM_CRITERIA_EPS, 30, 1e-3)
             )
         self.calibration_results = StereoCameraCalibrationResults(r, t, e, f, reprerror)

@@ -31,39 +31,22 @@ class Provider(object):
 
             [ p.setup_camera(640, 480)  for p in self.camera_providers ]
 
+            self.calibs = [
+                MonoCameraCalibration(chessboard_size=ChessboardPattern.chessboard_size, image_size=(640, 480)) for _ in self.camera_providers
+            ]
+
     def start_capturing(self):
         [ p.start_capturing() for p in self.camera_providers ]
 
     def stop_capturing(self):
         [ p.stop_capturing() for p in self.camera_providers ]
 
-    def calibrate_cameras(self, use_saved = False):
-        if use_saved:
-            for _ in self.camera_providers:
-                self.calibs.append(MonoCameraCalibration(chessboard_size=ChessboardPattern.chessboard_size ,image_size=(640, 480)))
-
-            self.calibs[0].calibration_results = MonoCameraCalibrationResults(
-                camera_matrix = 0,
-                distortion_coeffs = 0,
-                rotation_vecs = 0,
-                translation_vecs = 0
-            )
-
-            self.calibs[1].calibration_results = MonoCameraCalibrationResults(
-                camera_matrix=0,
-                distortion_coeffs=0,
-                rotation_vecs=0,
-                translation_vecs=0
-            )
-
+    def calibrate_cameras(self, use_saved = []):
+        if use_saved != []:
+            for i, jsonFile in enumerate(use_saved):
+                if jsonFile is not None:
+                    self.calibs[i].calibration_results = MonoCameraCalibrationResults(jsonFile=jsonFile)
             return True
-
-
-        success = True
-        if len(self.calibs) != len(self.camera_providers):
-            self.calibs = []
-            for _ in self.camera_providers:
-                self.calibs.append(MonoCameraCalibration(chessboard_size=ChessboardPattern.chessboard_size ,image_size=(640, 480)))
 
         for cam_ind, calib in enumerate(self.calibs):
             if calib.calibration_results is None:
@@ -74,18 +57,17 @@ class Provider(object):
                 calib_error = self.calibs[cam_ind].calibrate(images)
                 logging.info("Calibration end up with {}".format(calib_error))
 
-
         uncalibrated = []
         for i, calib in enumerate(self.calibs):
             if calib.calibration_results is None:
-                success = False
                 uncalibrated.append(i)
-            #else:
-            #    print(calib.calibration_results)
         print("Cameras", uncalibrated, "not calibrated successfully")
 
-        return success
+        if uncalibrated == []:
+            for i, calib in enumerate(self.calibs):
+                calib.calibration_results.save(i)
 
+        return (uncalibrated == [])
 
     def get_times_with_chessboard(self):
         for camera in self.camera_indexes:
@@ -96,15 +78,9 @@ class Provider(object):
                     succ.append(time)
             print(succ)
 
-    def calibrate_pairs(self, use_saved = False): # TODO: for now working with only TWO cameras
-        if use_saved:
-            self.stereo_calibration.calibration_results = StereoCameraCalibrationResults(
-                rotation_matrix = [[ 0.7218315,  -0.18127398,  0.66790646], [ 0.06328574,  0.97833254,  0.1971303 ], [-0.68916922, -0.10002591,  0.7176633 ]],
-                translation_matrix = [[-313.31814004],[ -91.22541214],[ 126.20238638]],
-                essential_matrix = [[  54.88293477, -114.34299674,  -90.34744443], [-124.83235929,  -54.21714052,  309.1483187 ], [  46.02080661, -323.06612595,   -0.83445697]],
-                fundamental_matrix = [[ -1.35848473e-05,   2.82811243e-05,   1.23845886e-02], [  3.06905591e-05,   1.33193765e-05,  -6.31260664e-02], [ -1.39487143e-02,   5.47770955e-02,   1.00000000e+00]],
-                reprojection_error = 0.7471242266180657
-            )
+    def calibrate_pairs(self, use_saved = None): # TODO: for now working with only TWO cameras
+        if use_saved is not None:
+            self.stereo_calibration = StereoCameraCalibration(jsonFile = use_saved)
             return
 
         print("Pairs")
@@ -156,12 +132,9 @@ class Provider(object):
         self.stereo_calibration = StereoCameraCalibration(self.calibs, imgpoint1, imgpoint2, objpoints1)
         self.stereo_calibration.stereo_calibrate()
 
-
+        self.stereo_calibration.calibration_results.save()
         print(self.stereo_calibration.calibration_results)
         print("Stereo calibration finished")
-
-    def get_images_same_time(self):
-        pass
 
 
 if __name__ == '__main__':
