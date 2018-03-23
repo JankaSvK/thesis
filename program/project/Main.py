@@ -70,35 +70,18 @@ if localization:
         provider.stereo_calibration.calibration_results
     )
 
-
-start1 = {'x':0, 'y':0, 'z':0}
-end1   = {'x':0, 'y':0, 'z':100}
-camera1 = { 'start':start1, 'end':end1 }
-
+camera1 = [[0, 0, 0], [0, 0, 130]]
 t = provider.stereo_calibration.calibration_results.translation_matrix
-start2 = {'x':t[0][0], 'y':t[1][0], 'z':t[2][0]} # + translation vector
-end2   = {'x':t[0][0], 'y':t[1][0], 'z':t[2][0] + 100}
-
-tmp = np.array([[0, 0, 100]]).T
-res = provider.stereo_calibration.calibration_results.rotation_matrix.dot(tmp)
-end2 = {'x': t[0][0]+res[0][0], 'y':t[1][0]+res[1][0], 'z':t[2][0]+res[2][0]}
-camera2 = { 'start':start2, 'end':end2 }
+rotated_vector = provider.stereo_calibration.calibration_results.rotation_matrix.dot(np.array([[0, 0, 100]]).T) + t
+camera2 = [t.T.tolist()[0], rotated_vector.T.tolist()[0]]
 
 gui.draw_cameras([camera1, camera2])
 
 time.sleep(1) #
 
 lastAddedTime = 0
-#last_located_point = None
 while True:
     located_point = Localization.get_3d_coordinates(coords[0][-1][1], coords[1][ -1][ 1]) # TODO: trebalo by skontrolovat ci cas sedi
-
-    # if last_located_point is None or np.linalg.norm(located_point - last_located_point) > 5:
-    #     if last_located_point is not None:
-    #         print( np.linalg.norm(located_point - last_located_point))
-    #     else:
-    #         print("None")
-    #     last_located_point = located_point
     QueuesProvider.LocalizatedPoints3D.append(located_point)
 
 
