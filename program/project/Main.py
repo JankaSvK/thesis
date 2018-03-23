@@ -89,10 +89,16 @@ gui.draw_cameras([camera1, camera2])
 time.sleep(1) #
 
 lastAddedTime = 0
+#last_located_point = None
 while True:
     located_point = Localization.get_3d_coordinates(coords[0][-1][1], coords[1][ -1][ 1]) # TODO: trebalo by skontrolovat ci cas sedi
 
-    if coords[0][-1][0] - lastAddedTime > 1/10:
-        QueuesProvider.LocalizatedPoints3D.append((located_point[0], located_point[1], located_point[2]))
-        lastAddedTime = coords[0][-1][0]
-        #print(located_point)
+    # if last_located_point is None or np.linalg.norm(located_point - last_located_point) > 5:
+    #     if last_located_point is not None:
+    #         print( np.linalg.norm(located_point - last_located_point))
+    #     else:
+    #         print("None")
+    #     last_located_point = located_point
+    QueuesProvider.LocalizatedPoints3D.append(located_point)
+
+

@@ -2,6 +2,8 @@ import threading
 import tkinter as tk
 
 import sys
+
+import numpy as np
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
 from matplotlib.backend_bases import key_press_handler
 import logging
@@ -27,7 +29,7 @@ class GUI(object):
     def draw_cameras(self, cameras):
         for i, cam in enumerate(cameras):
             s, e = cam['start'], cam['end']
-            self.subplot.scatter(s['x'], s['y'], s['z'], s=0.1)
+            self.subplot.scatter(s['x'], s['y'], s['z'], s=0.1) # Plot is not changing camera view to see arrows, so creating point to include
             a = Arrow3D([s['x'], e['x']], [s['y'], e['y']], [s['z'], e['z']], mutation_scale=20, lw=1, arrowstyle="-|>", color="k")
             self.subplot.add_artist(a)
             self.subplot.text(s['x'] + 5, s['y'], s['z'], i)
@@ -60,6 +62,8 @@ class GUI(object):
 
 
     def start_streaming(self):
+        minimal_distance = 20
+        last_point_drawn = None
         while True:
             for i, stream in enumerate(self.streams):
                 if len(stream) < 1:
@@ -77,10 +81,12 @@ class GUI(object):
                 self.video_labels[i].image = image
             #configure graph label
             if len(self.localization_data) != 0:
-                point = self.localization_data[-1]
-                self.subplot.scatter(point[0], point[1], point[2])
 
-                self.graph.show()
+                point = self.localization_data[-1]
+                if last_point_drawn is None or np.linalg.norm(point - last_point_drawn) > minimal_distance:
+                    last_point_drawn = point
+                    self.subplot.scatter(point[0], point[1], point[2])
+                    self.graph.show()
 
     def process_image(self, image):
         if isinstance(image, tuple):
