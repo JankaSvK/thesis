@@ -1,5 +1,7 @@
 import threading
 import tkinter as tk
+
+import sys
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
 from matplotlib.backend_bases import key_press_handler
 import logging
@@ -17,6 +19,18 @@ class GUI(object):
     def __init__(self, tracked_points):
         self.tracked_points = tracked_points
 
+    def do_nothing(self):
+        pass
+
+    def draw_cameras(self, cameras):
+        for i, cam in enumerate(cameras):
+            s, e = cam['start'], cam['end']
+            self.subplot.quiver(s['x'], s['y'], s['z'], e['x'], e['y'], e['z'], length = 10, normalize=True)
+            self.subplot.scatter(s['x'], s['y'], s['z'])
+            self.subplot.scatter(e['x'], e['y'], e['z'])
+
+            self.subplot.text(s['x'] + 5, s['y'] + 5, s['z'], i)
+
     #@staticmethod
     def click_callback(self, event, id):
         print ("clicked at", id,'-', event.x, event.y)
@@ -24,6 +38,7 @@ class GUI(object):
 
     def start(self, image_streams, localization_data = []):
         self.root = tk.Tk()
+
         self.streams = image_streams
         self.localization_data = localization_data
 
@@ -32,7 +47,6 @@ class GUI(object):
 
         f = Figure(figsize=(5, 4), dpi=100)
         self.subplot = f.add_subplot(111, projection = '3d')
-
 
         self.graph = FigureCanvasTkAgg(f, master=self.root)
         self.subplot.mouse_init()

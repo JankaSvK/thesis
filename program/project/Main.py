@@ -4,6 +4,7 @@ from collections import Set
 import time
 from queue import Queue
 import matplotlib.pyplot as plt
+import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 
 from Localization import Localization
@@ -50,10 +51,14 @@ trackers_initialization = True
 localization = True
 
 if calibration:
-    while not provider.calibrate_cameras(use_saved=['calib_results/0/2018-03-21-at-15-21.json', 'calib_results/1/2018-03-21-at-15-21.json']):
+    while not provider.calibrate_cameras(use_saved=['calib_results/0/2018-03-21-at-22-12.json', 'calib_results/1/2018-03-21-at-22-12.json']):
+    # while not provider.calibrate_cameras():
         pass
 
-    provider.calibrate_pairs(use_saved='calib_results/stereo_calib_results/2018-03-21-at-15-34.json') # TODO: necheckuje ci je hotovy
+    provider.calibrate_pairs(use_saved='calib_results/stereo_calib_results/2018-03-21-at-22-12.json')
+    provider.calibrate_pairs() # TODO: necheckuje ci je hotovy
+
+
 
 if trackers_initialization:
     initialize_trackers(provider.images, coords)
@@ -65,6 +70,22 @@ if localization:
         provider.stereo_calibration.calibration_results
     )
 
+
+start1 = {'x':0, 'y':0, 'z':0}
+end1   = {'x':0, 'y':0, 'z':100}
+camera1 = { 'start':start1, 'end':end1 }
+
+t = provider.stereo_calibration.calibration_results.translation_matrix
+start2 = {'x':t[0][0], 'y':t[1][0], 'z':t[2][0]} # + translation vector
+end2   = {'x':t[0][0], 'y':t[1][0], 'z':t[2][0] + 100}
+
+tmp = np.array([[0, 0, 100]]).T
+res = provider.stereo_calibration.calibration_results.rotation_matrix.dot(tmp)
+end2 = {'x': t[0][0]+res[0][0], 'y':t[1][0]+res[1][0], 'z':t[2][0]+res[2][0]}
+camera2 = { 'start':start2, 'end':end2 }
+
+gui.draw_cameras([camera1, camera2])
+
 time.sleep(1) #
 
 lastAddedTime = 0
@@ -74,3 +95,4 @@ while True:
     if coords[0][-1][0] - lastAddedTime > 1/10:
         QueuesProvider.LocalizatedPoints3D.append((located_point[0], located_point[1], located_point[2]))
         lastAddedTime = coords[0][-1][0]
+        #print(located_point)

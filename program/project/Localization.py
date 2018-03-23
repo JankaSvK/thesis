@@ -19,8 +19,8 @@ class Localization(object):
                 (640, 480), stereo_calibration_results.rotation_matrix, stereo_calibration_results.translation_matrix, alpha=0)
         else:
             rt = np.append(stereo_calibration_results.rotation_matrix, stereo_calibration_results.translation_matrix, axis = 1)
-            cls.projection_matrix1 = calibration_results1.camera_matrix.dot(rt)
-            cls.projection_matrix2 = calibration_results2.camera_matrix.dot(np.append(np.identity(3), np.zeros((3, 1)), axis = 1))
+            cls.projection_matrix2 = calibration_results2.camera_matrix.dot(rt)
+            cls.projection_matrix1 = calibration_results1.camera_matrix.dot(np.append(np.identity(3), np.zeros((3, 1)), axis = 1))
 
     @classmethod
     def get_3d_coordinates(cls, point1, point2):
