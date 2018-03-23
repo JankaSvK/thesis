@@ -11,6 +11,8 @@ from mpl_toolkits.mplot3d import Axes3D
 from queue import Queue
 import cv2
 from PIL import Image, ImageTk
+
+from Arrow3D import Arrow3D
 from Provider import Provider
 from QueuesProvider import QueuesProvider
 
@@ -25,11 +27,10 @@ class GUI(object):
     def draw_cameras(self, cameras):
         for i, cam in enumerate(cameras):
             s, e = cam['start'], cam['end']
-            self.subplot.quiver(s['x'], s['y'], s['z'], e['x'], e['y'], e['z'], length = 10, normalize=True)
-            self.subplot.scatter(s['x'], s['y'], s['z'])
-            self.subplot.scatter(e['x'], e['y'], e['z'])
-
-            self.subplot.text(s['x'] + 5, s['y'] + 5, s['z'], i)
+            self.subplot.scatter(s['x'], s['y'], s['z'], s=0.1)
+            a = Arrow3D([s['x'], e['x']], [s['y'], e['y']], [s['z'], e['z']], mutation_scale=20, lw=1, arrowstyle="-|>", color="k")
+            self.subplot.add_artist(a)
+            self.subplot.text(s['x'] + 5, s['y'], s['z'], i)
 
     #@staticmethod
     def click_callback(self, event, id):
