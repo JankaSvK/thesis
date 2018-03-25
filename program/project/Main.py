@@ -30,7 +30,7 @@ def initialize_trackers(input, output):
             if len(mouse_clicks) >= 2:
                 not_initialized_cameras.remove(cam_ind)
                 trackers[cam_ind].set_initial_position(mouse_clicks[-2], mouse_clicks[-1])
-                trackers[cam_ind].start_tracking()
+                trackers[cam_ind].start_tracking(trackers_stop_event)
 
 
 #logging.getLogger().setLevel(logging.INFO)
@@ -38,12 +38,16 @@ coords = []
 for i in range(2):
     coords.append([])
 
+stop_event = threading.Event()
+trackers_stop_event = threading.Event()
+
+
 provider = Provider([0, 1])
 provider.initialize_cameras()
 provider.start_capturing()
 
 gui = GUI(coords)
-guiThread = threading.Thread(target=gui.start, args=(provider.images, QueuesProvider.LocalizatedPoints3D), name="GUI")
+guiThread = threading.Thread(target=gui.start, args=(provider.images, stop_event, QueuesProvider.LocalizatedPoints3D), name="GUI")
 guiThread.start()
 
 calibration = True
@@ -80,8 +84,9 @@ gui.draw_cameras([camera1, camera2])
 time.sleep(1) #
 
 lastAddedTime = 0
-while True:
+while not stop_event.is_set():
     located_point = Localization.get_3d_coordinates(coords[0][-1][1], coords[1][ -1][ 1]) # TODO: trebalo by skontrolovat ci cas sedi
     QueuesProvider.LocalizatedPoints3D.append(located_point)
 
-
+provider.stop_capturing()
+trackers_stop_event.set()

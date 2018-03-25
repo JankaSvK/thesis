@@ -23,6 +23,7 @@ from QueuesProvider import QueuesProvider
 class GUI(object):
     def __init__(self, tracked_points):
         self.tracked_points = tracked_points
+        self.stop_event = False
 
     def do_nothing(self):
         pass
@@ -40,15 +41,12 @@ class GUI(object):
         QueuesProvider.add_mouse_click(window_index=id, x=event.x, y=event.y)
 
     def ask_quit(self):
-        print("Trying to close window")
-        #self.root.destroy()
-        #quit()
-        #exit()
-        #os._exit(1)
-        print("Tried everything")
+        self.stop_event = True
+        self.exit.set()
 
-    def start(self, image_streams, localization_data = []):
+    def start(self, image_streams, exiting_program, localization_data = []):
         self.root = tk.Tk()
+        self.exit = exiting_program
         self.root.protocol("WM_DELETE_WINDOW", self.ask_quit)
 
         self.streams = image_streams
@@ -65,16 +63,14 @@ class GUI(object):
         self.subplot.mouse_init()
         self.organize_labels()
 
-        #TODO: preco sa zakladaju dva thready?!?!?!
-        thread = threading.Thread(target=self.start_streaming, args=())
-        thread.start()
-        self.root.mainloop()
-        #self.start_streaming()
+        self.start_streaming()
+
+        print("Ending GUI")
 
     def start_streaming(self):
         minimal_distance = 20
         last_point_drawn = None
-        while True:
+        while self.stop_event == False:
             for i, stream in enumerate(self.streams):
                 if len(stream) < 1:
                     image = self.create_empty_image()
@@ -97,6 +93,10 @@ class GUI(object):
                     last_point_drawn = point
                     self.subplot.scatter(*point)
                     self.graph.show()
+
+            self.root.update_idletasks()
+            self.root.update()
+
 
     def process_image(self, image):
         if isinstance(image, tuple):

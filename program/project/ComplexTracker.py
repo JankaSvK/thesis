@@ -42,15 +42,16 @@ class ComplexTracker:
 
         return tracker #prepisat to na enumerator
 
-    def start_tracking(self):
+    def start_tracking(self, stop_event):
+        self.stop_event = stop_event
         t = threading.Thread(target=self.tracking, args=())
-        t.name = 'Tracker-'+str(self.camera_index)
-        t.daemon = True
+        t.name = 'Tracker'+str(self.camera_index)
+        t.setDaemon(True)
         t.start()
         print("Started thread")
 
     def tracking(self):
-        while True:
+        while not self.stop_event.is_set():
             if len(self.input) == 0:
                 continue
             (time, image) = self.input[-1]
