@@ -1,5 +1,6 @@
 import threading
 import tkinter as tk
+import threading, sys, os
 
 import sys
 
@@ -34,13 +35,21 @@ class GUI(object):
             a = Arrow3D([start[0], end[0]], [start[1], end[1]], [start[2], end[2]], mutation_scale=20, lw=1, arrowstyle="-|>", color="k")
             self.subplot.add_artist(a)
 
-    #@staticmethod
     def click_callback(self, event, id):
         print ("clicked at", id,'-', event.x, event.y)
         QueuesProvider.add_mouse_click(window_index=id, x=event.x, y=event.y)
 
+    def ask_quit(self):
+        print("Trying to close window")
+        #self.root.destroy()
+        #quit()
+        #exit()
+        #os._exit(1)
+        print("Tried everything")
+
     def start(self, image_streams, localization_data = []):
         self.root = tk.Tk()
+        self.root.protocol("WM_DELETE_WINDOW", self.ask_quit)
 
         self.streams = image_streams
         self.localization_data = localization_data
@@ -52,6 +61,7 @@ class GUI(object):
         self.subplot = f.add_subplot(111, projection = '3d')
 
         self.graph = FigureCanvasTkAgg(f, master=self.root)
+
         self.subplot.mouse_init()
         self.organize_labels()
 
@@ -59,7 +69,7 @@ class GUI(object):
         thread = threading.Thread(target=self.start_streaming, args=())
         thread.start()
         self.root.mainloop()
-
+        #self.start_streaming()
 
     def start_streaming(self):
         minimal_distance = 20
