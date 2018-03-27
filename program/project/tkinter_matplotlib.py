@@ -41,7 +41,7 @@ def on_key_event(event):
     print('you pressed %s' % event.key)
     key_press_handler(event, canvas, toolbar)
 
-canvas.mpl_connect('key_press_event', on_key_event)
+#canvas.mpl_connect('key_press_event', on_key_event)
 
 
 def _quit():

@@ -30,7 +30,7 @@ class CameraProvider(object):
         self.stop_event = t.Event()
         self.thread = t.Thread(target=self.capture_image, args=(self.stop_event, self.images), name="Camera" + str(self.camera_index))
         #TODO: do I want it?
-        #self.thread.setDaemon(True)
+        self.thread.setDaemon(True)
         self.thread.start()
 
     def stop_capturing(self):

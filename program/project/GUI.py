@@ -1,10 +1,11 @@
+import signal
 import threading
 import tkinter as tk
 import threading, sys, os
 
-import sys
 
 import numpy as np
+import time
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
 from matplotlib.backend_bases import key_press_handler
 import logging
@@ -42,7 +43,14 @@ class GUI(object):
 
     def ask_quit(self):
         self.stop_event = True
+        # self.stop_event.set()
         self.exit.set()
+
+       # raise RuntimeError
+
+        #from Main import check_stop
+        #check_stop("GUI to vyplo")
+
 
     def start(self, image_streams, exiting_program, localization_data = []):
         self.root = tk.Tk()
