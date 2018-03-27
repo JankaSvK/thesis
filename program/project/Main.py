@@ -5,8 +5,10 @@ t = threading.Thread(target = run_application, name="Application")
 t.setDaemon(True)
 t.start()
 
-while not stop_event.is_set():
-    pass
+
+stop_event.wait()
+# while not stop_event.is_set():
+#     pass
 
 provider.stop_capturing()
 print("Last instruction of mainthread")
