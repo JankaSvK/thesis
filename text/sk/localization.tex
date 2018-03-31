@@ -1,0 +1,48 @@
+\chapter{Localization}
+
+In previous few chapters we covered steps to obtain position of the object in
+2D images. In this chapter we will take closer look of obtaining postition of
+the object in 3D by combining iformation from more cameras.
+
+At this point we have computed not only intristic matrices of the cameras but
+also the rotation matrix and translation vector (from mono camera calibration
+and stereo calibration). Our goal is to from tuple of coordinates from the
+images taken by cameras to get a position of the object in world coodinates
+(3D).
+
+\section{Projection matrices}
+We define projection matrix as tranformation matrix P, where stands: $x = P
+\dot X$, where $X$ denote a vector of size 4x1 - homogenous world coordinates
+of the object and $x$ denotes homogenous object coordinates in the image plane
+of the camera - a vector 3x1.
+
+\subsection{World coordinate system}
+Firstly we will compute projection matrices. We define our world coordinate
+system as orthogonal, with the origin in the center of the first (usually left)
+camera. The positive part z-axis is poiting in front of the camera and and
+below the camera is positive y-axe and to the right is positive x-axe.
+\todo[inline]{Obrazok suradnicoveho systemu}
+
+\subsection{Computing projection matrices}
+Projection matrix can be decomposed as $P = K[R|T]$, where K is intristic
+camera matrix and $[R|T]$ is extrinstic matrix. $R$ is a rotation matrix and
+$T$ translation vector. For the first camere we get this equation: $ P_1 = K_1
+\dot [I_3 | 0_3]$. $K_1$ first camera instrictic parameters matrix, $I_3$
+denotes identity matrix 3x3 and $0_3$ zero vector.
+
+
+For the second camera results from stereo calibration will be used and since
+then we get this relation: $P_2 = K_2 \dot [R | T]$, where $K_2$ is second
+camera instrictic parameters matrix, $R$ rotation vector and $T$ translation
+vector obtained by stereo calibration.
+
+More about the decomposition itself could be found in article by \citet{computervisionblog}.
+\todo[inline]{V programe aktualne nerobim s distortion coeffs, pretoze uz aj bez toho su rozumne vysledky}
+
+\section{Triangulation}
+Suppose we know projection matrices for both cameras and $x_1$,$x_2$ as a
+coordinates from camera images.
+
+\section{Implementation note}
+For triangulation we used OpenCV function triangulatePoints($R$, $T$, $x_1$, $x_2$).
+\todo[inline]{Verbatim na funkciu}
