@@ -94,9 +94,8 @@ class GUI(object):
                 self.video_labels[i].configure(image = image)
                 self.video_labels[i].image = image
             #configure graph label
-            if len(self.localization_data) != 0:
-
-                point = self.localization_data[-1]
+            if 0 != len(QueuesProvider.LocalizatedPoints3D):
+                point = QueuesProvider.LocalizatedPoints3D[-1].coords
                 if last_point_drawn is None or np.linalg.norm(point - last_point_drawn) > minimal_distance:
                     last_point_drawn = point
                     self.subplot.scatter(*point)

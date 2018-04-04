@@ -2,7 +2,7 @@ import Config
 class QueuesProvider(object):
     Images = []
     LocalizatedPoints3D = []
-    TrackedPoints2D = []
+    TrackedPoints2D = [[] for _ in range(Config.camera_count())]
     MouseClicks = [[] for _ in range(Config.camera_count() + 1)]
 
     @classmethod
@@ -30,6 +30,6 @@ class CameraQueues(object):
     def __init__(self, i):
         self.mouse_clicks = QueuesProvider.MouseClicks[i]
 #        self.images = QueuesProvider.Images[i]
-#        self.tracked_points = QueuesProvider.TrackedPoints2D[i]
+        self.tracked_points = QueuesProvider.TrackedPoints2D[i]
 
 Camera = [CameraQueues(i) for i in Config.camera_indexes]
