@@ -2,6 +2,7 @@ import threading
 import time
 import numpy as np
 from Localization import Localization
+from OptionParser import *
 from QueuesProvider import *
 import Config
 from ComplexTracker import ComplexTracker
@@ -28,15 +29,12 @@ def initialize_trackers(input, output, trackers_stop_event):
                 trackers[cam_ind].start_tracking(trackers_stop_event)
 
 
-def run_application():
-
-    # coords = []
-    # for i in range(2):
-    #     coords.append([])
-
+def run_application(options):
     trackers_stop_event = threading.Event()
 
-    provider.initialize_cameras()
+    video_recordings = [options.video_recording1, options.video_recording2]
+
+    provider.initialize_cameras(video_recordings)
     provider.start_capturing()
 
     gui = GUI(QueuesProvider.TrackedPoints2D)
@@ -44,13 +42,17 @@ def run_application():
                                  args=(provider.images, stop_event, QueuesProvider.LocalizatedPoints3D), name="GUI")
     guiThread.start()
 
-    while not provider.calibrate_cameras(
+    while not stop_event.is_set() and not provider.calibrate_cameras(
             use_saved=['calib_results/0/2018-03-21-at-22-12.json', 'calib_results/1/2018-03-21-at-22-12.json']):
         # while not provider.calibrate_cameras():
         pass
 
-    provider.calibrate_pairs(use_saved='calib_results/stereo_calib_results/2018-03-21-at-22-12.json')
-    # provider.calibrate_pairs() # TODO: necheckuje ci je hotovy
+    while not stop_event.is_set() and not provider.calibrate_pairs(use_saved=options.stereo_calibration_results):
+        pass
+
+    if stop_event.is_set():
+        provider.stop_capturing()
+        return
 
     initialize_trackers(provider.images, QueuesProvider.TrackedPoints2D, trackers_stop_event)
 
@@ -69,11 +71,8 @@ def run_application():
 
     # trackers.stop_tracking()
     trackers_stop_event.set()
-
     provider.stop_capturing()
-
     Localization.save_localization_data()
-
 
 def get_camera_positions():
     camera1 = [[0, 0, 0], [0, 0, 130]]

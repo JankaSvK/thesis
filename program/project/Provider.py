@@ -24,10 +24,13 @@ class Provider(object):
         self.images = [deque([], maxlen=500) for _ in camera_indexes]
         self.calibs = []
 
-    def initialize_cameras(self):
+    def initialize_cameras(self, video_recordings = None):
+            if video_recordings is None:
+                video_recordings = [None, None]
+
             self.camera_providers = []
             for (i, (ind, name)) in enumerate(zip(self.camera_indexes, self.camera_names)):
-                self.camera_providers.append(CameraProvider(self.images[i], ind, name))
+                self.camera_providers.append(CameraProvider(self.images[i], ind, name, video_recording=video_recordings[i]))
 
             [ p.setup_camera(640, 480)  for p in self.camera_providers ]
 
@@ -80,10 +83,11 @@ class Provider(object):
 
     def calibrate_pairs(self, use_saved = None): # TODO: for now working with only TWO cameras
         if use_saved is not None:
+            print("Using saved data for stereo calibration.")
             self.stereo_calibration = StereoCameraCalibration(jsonFile = use_saved)
             return
 
-        print("Pairs")
+        print("Starting stereo calibration")
         assert (len(self.camera_indexes) == 2)
 
         threshold = 1/10 # TODO: more adequate value
@@ -121,9 +125,9 @@ class Provider(object):
                     j += 1
         assert(len(images_for_stereo1) == len(images_for_stereo2))
 
-        if len(images_for_stereo1) == 0:
+        if len(images_for_stereo1) < 5:
             print("Did not found images for stereo calibration")
-            return
+            return False
 
         (imgpoint1, objpoints1) = self.calibs[0].find_chessboad(images_for_stereo1, fastCheck=True)
         (imgpoint2, objpoints2) = self.calibs[1].find_chessboad(images_for_stereo2, fastCheck=True)
@@ -136,7 +140,7 @@ class Provider(object):
         print(self.stereo_calibration.calibration_results)
         print("Stereo calibration finished")
 
-
+        return True
 if __name__ == '__main__':
     logging.getLogger().setLevel(logging.INFO)
     provider = Provider([2])

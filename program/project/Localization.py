@@ -38,11 +38,13 @@ class Localization(object):
 
     @classmethod
     def save_localization_data(cls):
+        if len(QueuesProvider.LocalizatedPoints3D) == 0:
+            return
+
         filename = "localization_data/" + get_current_time() + ".txt"
         os.makedirs(os.path.dirname(filename), exist_ok=True)
 
         with open(filename, 'w') as output:
-           print(len(QueuesProvider.LocalizatedPoints3D))
            for position in QueuesProvider.LocalizatedPoints3D:
                output.write(str(position) + '\n')
 

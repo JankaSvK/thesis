@@ -1,22 +1,31 @@
 from optparse import OptionParser
 
-parser = OptionParser()
+options_calib1 = "calibration_results1"
+options_calib2 = "calibration_results2"
+options_stereo = "stereo_calibration_results"
+options_video1 = "video_recording1"
+options_video2 = "video_recording2"
 
-# Mono calibration results as an input
-parser.add_option("--calibration_results1", dest="calibration_results1",
-                  help="Calibration results for the first camera", metavar="CALIB1")
-parser.add_option("--calibration_results2", dest="calibration_results2",
-                  help="Calibration results for the second camera", metavar="CALIB2")
+def parse_options():
+    parser = OptionParser()
 
-# Stereo calibration result as an input
-parser.add_option("--stereo_calibration_results", dest="stereo_calibration_results",
-                  help="Stereo_calibration_results", metavar="STEREO")
 
-# Video recordings on input
-parser.add_option("--video_recording1", dest="video_recording1",
-                  help="video_recording1 for the first camera", metavar="VIDEO1")
-parser.add_option("--video_recording2", dest="video_recording2",
-                  help="video_recording2 for the second camera", metavar="VIDEO2")
+    # Mono calibration results as an input
+    parser.add_option("--calibration_results1", dest=options_calib1,
+                      help="Calibration results for the first camera", metavar="CALIB1")
+    parser.add_option("--calibration_results2", dest=options_calib2,
+                      help="Calibration results for the second camera", metavar="CALIB2")
 
-(options, args) = parser.parse_args()
+    # Stereo calibration result as an input
+    parser.add_option("--stereo_calibration_results", dest=options_stereo,
+                      help="Stereo calibration results", metavar="STEREO")
 
+    # Video recordings on input
+    parser.add_option("--video_recording1", dest=options_video1,
+                      help="Video recording for the first camera", metavar="VIDEO1")
+    parser.add_option("--video_recording2", dest=options_video2,
+                      help="Video recording for the second camera", metavar="VIDEO2")
+
+    (options, args) = parser.parse_args()
+
+    return options
