@@ -70,8 +70,7 @@ class MonoCameraCalibration(object):
             cv2.calibrateCamera(objpoints, imgpoints, self.image_size, None, None)
         if success:
             self.calibration_results = MonoCameraCalibrationResults(mtx, dist, rvecs, tvecs)
-
-            logging.info("\nCamera matrix\n{}\nDistortion coefficients\n{}".format(mtx, dist))
+            #logging.info("\nCamera matrix\n{}\nDistortion coefficients\n{}".format(mtx, dist))
         return success
 
 class StereoCameraCalibration(object):

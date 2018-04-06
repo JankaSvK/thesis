@@ -60,6 +60,9 @@ class StereoCameraCalibrationResults(object):
 
             self.reprojection_error = reprojection_error
 
+    def camera_distance(self):
+        return numpy.linalg.norm(self.translation_matrix)
+
     def save(self):
         result = {}
 

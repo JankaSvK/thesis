@@ -3,8 +3,14 @@ import threading
 import cv2
 import sys
 
+from CustomTracker import CustomTracker
+
+
 class ComplexTracker:
-    def __init__(self, camera_index, image_stream, tracked_points, tracker_type ='KCF'):
+    def __init__(self, camera_index, image_stream, tracked_points, tracker_type = None):
+        if tracker_type is None:
+            tracker_type = 'KCF'
+
         self.tracker = self.create_tracker(tracker_type)
         self.tracking_history = []
         self.input = image_stream
@@ -26,7 +32,7 @@ class ComplexTracker:
         ok = self.tracker.init(initial_image, self.initial_position)
         print("Initialization", ok)
 
-    def create_tracker(self, tracker_type):
+    def create_tracker(self, tracker_type): #TODO: vytiahnut do samostatneho suboru
         if tracker_type == 'BOOSTING':
             tracker = cv2.TrackerBoosting_create()
         if tracker_type == 'MIL':
@@ -39,6 +45,8 @@ class ComplexTracker:
             tracker = cv2.TrackerMedianFlow_create()
         if tracker_type == 'GOTURN':
             tracker = cv2.TrackerGOTURN_create()
+        if tracker_type == 'CUSTOMTRACKER':
+            tracker = CustomTracker()
 
         return tracker #prepisat to na enumerator
 
@@ -68,5 +76,3 @@ class ComplexTracker:
             return (x, y)
         else:
             return None
-
-

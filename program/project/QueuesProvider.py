@@ -25,7 +25,6 @@ class QueuesProvider(object):
     def add_mouse_click(cls, window_index, x, y):
         cls.MouseClicks[window_index].append({'x': x, 'y': y})
 
-# TODO: Mohlo by byt fajn, keby tie objekty boli pristupne per kamera Camera[index].MouseClicks atd
 class CameraQueues(object):
     def __init__(self, i):
         self.mouse_clicks = QueuesProvider.MouseClicks[i]

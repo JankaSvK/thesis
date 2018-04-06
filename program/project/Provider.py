@@ -55,15 +55,18 @@ class Provider(object):
                 minimum = min(len(self.images[cam_ind]), 100)
                 images = [self.images[cam_ind][-i] for i in range(minimum)]
 
-                print("Calibrate camera", cam_ind)
+ #               print("Calibrate camera", cam_ind)
                 calib_error = self.calibs[cam_ind].calibrate(images)
                 logging.info("Calibration end up with {}".format(calib_error))
+                if calib_error is not False:
+                    print("Camera", cam_ind, "calibrated successfuly")
+
 
         uncalibrated = []
         for i, calib in enumerate(self.calibs):
             if calib.calibration_results is None:
                 uncalibrated.append(i)
-        print("Cameras", uncalibrated, "not calibrated successfully")
+#        print("Cameras", uncalibrated, "not calibrated successfully")
 
         if uncalibrated == []:
             for i, calib in enumerate(self.calibs):
@@ -118,7 +121,7 @@ class Provider(object):
                         images_for_stereo1.append((time, image))
                         images_for_stereo2.append((biggerList[j][0], image2))
 
-                        print("First {}, second {}".format(time, biggerList[j][0]))
+#                        print("First {}, second {}".format(time, biggerList[j][0]))
                         j += 1
                         break
                     j += 1
@@ -136,9 +139,9 @@ class Provider(object):
         self.stereo_calibration.stereo_calibrate()
 
         self.stereo_calibration.calibration_results.save()
-        print(self.stereo_calibration.calibration_results)
+        #print(self.stereo_calibration.calibration_results)
         print("Stereo calibration finished")
-
+        print("Cameras are", self.stereo_calibration.calibration_results.camera_distance() / 10, "centimenters apart.")
         return True
 if __name__ == '__main__':
     logging.getLogger().setLevel(logging.INFO)

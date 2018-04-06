@@ -8,26 +8,10 @@ import Config
 from ComplexTracker import ComplexTracker
 from GUI import GUI
 from Provider import Provider
+from Tracking import Tracking
 
 stop_event = threading.Event()
 provider = Provider([0, 1])
-
-
-def initialize_trackers(input, output, trackers_stop_event):
-    trackers = []
-    for cam_ind in Config.camera_indexes:
-        trackers.append(ComplexTracker(cam_ind,
-                                       # image_stream=Camera[cam_ind].images, tracked_points=Camera[cam_ind].tracked_points))
-                                       input[cam_ind], output[cam_ind]))
-    not_initialized_cameras = list(Config.camera_indexes)
-    while not_initialized_cameras != [] and not stop_event.is_set():
-        for cam_ind in not_initialized_cameras:
-            mouse_clicks = Camera[cam_ind].mouse_clicks
-            if len(mouse_clicks) >= 2:
-                not_initialized_cameras.remove(cam_ind)
-                trackers[cam_ind].set_initial_position(mouse_clicks[-2], mouse_clicks[-1])
-                trackers[cam_ind].start_tracking(trackers_stop_event)
-
 
 def run_application(options):
     # Starting cameras
@@ -49,12 +33,15 @@ def run_application(options):
     while not stop_event.is_set() and not provider.calibrate_pairs(use_saved=options.stereo_calibration_results):
         pass
 
+    # Checking if it should be exited
     if stop_event.is_set():
         provider.stop_capturing()
         return
 
     # Tracking initialization
-    initialize_trackers(provider.images, QueuesProvider.TrackedPoints2D, stop_event)
+    QueuesProvider.Images = provider.images #TODO: fix
+    tracking = Tracking(tracker_type=options.tracker, stop_event=stop_event)
+    tracking.wait_until_all_trackers_initialized()
 
     # Computing matrices for localization
     Localization.compute_projection_matrices(
@@ -74,8 +61,6 @@ def run_application(options):
         Localization.localize_point()
 
     # Exiting program
-    # TODO: trackers.stop_tracking()
-    trackers_stop_event.set()
     provider.stop_capturing()
     Localization.save_localization_data()
 
