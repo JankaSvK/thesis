@@ -45,14 +45,13 @@ class Provider(object):
         [ p.stop_capturing() for p in self.camera_providers ]
 
     def calibrate_cameras(self, use_saved = []):
-        if use_saved != []:
-            for i, jsonFile in enumerate(use_saved):
-                if jsonFile is not None:
-                    self.calibs[i].calibration_results = MonoCameraCalibrationResults(jsonFile=jsonFile)
-            return True
+        if use_saved == []:
+            use_saved = [None, None]
 
         for cam_ind, calib in enumerate(self.calibs):
-            if calib.calibration_results is None:
+            if use_saved[cam_ind] is not None:
+                self.calibs[cam_ind].calibration_results = MonoCameraCalibrationResults(jsonFile=use_saved[cam_ind])
+            elif calib.calibration_results is None:
                 minimum = min(len(self.images[cam_ind]), 100)
                 images = [self.images[cam_ind][-i] for i in range(minimum)]
 
@@ -85,7 +84,7 @@ class Provider(object):
         if use_saved is not None:
             print("Using saved data for stereo calibration.")
             self.stereo_calibration = StereoCameraCalibration(jsonFile = use_saved)
-            return
+            return True
 
         print("Starting stereo calibration")
         assert (len(self.camera_indexes) == 2)

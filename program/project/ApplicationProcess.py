@@ -30,23 +30,22 @@ def initialize_trackers(input, output, trackers_stop_event):
 
 
 def run_application(options):
-    trackers_stop_event = threading.Event()
-
-    video_recordings = [options.video_recording1, options.video_recording2]
-
-    provider.initialize_cameras(video_recordings)
+    # Starting cameras
+    provider.initialize_cameras([options.video_recording1, options.video_recording2])
     provider.start_capturing()
 
+    # Starting GUI
     gui = GUI(QueuesProvider.TrackedPoints2D)
     guiThread = threading.Thread(target=gui.start,
                                  args=(provider.images, stop_event, QueuesProvider.LocalizatedPoints3D), name="GUI")
     guiThread.start()
 
+    # Mono camera calibration
     while not stop_event.is_set() and not provider.calibrate_cameras(
-            use_saved=['calib_results/0/2018-03-21-at-22-12.json', 'calib_results/1/2018-03-21-at-22-12.json']):
-        # while not provider.calibrate_cameras():
+            use_saved=[options.calibration_results1, options.calibration_results2]):
         pass
 
+    # Stereo camera calibration
     while not stop_event.is_set() and not provider.calibrate_pairs(use_saved=options.stereo_calibration_results):
         pass
 
@@ -54,22 +53,28 @@ def run_application(options):
         provider.stop_capturing()
         return
 
-    initialize_trackers(provider.images, QueuesProvider.TrackedPoints2D, trackers_stop_event)
+    # Tracking initialization
+    initialize_trackers(provider.images, QueuesProvider.TrackedPoints2D, stop_event)
 
+    # Computing matrices for localization
     Localization.compute_projection_matrices(
         provider.calibs[0].calibration_results,
         provider.calibs[1].calibration_results,
         provider.stereo_calibration.calibration_results
     )
 
+    # Adding camera position to GUI
     camera1, camera2 = get_camera_positions()
     gui.draw_cameras([camera1, camera2])
-    time.sleep(1)  #
 
+    time.sleep(1)
+
+    # Endless localization
     while not stop_event.is_set():
         Localization.localize_point()
 
-    # trackers.stop_tracking()
+    # Exiting program
+    # TODO: trackers.stop_tracking()
     trackers_stop_event.set()
     provider.stop_capturing()
     Localization.save_localization_data()

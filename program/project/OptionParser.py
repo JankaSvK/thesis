@@ -26,6 +26,10 @@ def parse_options():
     parser.add_option("--video_recording2", dest=options_video2,
                       help="Video recording for the second camera", metavar="VIDEO2")
 
+    # Tracker
+    parser.add_option("--tracker", dest="tracker",
+                      help="The algorithm used for tracking", metavar="TRACKER")
+
     (options, args) = parser.parse_args()
 
     return options
