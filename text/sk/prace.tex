@@ -57,6 +57,10 @@
 \usepackage{paralist}       % lepší enumerate a itemize
 \usepackage[usenames]{xcolor}  % barevná sazba
 
+\usepackage{xargs}                      % Use more than one optional parameter in a new commands
+\usepackage{todonotes}
+
+
 %%% Údaje o práci
 
 % Název práce v jazyce práce (přesně podle zadání)
@@ -131,12 +135,13 @@ Abstract.
 \tableofcontents
 
 %%% Jednotlivé kapitoly práce jsou pro přehlednost uloženy v samostatných souborech
-%\include{uvod}
+\include{uvod}
 \include{related-works}
-%\include{kap01}
-%\include{kap02}
-%\include{kap03}
-%\include{kap04}
+\include{proposed_system}
+\include{calibration}
+\include{tracker}
+\include{localization}
+\include{experiments}
 
 %\include{zaver}
 
