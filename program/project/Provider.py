@@ -70,7 +70,8 @@ class Provider(object):
 
         if uncalibrated == []:
             for i, calib in enumerate(self.calibs):
-                calib.calibration_results.save(i)
+                if use_saved[i] is None:
+                    calib.calibration_results.save(i)
 
         return (uncalibrated == [])
 

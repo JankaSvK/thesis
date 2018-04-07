@@ -4,6 +4,7 @@ import cv2
 import sys
 
 from CustomTracker import CustomTracker
+from TrackerSimpleBackground import TrackerSimpleBackground
 
 
 class ComplexTracker:
@@ -12,7 +13,6 @@ class ComplexTracker:
             tracker_type = 'KCF'
 
         self.tracker = self.create_tracker(tracker_type)
-        self.tracking_history = []
         self.input = image_stream
         self.output = tracked_points
         self.camera_index = camera_index
@@ -47,6 +47,8 @@ class ComplexTracker:
             tracker = cv2.TrackerGOTURN_create()
         if tracker_type == 'CUSTOMTRACKER':
             tracker = CustomTracker()
+        if tracker_type == 'SIMPLEBACKGROUND':
+            tracker = TrackerSimpleBackground()
 
         return tracker #prepisat to na enumerator
 
