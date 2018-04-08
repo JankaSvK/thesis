@@ -2,6 +2,9 @@ import time
 import cv2
 import numpy
 
+from TrackingHelper import get_largest_contour
+
+
 class TrackerSimpleBackground(object):
     name = 'SIMPLEBACKGROUND'
 
@@ -26,18 +29,7 @@ class TrackerSimpleBackground(object):
 
         im2, cnts, hierarchy = cv2.findContours(diff, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
-        largest_area, largest_cnt = 0, None
-        set = 0
-        for c in cnts:
-            if cv2.contourArea(c) < self.ignored_size_of_contour:
-                continue
-
-            if largest_area < cv2.contourArea(c):
-                set = 1
-                largest_cnt = c
-                largest_area = cv2.contourArea(c)
-            (x, y, w, h) = cv2.boundingRect(c)
-
-        if set == 1 and largest_cnt is not None:
-            return (True, cv2.boundingRect(largest_cnt))
-        return (False, (-1, -1, -1, -1))
+        largest = get_largest_contour(cnts, self.ignored_size_of_contour)
+        if largest is not None:
+            return (True, cv2.boundingRect(largest))
+        return (False, None)

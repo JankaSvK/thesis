@@ -4,6 +4,7 @@ import threading
 import cv2
 import sys
 
+from TrackerPatternMatching import TrackerPatternMatching
 from CustomTracker import CustomTracker
 from TrackerSimpleBackground import TrackerSimpleBackground
 from TtrackerHSV import TrackerHSV
@@ -53,6 +54,8 @@ class ComplexTracker:
             tracker = TrackerSimpleBackground()
         elif tracker_type == TrackerHSV.name:
             tracker = TrackerHSV()
+        elif tracker_type == TrackerPatternMatching.name:
+            tracker = TrackerPatternMatching()
 
         else:
             tracker = cv2.TrackerKCF_create()
