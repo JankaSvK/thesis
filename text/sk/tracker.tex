@@ -12,8 +12,9 @@ many good trackers using also information from previous images exist. For this
 task some trackers from both categories.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section {Detection based algorithms}
 
-\section{Simple Background Tracker}
+\subsection{Simple Background Tracker}
 
 This tracker takes a photo of the background at the beginning and calls it
 \emph{pattern}. In order to detect an object in \emph{image} is taken a
@@ -37,40 +38,124 @@ vie, čo očakávať)}
 
 \todo[inline]{Nájdenie contúr na obrázku, zobrazenie najväčšej, bod ako stred}
 
-\subsubsection{Advantages}
+Advantages
 \begin{itemize}
 \item Quite straight-forward implementation
 \item Ability to recognise variate object without having specific color or pattern.
 \end{itemize}
 
-\subsubsection{Disadvantages}
+Disadvantages
 \begin{itemize}
 \item Cannot recover from even small movement of the camera.
 \item Moving object with a hand will cause recognizing the hand also as an object and will result wrongly estimated center of the moving object. Same problems cause shadows.
 \end{itemize}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\section{Adaptive Background Tracker}
+\subsection{Adaptive Background Tracker}
 
 In order to make our background tracker robust to small movement of camera we
 are going to update our \emph{pattern}. This could be simply done by defining \emph{pattern}
 as the mean of last \emph{n} images.
 
-\subsubsection{Advantages}
+Advantages
 \begin{itemize}
 \item Robust against movements of the camera
 \end{itemize}
 
-\subsubsection{Disadvantages}
+Disadvantages
 \begin{itemize}
 \item If the object is not moving it will disappear as becoming a part of the
 background. After moving it will recover properly.
 \end{itemize}
 
+\subsection{HSV tracker}
+
+This tracker is based on color tracking. Given an input object we find the
+color with the largest area inside the object (range of color tones is used).
+On position request we return a center of the largest area with given color
+range.
+
+\todo[inline]{Obrazok kde je maska a potom bod}
+
+Advantages
+- 
+
+Disadvatages
+- able to track only one color objects
+
+\subsection {Pattern matching}
+
+Pattern (or template) matching is based on sliding over the input image and comparing the template with the patch of the input image. TODO This algorithm is slow on big images. There for we preprocess the image beforehand by resizing it. At the other hand it may cause more false detection due to lower quality.
+
+For patch and template comparison many different metrics may be used. We used TODO, since it perfomed best on given examples.
+
+Metric could be written as:
+$$R(x, y) = ....$$
+where $x'$ and $y'$ denotes points from the neighbourhood of the $x, y$. $T$ denotes our pattern and $I$ denotes a patch from the input image. 
+
+Advantages
+- in case of different background pattern and object low change of false positives
+
+Disadvantages
+- not persistable against appearance chagnges
+- computabily expensive
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{More advanced trackers}
+\section{Tracking algorithms}
+
+Using an advantage of information from previous frames could create not only
+more stable but also faster trackers. Tracking preserves identity, which means
+that also in the case multiple moving objects it remains tracking the original
+one.
+
+Sample information we can obtain from tracking information:
+- velocity - from previous images we can estimate speed and the direction of
+  the movement. This can reduce searching area to smaller one and increasing so
+  the speed of the algorithm.
+- appearance - object may rotate and change its shape or color. Tracker able to
+  learn can be persistable against such changes
+
+Algorithm using these information can cope with occlusion - what usually
+detection algorithms are not able.
+
+In the next sections we will present few trackers implemented in the OpenCV. We
+will shortly describe their principle and state their advatages and
+disadvantages. At the end of the chapter comparison table will be provided.
+
+\subsection{BOOSTING tracker}
+Boosting tracker is based on online AdaBoost. It consider bounding box as positive sample and patches of background as negative ones. Given a new image, classifier is run on every pixel in the neighbourhood of the previous location and the score of the classifier is recorded. The location with highest score is choosed as a new location. 
+
+Advantages
+- foundation of more successful trackers 
+
+Disadvantages
+- another trackers evolved from this idea and now perform better
+
+H Grabner, M Grabner, and H Bischof, Real-time tracking via on-line boosting, In Proc. BMVC, volume 1, pages 47– 56, 2006
+http://www.bmva.org/bmvc/2006/papers/033.pdf
+
+\todo[inline]{Pridat do literatury https://www.learnopencv.com/object-tracking-using-opencv-cpp-python/}
+
+\subsection{MIL tracker}
+
+
+
+\subsection{KCF tracker}
+
+
+
+\subsection{TLD tracker}
+
+
+
+\subsection{MEDIANFLOW tracker}
+
+
+
+
+
+Note: GOTURN tracker is also implemented in OpenCV, unfortunately at the time
+of the writing thesis it contains bug causing it unusable.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
