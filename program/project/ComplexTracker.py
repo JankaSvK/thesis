@@ -1,3 +1,4 @@
+import time
 import threading
 
 import cv2
@@ -5,6 +6,7 @@ import sys
 
 from CustomTracker import CustomTracker
 from TrackerSimpleBackground import TrackerSimpleBackground
+from TtrackerHSV import TrackerHSV
 
 
 class ComplexTracker:
@@ -35,20 +37,25 @@ class ComplexTracker:
     def create_tracker(self, tracker_type): #TODO: vytiahnut do samostatneho suboru
         if tracker_type == 'BOOSTING':
             tracker = cv2.TrackerBoosting_create()
-        if tracker_type == 'MIL':
+        elif tracker_type == 'MIL':
             tracker = cv2.TrackerMIL_create()
-        if tracker_type == 'KCF':
+        elif tracker_type == 'KCF':
             tracker = cv2.TrackerKCF_create()
-        if tracker_type == 'TLD':
+        elif tracker_type == 'TLD':
             tracker = cv2.TrackerTLD_create()
-        if tracker_type == 'MEDIANFLOW':
+        elif tracker_type == 'MEDIANFLOW':
             tracker = cv2.TrackerMedianFlow_create()
-        if tracker_type == 'GOTURN':
-            tracker = cv2.TrackerGOTURN_create()
-        if tracker_type == 'CUSTOMTRACKER':
+        #elif tracker_type == 'GOTURN': # Until bug is resolved, not usable
+        #    tracker = cv2.TrackerGOTURN_create()
+        elif tracker_type == 'CUSTOMTRACKER':
             tracker = CustomTracker()
-        if tracker_type == 'SIMPLEBACKGROUND':
+        elif tracker_type == 'SIMPLEBACKGROUND':
             tracker = TrackerSimpleBackground()
+        elif tracker_type == TrackerHSV.name:
+            tracker = TrackerHSV()
+
+        else:
+            tracker = cv2.TrackerKCF_create()
 
         return tracker #prepisat to na enumerator
 
@@ -71,10 +78,11 @@ class ComplexTracker:
                 self.output.append((time, coords))
 
     def find_object(self, image):
+        print(time.time())
         ok, bbox = self.tracker.update(image)
-        x, y = int(bbox[0] + bbox[2] / 2), int(bbox[1] + bbox[3] / 2)
 
         if ok:
+            x, y = int(bbox[0] + bbox[2] / 2), int(bbox[1] + bbox[3] / 2)
             return (x, y)
         else:
             return None

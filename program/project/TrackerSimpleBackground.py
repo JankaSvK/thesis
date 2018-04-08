@@ -1,3 +1,4 @@
+import time
 import cv2
 import numpy
 
@@ -14,6 +15,8 @@ class TrackerSimpleBackground(object):
         return True
 
     def update(self, image):
+        print(time.time())
+
         diff = cv2.absdiff(self.original, image)
         diff = numpy.sum(diff, 2)
 
