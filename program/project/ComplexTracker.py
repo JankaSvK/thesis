@@ -74,11 +74,9 @@ class ComplexTracker:
             (time, image) = self.input[-1]
             coords = self.find_object(image)
 
-            if coords is not None:
-                self.output.append((time, coords))
+            self.output.append((time, coords))
 
     def find_object(self, image):
-        print(time.time())
         ok, bbox = self.tracker.update(image)
 
         if ok:

@@ -87,7 +87,10 @@ class GUI(object):
 
                     if len(self.tracked_points[i]) > 0:
                         coords = self.tracked_points[i][-1]
-                        cv2.circle(img[1], coords[1], 5, (0, 0, 255), -1)
+                        if coords[1] is None:
+                            cv2.putText(img[1], "Object was not found", (10, 30), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255))
+                        else:
+                            cv2.circle(img[1], coords[1], 5, (0, 0, 255), -1)
 
                     image = self.process_image(img)
 
