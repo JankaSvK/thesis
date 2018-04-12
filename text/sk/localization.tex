@@ -49,20 +49,49 @@ calibration results are provided with high accurancy compared to measurement of
 $x_1$ and $x_2$ (that is the reason to have longer calibration with more images
 once).
 
-We are going shortly describe simple linear triangulation method we used. 
+\subsection{Simple linear triangulation}
+We are going to shortly describe how is triangulation working under the hood.
 
-With respect to an error in measurement it may happen there will not be a point
-$X$ satisfing \ref{projection-statements}.
+The results of cross product of vector itself is null vector. Since
+\ref{projection-statements} we can write our crossproduct for a specific point
+as $x \times (PX) = 0$. We denote point $x = (x, y, w)$, where $w = 1$ since
+these coordinates are homogenous -- in other words up to scale factor $w$.
 
-%Instead of that we will solve an equation:
-%\begin{equation}
-%\hat{x_1} = P_1\hat{X}, \hat{x_2} = P_2\hat{X} \label{projection-statements-estimated}
-%\end{equation}
+We can then rewrite $x \times (PX) = 0$ in following way:
 
-%The idea is to estimate a 3D point $\hat{X}$ with respect to minimizing reprojection error $E$, defined as $ E = (x_1 - \hat{x_1})^2 + (x_2 - \hat{x_2})^2 $.
+$$ y(p^{3T}X) - w(p^{1T}X) = 0 $$
+$$ w(p^{3T}X) - x(p^{2T}X) = 0 $$
+$$ x(p^{2T}X) - y(p^{1T}X) = 0 $$
 
+Where $p^{iT}$ denotes ith row of $P$. Since $w = 1$ we can equally write:
 
+$$ x(p^{3T}X) - (p^{1T}X) = 0 $$
+$$ y(p^{3T}X) - (p^{2T}X) = 0 $$
+$$ x(p^{2T}X) - y(p^{1T}X) = 0 $$
+
+These equations are linear in the components of X. Only two equations are
+linear independent, since the third one could be obtained as from the sum $y$
+times first row and $-x$ times second row.
+
+Therefore an equation of form $AX = 0$ can then be composed using two points $x_1 = (x, y, 1)$ and $x = (m, n, 1)$:
+
+\[
+A = \begin{pmatrix}
+x(p_1^{3T}X) - (p_1^{1T}X) \\
+y(p_1^{3T}X) - (p_1^{2T}X) \\
+m(p_2^{3T}X) - (p_2^{1T}X) \\
+n(p_2^{3T}X) - (p_2^{2T}X) \\
+\end{pmatrix}
+\] 
+
+For each image two equations were included, giving a total of four equations in
+four homogenoeours unknowns.
+
+Without an error during measurements a point $X$ satisfiying $AX = 0$ would
+exists. Due to errors it might not exists. As a next step Homogenous method
+(DLT) is used to find a solution. More about the method could be found in \citet*{multiple-view-geometry}.
 
 \section{Implementation note}
-For triangulation we used OpenCV function triangulatePoints($P_1$, $P_2$, $x_1$, $x_2$).
-\todo[inline]{Verbatim na funkciu}
+For triangulation we used OpenCV function triangulatePoints($P_1$, $P_2$,
+$x_1$, $x_2$), which is based on simple triangulation method with use of DLT
+method for solving equations.
