@@ -74,10 +74,17 @@ color with the largest area inside the object (range of color tones is used).
 On position request we return a center of the largest area with given color
 range.
 
+We choose color coding via HSV (Hue, Saturation, Value). Unlike the RGB (Red,
+Green, Blue) coding it can describe color as Hue value, not triple values of
+mixed colors. The advantage of this approach is the fact that hue value is
+preserved even though the color is lighter or darker (like shadows in the
+image). On the other hand in RGB coding shadows may cause difference in all
+three parts of coded color.
+
 \todo[inline]{Obrazok kde je maska a potom bod}
 
 Advantages
-- 
+- none
 
 Disadvatages
 - able to track only one color objects
@@ -93,11 +100,9 @@ $$R(x, y) = ....$$
 where $x'$ and $y'$ denotes points from the neighbourhood of the $x, y$. $T$ denotes our pattern and $I$ denotes a patch from the input image. 
 
 Advantages
-- in case of different background pattern and object low change of false positives
 
 Disadvantages
-- not persistable against appearance chagnges
-- computabily expensive
+- not persistable against appearance changes -- really bad performance
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

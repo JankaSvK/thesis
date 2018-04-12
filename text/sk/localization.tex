@@ -30,7 +30,6 @@ $T$ translation vector. For the first camere we get this equation: $ P_1 = K_1
 \dot [I_3 | 0_3]$. $K_1$ first camera instrictic parameters matrix, $I_3$
 denotes identity matrix 3x3 and $0_3$ zero vector.
 
-
 For the second camera results from stereo calibration will be used and since
 then we get this relation: $P_2 = K_2 \dot [R | T]$, where $K_2$ is second
 camera instrictic parameters matrix, $R$ rotation vector and $T$ translation
@@ -40,9 +39,30 @@ More about the decomposition itself could be found in article by \citet{computer
 \todo[inline]{V programe aktualne nerobim s distortion coeffs, pretoze uz aj bez toho su rozumne vysledky}
 
 \section{Triangulation}
-Suppose we know projection matrices for both cameras and $x_1$,$x_2$ as a
-coordinates from camera images.
+Now when we know projection matrices we can formalize our problem as 
+\begin{equation}
+x_1 = P_1X, x_2 = P_2X \label{projection-statements}
+\end{equation}
+with the goal to find $X$. Since errors may occure during
+measurement of $x_1$, $x_2$ and calibration. In further steps we consider that
+calibration results are provided with high accurancy compared to measurement of
+$x_1$ and $x_2$ (that is the reason to have longer calibration with more images
+once).
+
+We are going shortly describe simple linear triangulation method we used. 
+
+With respect to an error in measurement it may happen there will not be a point
+$X$ satisfing \ref{projection-statements}.
+
+%Instead of that we will solve an equation:
+%\begin{equation}
+%\hat{x_1} = P_1\hat{X}, \hat{x_2} = P_2\hat{X} \label{projection-statements-estimated}
+%\end{equation}
+
+%The idea is to estimate a 3D point $\hat{X}$ with respect to minimizing reprojection error $E$, defined as $ E = (x_1 - \hat{x_1})^2 + (x_2 - \hat{x_2})^2 $.
+
+
 
 \section{Implementation note}
-For triangulation we used OpenCV function triangulatePoints($R$, $T$, $x_1$, $x_2$).
+For triangulation we used OpenCV function triangulatePoints($P_1$, $P_2$, $x_1$, $x_2$).
 \todo[inline]{Verbatim na funkciu}
