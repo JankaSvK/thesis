@@ -81,10 +81,22 @@ preserved even though the color is lighter or darker (like shadows in the
 image). On the other hand in RGB coding shadows may cause difference in all
 three parts of coded color.
 
-\todo[inline]{Obrazok kde je maska a potom bod}
+\begin{figure}\centering
+\includegraphics[width=0.65\textwidth]{img/hsv-cylinder.png}
+\caption{"HSV cylinder" by SharkD is licensed under CC BY 3.0}
+\end{figure}
 
-Advantages
-- none
+Given image of template we convert from RGB to HSV. Then we choose an average color in the picture. Since the coding of Hue is placed on the circle, it is not enough to take common used average. It would cause that image full of Warm Red (Hue is circa equal to 15) and cool Red (Hue is circa 345) would average to mid cyan (Hue: 180).
+
+In order to get more reasonable average we take hue value of each pixel as an angle. Then we use formulate to compute average of the angles.
+
+$$ x = \sum cos \alpha $$
+$$ y = \sum sin \alpha $$
+$$ \alpha_{avg} = arctang2(y, x) $$
+
+It is important to note, that results is only average, since geometric function have only really good approximation during computing.
+
+\todo[inline]{Obrazok kde je maska a potom bod}
 
 Disadvatages
 - able to track only one color objects
@@ -124,11 +136,15 @@ Algorithm using these information can cope with occlusion - what usually
 detection algorithms are not able.
 
 In the next sections we will present few trackers implemented in the OpenCV. We
-will shortly describe their principle and state their advatages and
-disadvantages. At the end of the chapter comparison table will be provided.
+provide short overview of the trackers available. At the end of the chapter
+comparison table will be provided.
 
 \subsection{BOOSTING tracker}
-Boosting tracker is based on online AdaBoost. It consider bounding box as positive sample and patches of background as negative ones. Given a new image, classifier is run on every pixel in the neighbourhood of the previous location and the score of the classifier is recorded. The location with highest score is choosed as a new location. 
+Boosting tracker is based on online AdaBoost. It consider bounding box as
+positive sample and patches of background as negative ones. Given a new image,
+classifier is run on every pixel in the neighbourhood of the previous location
+and the score of the classifier is recorded. The location with highest score is
+choosed as a new location. 
 
 Advantages
 - foundation of more successful trackers 
@@ -142,25 +158,29 @@ http://www.bmva.org/bmvc/2006/papers/033.pdf
 \todo[inline]{Pridat do literatury https://www.learnopencv.com/object-tracking-using-opencv-cpp-python/}
 
 \subsection{MIL tracker}
-
-
+The shortcut comes from Multiple Instance Learning. In comparison to the
+BOOSTING tracker, it does not keep only one image of positive example, but
+whole bunch of the images. Small neighborhood of the current localition is took
+as potential positive examples. It helps tracker to cope with the occlusion.
 
 \subsection{KCF tracker}
-
-
+KCF stands for Kernelized Correlation Filters. Similary as MIL tracker it uses
+more positive samples and their larga overlapping regions. 
 
 \subsection{TLD tracker}
-
-
+Tracking, learning and detection, these are the three components of this
+tracker. Tracker works frame to frame, detection corrects the tracker if
+necessary. The learning estimates detector's errors and updates it to avoid
+these errors in the future.
 
 \subsection{MEDIANFLOW tracker}
+Thi tracker focus on forward and backward measurements trying to minimize
+discrepancies between these two trajectories.
 
-
-
-
-
-Note: GOTURN tracker is also implemented in OpenCV, unfortunately at the time
-of the writing thesis it contains bug causing it unusable.
+\subsection{OpenCV note}
+All these mentioned trackers are implemented in OpenCV contribute. GOTURN
+tracker is also implemented in OpenCV, unfortunately at the time of the writing
+thesis it contains bug causing it unusable.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
