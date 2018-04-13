@@ -31,6 +31,9 @@ class Localization(object):
 
     @classmethod
     def get_3d_coordinates(cls, point1, point2):
+        if point1 is None or point2 is None:
+            return None
+
         locatedPointsHom = cv2.triangulatePoints(projMatr1=cls.projection_matrix1, projMatr2=cls.projection_matrix2,
                                                  projPoints1=point1,
                                                  projPoints2=point2)
@@ -50,6 +53,9 @@ class Localization(object):
 
     @classmethod
     def localize_point(cls):
+        if len(Camera[0].tracked_points) == 0 or len(Camera[1].tracked_points) == 0:
+            return
+
         point1 = Camera[0].tracked_points[-1]
         point2 = Camera[1].tracked_points[-1]
 
@@ -60,6 +66,8 @@ class Localization(object):
         located_point = Localization.get_3d_coordinates(Camera[0].tracked_points[-1][1],
                                                         Camera[1].tracked_points[-1][1])
 
+        if located_point is None:
+            return
         if cls.moved_more_than(cls.last_located_point, located_point, cls.localization_precision):
             # TODO: tricky - many positions at the same time
             with_timestamp = CoordsWithTimestamp(timestamp= (point1[0] + point2[0]) / 2, coords=located_point)

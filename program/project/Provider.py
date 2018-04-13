@@ -132,6 +132,12 @@ class Provider(object):
             print("Did not found images for stereo calibration")
             return False
 
+        print("For stereo calibration available ", len(images_for_stereo1), "images.")
+        consider = 40
+        print("Considering ", consider, "images.")
+        images_for_stereo1 = images_for_stereo1[:consider]
+        images_for_stereo2 = images_for_stereo2[:consider]
+
         (imgpoint1, objpoints1) = self.calibs[0].find_chessboad(images_for_stereo1, fastCheck=True)
         (imgpoint2, objpoints2) = self.calibs[1].find_chessboad(images_for_stereo2, fastCheck=True)
 

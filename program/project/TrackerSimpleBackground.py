@@ -18,8 +18,6 @@ class TrackerSimpleBackground(object):
         return True
 
     def update(self, image):
-        print(time.time())
-
         diff = cv2.absdiff(self.original, image)
         diff = numpy.sum(diff, 2)
 
@@ -27,9 +25,7 @@ class TrackerSimpleBackground(object):
         diff = cv2.blur(diff, self.blur_size)   # reducing noise
         diff = (diff > self.threshold).astype(numpy.uint8) * 255  # thresholding image
 
-        im2, cnts, hierarchy = cv2.findContours(diff, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-
-        largest = get_largest_contour(cnts, self.ignored_size_of_contour)
+        largest = get_largest_contour(diff, self.ignored_size_of_contour)
         if largest is not None:
             return (True, cv2.boundingRect(largest))
         return (False, None)

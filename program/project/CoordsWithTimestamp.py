@@ -8,4 +8,4 @@ class CoordsWithTimestamp(object):
         self.coords = coords
 
     def __str__(self):
-        return '({}, {})'.format(self.time, self.coords)
+        return '{}  {}  {}  {}'.format(self.time, *self.coords)

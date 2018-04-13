@@ -50,7 +50,7 @@ class ComplexTracker:
         #    tracker = cv2.TrackerGOTURN_create()
         elif tracker_type == 'CUSTOMTRACKER':
             tracker = CustomTracker()
-        elif tracker_type == 'SIMPLEBACKGROUND':
+        elif tracker_type == TrackerSimpleBackground.name:
             tracker = TrackerSimpleBackground()
         elif tracker_type == TrackerHSV.name:
             tracker = TrackerHSV()
@@ -63,12 +63,17 @@ class ComplexTracker:
         return tracker #prepisat to na enumerator
 
     def start_tracking(self, stop_event):
-        self.stop_event = stop_event
+        self.stop_event = threading.Event()
+
+        # self.stop_event = stop_event
         t = threading.Thread(target=self.tracking, args=())
         t.name = 'Tracker'+str(self.camera_index)
         t.setDaemon(True)
         t.start()
         print("Started thread")
+
+    def stop_tracking(self):
+        self.stop_event.set()
 
     def tracking(self):
         while not self.stop_event.is_set():
@@ -78,6 +83,7 @@ class ComplexTracker:
             coords = self.find_object(image)
 
             self.output.append((time, coords))
+        print("Exiting tracker")
 
     def find_object(self, image):
         ok, bbox = self.tracker.update(image)
