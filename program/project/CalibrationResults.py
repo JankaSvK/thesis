@@ -39,7 +39,7 @@ class MonoCameraCalibrationResults(object):
             else:
                 result[key] = (self.__dict__[key]).tolist()
 
-        filename = "calib_results/" + str(camera_index) + "/" + get_current_time() +".json"
+        filename = "calib_results/" + str(camera_index + 1) + "/" + get_current_time() +".json"
         os.makedirs(os.path.dirname(filename), exist_ok=True)
 
         with open(filename, 'w') as output:

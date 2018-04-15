@@ -8,29 +8,19 @@ from CalibrationResults import MonoCameraCalibrationResults, StereoCameraCalibra
 from CameraProvider import CameraProvider
 
 class Provider(object):
-    def __init__(self, camera_indexes, camera_names = None):
-        logging.info("Initializing provider for all cameras")
-
-        if camera_names is None:
-            camera_names = [None for _ in camera_indexes]
-
-        if len(camera_indexes) != len(camera_names):
-            #TODO: should not fail, when missing just some of the names
-            raise RuntimeError
-
-        self.camera_names = camera_names
-        self.camera_indexes = camera_indexes
-
-        self.images = [deque([], maxlen=500) for _ in camera_indexes]
+    def __init__(self):
         self.calibs = []
 
-    def initialize_cameras(self, video_recordings = None):
+    def initialize_cameras(self, camera_indexes, video_recordings = None):
+            self.camera_indexes = camera_indexes
+            self.images = [deque([], maxlen=500) for _ in camera_indexes]
+
             if video_recordings is None:
                 video_recordings = [None, None]
 
             self.camera_providers = []
-            for (i, (ind, name)) in enumerate(zip(self.camera_indexes, self.camera_names)):
-                self.camera_providers.append(CameraProvider(self.images[i], ind, name, video_recording=video_recordings[i]))
+            for i, ind in enumerate(self.camera_indexes):
+                self.camera_providers.append(CameraProvider(self.images[i], ind, video_recording=video_recordings[i]))
 
             [ p.setup_camera(640, 480)  for p in self.camera_providers ]
 

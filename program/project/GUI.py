@@ -19,6 +19,7 @@ from PIL import Image, ImageTk
 from Arrow3D import Arrow3D
 from Provider import Provider
 from QueuesProvider import QueuesProvider
+from Tracking import Tracking
 
 
 class GUI(object):
@@ -41,6 +42,12 @@ class GUI(object):
     def click_callback(self, event, id):
         print ("clicked at", id,'-', event.x, event.y)
         QueuesProvider.add_mouse_click(window_index=id, x=event.x, y=event.y)
+
+    def tracker_callback(self, id):
+        print("tracker initialization")
+        self.tracker_buttons[id].config(relief='sunken')
+        Tracking.tracking_object.reinitialize_tracker(index=id)
+        pass
 
     def ask_quit(self):
         self.stop_event = True
@@ -100,6 +107,7 @@ class GUI(object):
                     self.last_scattered.set_visible(False)
 
                 self.last_scattered = self.subplot.scatter(*point, c = self.colors[1])
+                print(point)
 
                 self.graph.show()
 
@@ -122,6 +130,7 @@ class GUI(object):
                 cv2.putText(img[1], "Object was not found", (10, 30), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255))
             else:
                 cv2.circle(img[1], coords[1], 5, (0, 0, 255), -1)
+                print(i, coords[1])
 
     def process_image(self, image):
         if isinstance(image, tuple):
@@ -132,6 +141,7 @@ class GUI(object):
 
     def create_labels_for_streams(self, count):
         self.video_labels = []
+        self.tracker_buttons = []
         import functools
         for i in range(count):
             label = tk.Label(self.root)
@@ -139,11 +149,18 @@ class GUI(object):
             label.bind("<Button-1>", bind)
             self.video_labels.append(label)
 
+            bind_tracker = functools.partial(self.tracker_callback, id=i)
+            button = tk.Button(self.root, text="Initialize tracker", command=bind_tracker)
+            self.tracker_buttons.append(button)
+
+
     def organize_labels(self):
         if len(self.video_labels) <= 10:
             for i, label in enumerate(self.video_labels):
                 label.grid(row = 0, column = i)
+                self.tracker_buttons[i].grid(row = 1, column = i)
         self.graph.get_tk_widget().grid(row = 0, column = len(self.video_labels))
+
 
     def create_empty_image(self):# TODO fix resolution
         img  = Image.new("RGB", (640, 480), "white")

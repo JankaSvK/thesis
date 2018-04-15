@@ -11,11 +11,16 @@ from Provider import Provider
 from Tracking import Tracking
 
 stop_event = threading.Event()
-provider = Provider([0, 1])
+provider = Provider()
 
 def run_application(options):
-    # Starting cameras
-    provider.initialize_cameras([options.video_recording1, options.video_recording2])
+    if options.camera1 is not None:
+        Config.camera_initialize[0] = options.camera1
+    if options.camera2 is not None:
+        Config.camera_initialize[1] = options.camera2
+
+    # Starting the cameras
+    provider.initialize_cameras(Config.camera_initialize, [options.video_recording1, options.video_recording2])
     provider.start_capturing()
 
     # Starting GUI
@@ -41,6 +46,7 @@ def run_application(options):
     # Tracking initialization
     QueuesProvider.Images = provider.images #TODO: fix
     tracking = Tracking(tracker_type=options.tracker, stop_event=stop_event)
+    Tracking.tracking_object = tracking
     tracking.wait_until_all_trackers_initialized()
 
     # Computing matrices for localization

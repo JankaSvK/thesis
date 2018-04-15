@@ -3,6 +3,8 @@ from QueuesProvider import QueuesProvider
 from ComplexTracker import ComplexTracker
 
 class Tracking(object):
+    tracking_object = None
+
     def __init__(self, tracker_type, stop_event):
         self.stop_event = stop_event
         self.tracker_type = tracker_type
@@ -22,11 +24,15 @@ class Tracking(object):
                     self.not_initialized_cameras.remove(cam_ind)
 
     def reinitialize_tracker(self, index):
-        border = len(QueuesProvider.TrackedPoints2D[index])
+        print("reinitialization called", index)
+        border = len(QueuesProvider.MouseClicks[index])
         old_tracker = self.trackers[index]
-        self.trackers[index] = ComplexTracker(index, QueuesProvider[index], QueuesProvider.TrackedPoints2D[index], tracker_type=self.tracker_type)
-        while not self.stop_event.is_set and len(QueuesProvider.TrackedPoints2D[index]) - border < 2:
+        self.trackers[index] = ComplexTracker(index, QueuesProvider.Images[index], QueuesProvider.TrackedPoints2D[index], tracker_type=self.tracker_type)
+
+        while not self.stop_event.is_set() and len(QueuesProvider.MouseClicks[index]) - border < 2:
             pass
+
+        print("Enough clicks for initialization")
         bbox = QueuesProvider.MouseClicks[index][-2:]
 
         old_tracker.stop_tracking()
