@@ -1,4 +1,5 @@
 import cv2
+import numpy
 
 cap = cv2.VideoCapture(0)
 
@@ -10,9 +11,21 @@ while(1):
     #ziskaj masku
 
     diff = cv2.absdiff(original,frame)
-    diff = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
+    diff = numpy.sum(diff, 2)
+#    diff = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
 
-    _, diff = cv2.threshold(diff, 30,255,0)
+#    print(diff)
+#    print(numpy.dtype(diff[0][0]))
+#    print(diff2)
+#    print(numpy.dtype(diff2[0][0]))
+
+    diff = (diff > 100).astype(numpy.uint8) * 255 ## thresholding image
+#    print(numpy.dtype(diff[0][0]))
+#    _, diff = cv2.threshold(diff, 30, 1<<32, 0)
+##  cv::blur(thresholdImage,thresholdImage,cv::Size(BLUR_SIZE,BLUR_SIZE));
+    diff = cv2.blur(diff, (10, 10))
+    diff = (diff > 100).astype(numpy.uint8) * 255 ## thresholding image
+
 
     cv2.imshow('diff', diff)
 

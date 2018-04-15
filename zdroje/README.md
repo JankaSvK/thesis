@@ -35,3 +35,5 @@ Veľmi zaujimavé články k téme
 - https://erget.wordpress.com/2014/02/01/calibrating-a-stereo-camera-with-opencv/
 - https://erget.wordpress.com/2014/03/13/building-an-interactive-gui-with-opencv/
 - vyrezávanie z OpenCv okienka https://www.pyimagesearch.com/2015/03/09/capturing-mouse-click-events-with-python-and-opencv/
+- https://stackoverflow.com/questions/14414274/opencv-detect-real-world-coordinates
+- https://forums.ni.com/t5/Machine-Vision/3D-position-from-from-stereo-x-y-and-disparity/td-p/2530840
