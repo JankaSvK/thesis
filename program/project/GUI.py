@@ -3,7 +3,9 @@ import threading
 import tkinter as tk
 import threading, sys, os
 
+import functools
 
+import matplotlib
 import numpy as np
 import time
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
@@ -16,21 +18,22 @@ from queue import Queue
 import cv2
 from PIL import Image, ImageTk
 
+import Config
 from Arrow3D import Arrow3D
 from Provider import Provider
 from QueuesProvider import QueuesProvider
-from Tracking import Tracking
+from TrackersProvider import get_tracker_uid
 
 
 class GUI(object):
     def __init__(self, tracked_points):
-        self.colors = ['C0', 'C1', 'C2']
+        self.rgbcolors = [(1, 0, 0), (0, 0, 1), (0, 1, 0), (0.5, 0.5, 0.5), (0.1, 0.2, 0.5)]
         self.tracked_points = tracked_points
         self.stop_event = False
         self.initialized = threading.Event()
-
-    def do_nothing(self):
-        pass
+        self.objects_count = Config.objects_count
+        self.last_drawn_points = [(None, None) for _ in range(self.objects_count)]
+        self.tracker_buttons = []
 
     def draw_cameras(self, cameras):
         for i, cam in enumerate(cameras):
@@ -44,35 +47,21 @@ class GUI(object):
         print ("clicked at", id,'-', event.x, event.y)
         QueuesProvider.add_mouse_click(window_index=id, x=event.x, y=event.y)
 
-    def tracker_callback(self, id):
-        print("tracker initialization")
-        self.tracker_buttons[id].config(relief='sunken')
-#        Tracking.tracking_object.reinitialize_tracker(index=id)
-        QueuesProvider.MouseClicks[id] = []
-
-        print("id", id)
-        Queue
-        self.trackers_initialization_events[id].set()
-
-
-        pass
+    def tracker_callback(self, cam_ind, obj_ind):
+        uid = get_tracker_uid(cam_ind, obj_ind)
+        self.tracker_buttons[uid].config(relief='sunken')
+        QueuesProvider.MouseClicks[cam_ind] = []
+        self.trackers_initialization_events[uid].set()
 
     def ask_quit(self):
         self.stop_event = True
-        # self.stop_event.set()
         self.exit.set()
-
-       # raise RuntimeError
-
-        #from Main import check_stop
-        #check_stop("GUI to vyplo")
 
 
     def start(self, image_streams, exiting_program, trackers_initialization_events, localization_data = []):
         self.root = tk.Tk()
         f = Figure(figsize=(5, 4), dpi=100)
         self.subplot = f.add_subplot(111, projection='3d')
-        print("Tkinter")
         self.exit = exiting_program
         self.root.protocol("WM_DELETE_WINDOW", self.ask_quit)
 
@@ -95,30 +84,35 @@ class GUI(object):
 
     def start_streaming(self):
         minimal_distance = 20
-        self.last_point_drawn = None
         self.last_scattered = None
         while self.stop_event == False:
             self.update_cameras_views()
-            self.draw_located_points(minimal_distance)
+
+            for object_id in range(self.objects_count):
+                self.draw_located_points(minimal_distance, object_id)
+
+            for i, event in enumerate(self.trackers_initialization_events):
+                if not event.is_set():
+                    self.tracker_buttons[i].config(relief='raised')
 
             self.root.update_idletasks()
             self.root.update()
 
-    def draw_located_points(self, minimal_distance):
-        if 0 != len(QueuesProvider.LocalizatedPoints3D):
-            point = QueuesProvider.LocalizatedPoints3D[-1].coords
-            if self.last_point_drawn is None or np.linalg.norm(point - self.last_point_drawn) > minimal_distance:
-                if self.last_point_drawn is not None:
-                    zipped = list(zip(self.last_point_drawn, point))
-                    self.subplot.plot(zipped[0], zipped[1], zipped[2], self.colors[0])
+    def draw_located_points(self, minimal_distance, object_id):
+        if 0 != len(QueuesProvider.LocalizatedPoints3D[object_id]):
+            point = QueuesProvider.LocalizatedPoints3D[object_id][-1].coords
 
-                self.last_point_drawn = point
-                if self.last_scattered is not None:
-                    self.last_scattered.set_visible(False)
+            last_drawn, last_scattered = self.last_drawn_points[object_id]
+            if last_drawn is None or np.linalg.norm(point - last_drawn) > minimal_distance:
+                if last_drawn is not None:
+                    zipped = list(zip(last_drawn, point))
+                    self.subplot.plot(zipped[0], zipped[1], zipped[2], color=self.rgbcolors[object_id])
 
-                self.last_scattered = self.subplot.scatter(*point, c = self.colors[1])
-                print(point)
+                if last_scattered is not None:
+                    last_scattered.set_visible(False)
 
+                scattered = self.subplot.scatter(*point, c=self.rgbcolors[object_id])
+                self.last_drawn_points[object_id] = (point, scattered)
                 self.graph.show()
 
     def update_cameras_views(self):
@@ -134,13 +128,21 @@ class GUI(object):
             self.video_labels[i].image = image
 
     def add_tracker_information(self, i, img):
-        if len(self.tracked_points[i]) > 0:
-            coords = self.tracked_points[i][-1]
+        for obj_id in range(self.objects_count):
+            uid = get_tracker_uid(i, obj_id)
+            tracked_points = self.tracked_points[uid]
+
+            if len(tracked_points) == 0:
+                continue
+            color = self.process_rgb_color(self.rgbcolors[obj_id])
+            coords = tracked_points[-1]
             if coords[1] is None:
-                cv2.putText(img[1], "Object was not found", (10, 30), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255))
+                cv2.putText(img[1], "Object "+str(obj_id + 1)+" was not found", (10, (obj_id + 1) * 30), cv2.FONT_HERSHEY_COMPLEX, 1, color)
             else:
-                cv2.circle(img[1], coords[1], 5, (0, 0, 255), -1)
-                #print(i, coords[1])
+                cv2.circle(img[1], coords[1], 5, color, -1)
+
+    def process_rgb_color(self, color):
+        return [c * 255 for c in reversed(color)]
 
     def process_image(self, image):
         if isinstance(image, tuple):
@@ -159,16 +161,11 @@ class GUI(object):
             label.bind("<Button-1>", bind)
             self.video_labels.append(label)
 
-            bind_tracker = functools.partial(self.tracker_callback, id=i)
-            button = tk.Button(self.root, text="Initialize tracker", command=bind_tracker)
-            self.tracker_buttons.append(button)
-
-
     def organize_labels(self):
         if len(self.video_labels) <= 10:
             for i, label in enumerate(self.video_labels):
                 label.grid(row = 0, column = i)
-                self.tracker_buttons[i].grid(row = 1, column = i)
+        self.create_buttons()
         self.graph.get_tk_widget().grid(row = 0, column = len(self.video_labels))
 
 
@@ -176,7 +173,17 @@ class GUI(object):
         img  = Image.new("RGB", (640, 480), "white")
         return ImageTk.PhotoImage(image = img)
 
-
+    def create_buttons(self):
+        for cam_ind in range(len(self.streams)):
+            f = tk.Frame(self.root)
+            for obj_ind in range(self.objects_count):
+                bind_tracker = functools.partial(self.tracker_callback, cam_ind=cam_ind, obj_ind=obj_ind)
+                b = tk.Button(f,
+                              text = "Initialize object " + str(obj_ind + 1),
+                              command = bind_tracker)
+                b.grid(row = 0, column = obj_ind)
+                self.tracker_buttons.append(b)
+            f.grid(row = 1, column = cam_ind)
 
 if __name__ == '__main__':
     provider = Provider([0, 1])

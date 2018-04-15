@@ -61,6 +61,7 @@ def run_application(options):
     )
     trackers_provider_thread = threading.Thread(target=trackers_provider.track, name="Trackers")
     trackers_provider_thread.start()
+
     # Computing matrices for localization
     Localization.compute_projection_matrices(
         provider.calibs[0].calibration_results,
@@ -75,10 +76,10 @@ def run_application(options):
     camera1, camera2 = get_camera_positions()
     gui.draw_cameras([camera1, camera2])
 
-
     # Endless localization
     while not stop_event.is_set():
-        Localization.localize_point()
+        for i in range(Config.objects_count):
+            Localization.localize_point(i)
 
     # Exiting program
     provider.stop_capturing()

@@ -1,12 +1,16 @@
 import cv2
 import numpy as np
 import os
+
+import Config
+import TrackersProvider
 from CalibrationResults import get_current_time
 from CoordsWithTimestamp import CoordsWithTimestamp
 from QueuesProvider import QueuesProvider, Camera
 
 
 class Localization(object):
+    objects_count = Config.objects_count
     rotation_matrix1 = None
     rotation_matrix2 = None
     projection_matrix1 = None
@@ -41,40 +45,46 @@ class Localization(object):
 
     @classmethod
     def save_localization_data(cls):
-        if len(QueuesProvider.LocalizatedPoints3D) == 0:
-            return
+        for i in range(cls.objects_count):
 
-        filename = "localization_data/" + get_current_time() + ".txt"
-        os.makedirs(os.path.dirname(filename), exist_ok=True)
+            if len(QueuesProvider.LocalizatedPoints3D[i]) == 0:
+                return
 
-        with open(filename, 'w') as output:
-           for position in QueuesProvider.LocalizatedPoints3D:
-               output.write(str(position) + '\n')
+            filename = "localization_data/" + get_current_time() + "-" + str(i + 1) + ".txt"
+            os.makedirs(os.path.dirname(filename), exist_ok=True)
+
+            with open(filename, 'w') as output:
+               for position in QueuesProvider.LocalizatedPoints3D[i]:
+                   output.write(str(position) + '\n')
 
     @classmethod
-    def localize_point(cls):
-        if len(Camera[0].tracked_points) == 0 or len(Camera[1].tracked_points) == 0:
+    def localize_point(cls, object_id):
+        points0 = QueuesProvider.TrackedPoints2D[(TrackersProvider.get_tracker_uid(0, object_id))]
+        points1 = QueuesProvider.TrackedPoints2D[(TrackersProvider.get_tracker_uid(1, object_id))]
+
+        if len(points0) == 0 or len(points1) == 0:
             return
 
-        point1 = Camera[0].tracked_points[-1]
-        point2 = Camera[1].tracked_points[-1]
+        point1 = points0[-1]
+        point2 = points1[-1]
 
-        if point1 is None or point2 is None:
+        if point1 is None or point2 is None or point1[0] is None or point2[0] is None:
             return
 
         if abs(point1[0] - point2[0]) > 1/10:
             return
             # TODO: find in past points the correct one
 
-        located_point = Localization.get_3d_coordinates(Camera[0].tracked_points[-1][1],
-                                                        Camera[1].tracked_points[-1][1])
+        located_point = Localization.get_3d_coordinates(point1[1],
+                                                        point2[1])
 
         if located_point is None:
             return
+
         if cls.moved_more_than(cls.last_located_point, located_point, cls.localization_precision):
             # TODO: tricky - many positions at the same time
             with_timestamp = CoordsWithTimestamp(timestamp= (point1[0] + point2[0]) / 2, coords=located_point)
-            QueuesProvider.LocalizatedPoints3D.append(with_timestamp)
+            QueuesProvider.LocalizatedPoints3D[object_id].append(with_timestamp)
             cls.last_located_point = located_point
 
     @classmethod

@@ -10,6 +10,10 @@ def parse_options():
     parser.add_option("--camera_input2", dest="camera2",
                       help="Index of camera to be run as left camera", metavar="NUMBER")
 
+    # Defining how many objects will be tracked
+    parser.add_option("--number_of_objects", dest="objects_count",
+                      help="Number of objects to be tracked.", metavar="NUMBER")
+
     # Mono calibration results as an input
     parser.add_option("--calibration_results1", dest="calibration_results1",
                       help="Calibration results for the first camera", metavar="FILE")

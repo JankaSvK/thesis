@@ -19,7 +19,7 @@ class TrackersProvider(object):
         for cam_ind, image_stream in enumerate(self.image_streams):
             for obj_ind in range(self.object_count):
                 uid = get_tracker_uid(cam_ind, obj_ind)
-                print("Append tacker with ", uid, "cam ind", cam_ind, "obj inde", obj_ind)
+                print("Append tacker with uid=", uid, "cam_ind=", cam_ind, "obj_ind=", obj_ind)
                 self.trackers.append(
                     Tracker(cam_ind=cam_ind, obj_ind=obj_ind,
                             tracker_type = tracker_type,
@@ -32,10 +32,10 @@ class TrackersProvider(object):
 
             for tracker in self.trackers:
                 if tracker.initialization_event.is_set():
-                    if len(self.mouse_clicks[tracker.uid]) < 2:
+                    if len(self.mouse_clicks[tracker.camera_id]) < 2:
                         continue
 
-                    clicks = self.mouse_clicks[tracker.uid][-2:]
+                    clicks = self.mouse_clicks[tracker.camera_id][-2:]
                     bbox = tracker.create_bounding_box(*clicks)
                     tracker.initialize_tracker(bbox)
                     tracker.initialization_event.clear()
