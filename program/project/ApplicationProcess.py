@@ -9,6 +9,7 @@ from ComplexTracker import ComplexTracker
 from GUI import GUI
 from Provider import Provider
 from Tracking import Tracking
+from TrackersProvider import TrackersProvider
 
 stop_event = threading.Event()
 provider = Provider()
@@ -19,14 +20,19 @@ def run_application(options):
     if options.camera2 is not None:
         Config.camera_initialize[1] = options.camera2
 
+
+    trackers_initialization_events = [threading.Event() for _ in range(Config.objects_count * 2)]
+
     # Starting the cameras
     provider.initialize_cameras(Config.camera_initialize, [options.video_recording1, options.video_recording2])
     provider.start_capturing()
 
+    QueuesProvider.Images = provider.images
+
     # Starting GUI
     gui = GUI(QueuesProvider.TrackedPoints2D)
     guiThread = threading.Thread(target=gui.start,
-                                 args=(provider.images, stop_event, QueuesProvider.LocalizatedPoints3D), name="GUI")
+                                 args=(provider.images, stop_event, trackers_initialization_events, QueuesProvider.LocalizatedPoints3D), name="GUI")
     guiThread.start()
 
     # Mono camera calibration
@@ -44,11 +50,17 @@ def run_application(options):
         return
 
     # Tracking initialization
-    QueuesProvider.Images = provider.images #TODO: fix
-    tracking = Tracking(tracker_type=options.tracker, stop_event=stop_event)
-    Tracking.tracking_object = tracking
-    tracking.wait_until_all_trackers_initialized()
-
+    trackers_provider = TrackersProvider(
+        images1 = provider.images[0], images2 = provider.images[1],
+        mouse_clicks = QueuesProvider.MouseClicks,
+        coordinates = QueuesProvider.TrackedPoints2D,
+        stop_event = stop_event,
+        initialization_events = trackers_initialization_events,
+        tracker_type = options.tracker,
+        number_of_tracked_objects = Config.objects_count
+    )
+    trackers_provider_thread = threading.Thread(target=trackers_provider.track, name="Trackers")
+    trackers_provider_thread.start()
     # Computing matrices for localization
     Localization.compute_projection_matrices(
         provider.calibs[0].calibration_results,
@@ -56,11 +68,13 @@ def run_application(options):
         provider.stereo_calibration.calibration_results
     )
 
+    # Wait until gui fully initialized
+    gui.initialized.wait()
+
     # Adding camera position to GUI
     camera1, camera2 = get_camera_positions()
     gui.draw_cameras([camera1, camera2])
 
-    time.sleep(1)
 
     # Endless localization
     while not stop_event.is_set():

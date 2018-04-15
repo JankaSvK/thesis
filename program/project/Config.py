@@ -5,3 +5,4 @@ def camera_count():
 
 camera_indexes = [i for i in range(camera_count())] # Na ktorych cislach sa inicializuju, potom su ale preznacene
 
+objects_count = 1

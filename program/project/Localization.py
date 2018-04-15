@@ -59,6 +59,9 @@ class Localization(object):
         point1 = Camera[0].tracked_points[-1]
         point2 = Camera[1].tracked_points[-1]
 
+        if point1 is None or point2 is None:
+            return
+
         if abs(point1[0] - point2[0]) > 1/10:
             return
             # TODO: find in past points the correct one

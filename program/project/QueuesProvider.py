@@ -2,8 +2,8 @@ import Config
 class QueuesProvider(object):
     Images = []
     LocalizatedPoints3D = []
-    TrackedPoints2D = [[] for _ in range(Config.camera_count())]
-    MouseClicks = [[] for _ in range(Config.camera_count() + 1)]
+    TrackedPoints2D = [[] for _ in range(Config.camera_count() * Config.objects_count)]
+    MouseClicks = [[] for _ in range(Config.camera_count() * Config.objects_count + 1)]
 
     @classmethod
     def get_image_with_timestamp(cls, camera_index, image_index = -1):

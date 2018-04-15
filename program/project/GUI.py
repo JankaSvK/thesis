@@ -27,6 +27,7 @@ class GUI(object):
         self.colors = ['C0', 'C1', 'C2']
         self.tracked_points = tracked_points
         self.stop_event = False
+        self.initialized = threading.Event()
 
     def do_nothing(self):
         pass
@@ -46,7 +47,14 @@ class GUI(object):
     def tracker_callback(self, id):
         print("tracker initialization")
         self.tracker_buttons[id].config(relief='sunken')
-        Tracking.tracking_object.reinitialize_tracker(index=id)
+#        Tracking.tracking_object.reinitialize_tracker(index=id)
+        QueuesProvider.MouseClicks[id] = []
+
+        print("id", id)
+        Queue
+        self.trackers_initialization_events[id].set()
+
+
         pass
 
     def ask_quit(self):
@@ -60,10 +68,15 @@ class GUI(object):
         #check_stop("GUI to vyplo")
 
 
-    def start(self, image_streams, exiting_program, localization_data = []):
+    def start(self, image_streams, exiting_program, trackers_initialization_events, localization_data = []):
         self.root = tk.Tk()
+        f = Figure(figsize=(5, 4), dpi=100)
+        self.subplot = f.add_subplot(111, projection='3d')
+        print("Tkinter")
         self.exit = exiting_program
         self.root.protocol("WM_DELETE_WINDOW", self.ask_quit)
+
+        self.trackers_initialization_events = trackers_initialization_events
 
         self.streams = image_streams
         self.localization_data = localization_data
@@ -71,17 +84,14 @@ class GUI(object):
         count = len(self.streams)
         self.create_labels_for_streams(count)
 
-        f = Figure(figsize=(5, 4), dpi=100)
-        self.subplot = f.add_subplot(111, projection = '3d')
 
         self.graph = FigureCanvasTkAgg(f, master=self.root)
 
         self.subplot.mouse_init()
         self.organize_labels()
 
+        self.initialized.set()
         self.start_streaming()
-
-        print("Ending GUI")
 
     def start_streaming(self):
         minimal_distance = 20
@@ -130,7 +140,7 @@ class GUI(object):
                 cv2.putText(img[1], "Object was not found", (10, 30), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255))
             else:
                 cv2.circle(img[1], coords[1], 5, (0, 0, 255), -1)
-                print(i, coords[1])
+                #print(i, coords[1])
 
     def process_image(self, image):
         if isinstance(image, tuple):
