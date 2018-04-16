@@ -1,0 +1,99 @@
+\chapter{User documentation}
+This part of the documentation is focused on the end user. We introduce
+installation details and manual for program usage.
+
+\section{Installation guide}
+This section documents the process of downloading til running the program.
+
+\subsection{Dependencies}
+Following packages are required to compile the application. We also provide
+versions of packages used to create and test our implementation.
+
+\begin{center}
+\begin{tabular}{l l}
+	package	&	version \\ \hline
+	Python	&	3.3 \\
+	NumPy	&	x.x \\
+	OpenCV	&	x.x 
+\end{tabular}
+\end{center}
+
+In case OpenCVcontrib could not be obtained, the program can be used with
+OpenCV (version x.x). As the result only detection trackers will be available.
+
+\subsection{Hardware requirements}
+The software was primarly tested on a system with Intel(R) Core(TM) i5-7300HQ
+CPU (2.50GHz, 2496 Mhz, 4Core), 16GB RAM running Microsoft Windows 10
+Enterprise. Minimal requirements are lower, but the copmutation power reflects
+on frequency of getting localization results.
+
+Also two cameras are needed. We tested on .... and .... . Laptop camera may be
+used. Requirements for the cameras are 640x320 px and 20 FPS.
+
+\subsection{Downloading the application}
+The application can be downloaded from \url{https://github.com/JankaSvK/thesis}.
+
+\section{Usage guide}
+
+\subsection{Running the application}
+In the folder \verb+application+ we find an entry point for our application
+\verb+Main.py+.
+
+Different options may be passed to the program (ref to list). In case no option
+is passed program runs on first two available cameras. Firstly calibration for
+each camera is done and then stereo calibration. As a tracker is used \verb+KCF+.
+
+\begin{code}
+Usage: Main.py [options]
+
+Options:
+  -h, --help            show this help message and exit
+  --calibrationi\_results1=CALIB1
+                        Calibration results for the first camera
+  --calibration\_results2=CALIB2
+                        Calibration results for the second camera
+  --stereo\_calibration\_results=STEREO
+                        Stereo calibration results
+  --video\_recording1=VIDEO1
+                        Video recording for the first camera
+  --video\_recording2=VIDEO2
+                        Video recording for the second camera
+  --tracker=TRACKER     The algorithm used for tracking
+\end{code}
+% len vykopiruj z toho co ti da -h
+
+\subsection{Notes for options}
+Video file
+- formats \verb+TODO+ are accepted.
+
+As \verb+TRACKER+ may be used a name of implemented trackers. We introduce a list of the names \verb+KCF, SIMPLEBACKGROUND, PATTERNMATCHING, HSV, TLD, ...+.
+
+For calibration results JSON in this format are used:
+Calibration results:
+
+
+Stereo calibration:
+\begin{code}
+
+\end{code}
+\subsection{Reusing calibration results}
+Calibration results from previous runs may be reused by adding the option for specific camera. After succesfull calibration the results are automatically saved in this structure:
+
+\begin{code}
+calib\_results/
+ - 1/
+ - 2/
+ - stereo\_calib\_results/
+\end{code} 	
+
+The file for specific calibration result is named in this manner:
+{year}-{month}-{day}-at-{hour}-{minute}.json when the calibration successfully
+ended.
+
+\subsection {Inspecting localization data}
+After appropiate close of the program, localization data are automatically
+saved in \verb+localization\_data/+. Same convention for file names is used as
+with calibration results.
+
+Sample of localization data exaplained:
+TODO
