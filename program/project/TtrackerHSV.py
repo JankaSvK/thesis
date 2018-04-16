@@ -33,7 +33,7 @@ class TrackerHSV(object):
         self.highest_point = [179, self.upper_saturation, self.upper_value]
 
     def init(self, image, bbox):
-        pattern = image[bbox[0]:bbox[2] + bbox[0], bbox[1]:bbox[3] + bbox[1]]
+        pattern = image[bbox[1]:bbox[3] + bbox[1], bbox[0]:bbox[2] + bbox[0]] # swapping x and y, since matrix representation have columns first
         hsv = cv2.cvtColor(pattern, cv2.COLOR_BGR2HSV)
         hues = hsv[:,:,0].flatten()
         self.most_common_color = get_average_angle(hues)
