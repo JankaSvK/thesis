@@ -1,39 +1,45 @@
 \chapter{Tracker}
 
-We considerate tracker as an algorithm used to detect a position of the object in
-an image. We will present few tested trackers and their results in this task.
-Firstly we provide a short description of simple straightforward tracker and
-then we will describe more complicated trackers.
+We considerate tracker as an algorithm to detect a position of the object in
+an image. We will present a few tested trackers and their results in this task.
+Firstly we provide a short description of a simple straightforward tracker and
+then we describe more complicated trackers.
 
-We use a word tracker generally for an algorithm able to detect object.
-Although trackers do not take an advantage of viewed images and information
-gained from them. They simply detect an object in the each image. On the other
-hand many good trackers using also information from previous images exist. For
-this task we evaluate some trackers in both categories.
-	
+We use the notion \emph{tracker} generally for an algorithm able to detect and
+track an object.  We differentiate between two types of tracker algorithms:
+\emph{detection based algorithms} and \emph{sequence based algorithms}.
+Detection based algorithms detect an object on each image separately. On the
+other hand, sequence-based algorithms obtain, store and process information
+from a sequence of the past images and use them for more accurate and faster
+tracking results. For this task, we evaluate some trackers in both categories.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section {Detection based algorithms}
+We denote as detection based algorithms all trackers, which detect an object on
+Each image separately. These algorithms use only information obtained from
+the current image and the information from the image on which the tracker was
+initialized.
 
 \subsection{Simple Background Tracker}
 
-This tracker takes a photo of the background at the beginning and we denote it
-as a \emph{pattern}. In order to detect an object in a \emph{image}, a
-comparison of the \emph{image} and \emph{pattern} is taken. A Comparison is
-done by taking a sum of an absolute difference for each color (Red, Green,
-Blue) in the images for each pixel. 
+\emph{Simple Background Tracker} takes a photo of the background at the
+beginning and we denote it as a \emph{pattern}. In order to detect an object in
+a \emph{image}, a comparison of the \emph{image} and \emph{pattern} is taken.
+We make this comparison by taking a sum of an absolute difference for each
+color (Red, Green, Blue) in the images for each pixel.
 
-As result, we get a map, where higher values mean bigger difference between the
-colors of the \emph{pattern} and \emph{image} at given point. We will assume it
-is caused by an object in front of the camera at given point.  As the next step
-we will binarize the map with a given \emph{threshold}, \emph{blur} it and
-\emph{threshold} again. At this point we will find a contour with biggest area
-using OpenCV library. Center point of the rectangle of this contour will our
-estimation of the position of our object in the image. Whole process could be
-viewed in the image \ref{fig:simple-background-tracker}.
+As a result, we get a mask, where higher values mean the bigger difference between
+the colors of the \emph{pattern} and \emph{image} at given pixel. We assume it
+is caused by an object in front of the camera.  As the next step we will
+binarize the mask with a given \emph{threshold}, \emph{blur} it and
+\emph{threshold} again. At this point, we will find a contour with the biggest
+area using OpenCV library. The center point of the rectangle of this contour
+will be our estimation of the position of our object in the image. The whole
+process is in the figure \ref{fig:simple-background-tracker}.
 
-In the image we can see that between the photo of the background and the photo
-of the objects shadows moved. It is causing noise, which we reduce by
-thresholding and blurring the image.
+In the image is showed that between the photo of the background and the photo
+of the object the light slightly changed (at the edge of the puzzle pieces). It
+is causing noise, which we reduce by thresholding and blurring the image.
 
 \begin{figure}
   \centering
@@ -69,64 +75,67 @@ thresholding and blurring the image.
   \label{fig:simple-background-tracker}
 \end{figure}
 
-Advantages
-\begin{itemize}
-\item Quite straight-forward implementation
-\item Ability to recognise variate object without having specific color or pattern.
-\end{itemize}
+As an advantage of this algorithm, we consider its simplicity and
+straight-forward implementation. Furthermore, with a static background with
+only one object moving it can reliably track an object without any information
+about it.
 
-Disadvantages
-\begin{itemize}
-\item Cannot recover from even small movement of the camera.
-\item Moving object with a hand will cause recognizing the hand also as an object and will result wrongly estimated center of the moving object. Same problems cause shadows.
-\end{itemize}
+On the contrary, it can not recover even from a little light changes or camera
+movement. Also, an object moved by a human, for example, cannot be tracked
+reliably, since the tracker recognizes the hand by the tracker as moving object
+too.
 
-\subsection{Adaptive Background Tracker}
-
-In order to make our background tracker robust to small movement of camera we
-are going to update our \emph{pattern}. This could be simply done by defining \emph{pattern}
-as the mean of last \emph{n} images.
-
-Advantages
-\begin{itemize}
-\item Robust against movements of the camera
-\end{itemize}
-
-Disadvantages
-\begin{itemize}
-\item If the object is not moving it will disappear as becoming a part of the
-background. After moving it will recover properly.
-\end{itemize}
+%\subsection{Adaptive Background Tracker}
+%
+%In order to make our background tracker robust to small movement of camera we
+%are going to update our \emph{pattern}. This could be simply done by defining \emph{pattern}
+%as the mean of last \emph{n} images.
+%
+%Advantages
+%\begin{itemize}
+%\item Robust against movements of the camera
+%\end{itemize}
+%
+%Disadvantages
+%\begin{itemize}
+%\item If the object is not moving it will disappear as becoming a part of the
+%background. After moving it will recover properly.
+%\end{itemize}
 
 \subsection{HSV tracker}
 
-This tracker is based on color tracking. Given an input object we find the
-color with the largest area inside the object (range of color tones is used).
-On position request we return a center of the largest area with given color
-range.
+HSV tracker uses an idea of tracking an object by its color. Given an input
+object described by a bounding box, we find the average color within the
+bounding box. On a position request, we return a center of the largest area
+with the color of the object.
 
 We choose color coding via HSV (Hue, Saturation, Value). Unlike the RGB (Red,
-Green, Blue) coding it can describe color as Hue value, not triple values of
-mixed colors. The advantage of this approach is the fact that hue value is
-preserved even though the color is lighter or darker (like shadows in the
-image). On the other hand in RGB coding shadows may cause difference in all
-three parts of coded color.
+Green, Blue) coding it can describe a color as Hue value, not triple values of
+mixed colors. The approach of HSV color coding preserves one value -- hue
+value,  even though the color is lighter or darker (like shadows in the image).
+On the other hand in RGB coding shadows may cause a difference in all three
+parts of coded color. Therefore an object description can be simplified
+to one value.
 
 \begin{figure}[h!]\centering
 \includegraphics[width=0.65\textwidth]{img/hsv-cylinder.png}
 \caption{"HSV cylinder" by SharkD is licensed under CC BY 3.0}
 \end{figure}
 
-Given image of template we convert from RGB to HSV. Then we choose an average
-color in the picture. Since the coding of Hue is placed on the circle, it is
-not enough to take common used average. It would cause that image full of Warm
-Red (Hue is circa equal to 15) and cool Red (Hue is circa 345) would average to
-mid cyan (Hue: 180).
+We describe our algorithm in a few steps. Firstly, we convert our template
+image (bounding box) from RGB color space to HSV. Then we choose an average
+color in the template. Since the coding of Hue part is placed in the circle, it
+is not enough to take a commonly used average. It would cause that image full
+of Warm Red (the hue value of this color is circa equal to 15) and Cool Red
+(the hue is circa 345) would average to Mid Cyan (hue: 180), instead of Red
+(hue 0).
 
-In order to get more reasonable average we take hue value of each pixel as an
-angle. Then we acompute average of the angles.  We take a sum of unit vectors
-for each angle. For this vector $(x, y)$ we find corresponding angle using
-$arctang2(y, x)$.
+To get a more reasonable average, we take the hue value of each pixel as an
+angle. Then we compute the average of the angles. We represent each angle as a
+corresponding unit vector from the origin. We sum these vector and get a vector
+$(x, y)$. We find a corresponding angle for this vector using $arctang2$
+function.  The following formulas describe the process of getting an average
+angle.
 
 $$
 \begin{aligned}
@@ -136,9 +145,9 @@ y &= \sum_\alpha sin \alpha \\
 \end{aligned}
 $$
 
-It is important to note, that results is only approximate, since geometric
-function have only good approximation during computing. The results for one
-colored object could be seen in the image \ref{fig:hsv-tracker}.
+The use of this algorithm for one colored object is displayed in the figure
+\ref{fig:hsv-tracker}. We consider as a disadvantage that no other objects of
+the same color can be placed in the view of the camera.
 
 \begin{figure}
   \centering
@@ -162,20 +171,16 @@ colored object could be seen in the image \ref{fig:hsv-tracker}.
   \label{fig:hsv-tracker}
 \end{figure}
 
-Disadvantages
-- able to track only one color objects
-
 \subsection {Pattern matching}
+Pattern (or template) matching algorithm slides over the input image and
+compare the template with the patch of the input image.
 
-Pattern (or template) matching is based on sliding over the input image and
-comparing the template with the patch of the input image.
-
-For patch and template comparison many different metrics may be used. We use 
+For patch and template comparison many different metrics may be used. We use
 square distance.
 
 Metric could be written as:
 $$
-R(x, y) = 
+R(x, y) =
 %\frac{
 \sum_{x', y'} (T(x', y') - I(x + x', y + y'))^2
 %}{
@@ -188,10 +193,11 @@ sums squared distance between corresponding pixels in the pattern and the
 patch. From the computed value for each pixel the one with the lowest value
 (i.e. shortest distance) is our estimation of the position of the object.
 
-This algortihm works only on grayscale images. Since then a lot of information
-is lost during conversion. This sumed up with no ability to recognize rotated,
-slighty changes results in very bad tracking results. A process of correct
-matching and also incorrect could be viewed in the image
+This algorithm works only on grayscale images. Since then much information is
+lost during conversion. This disadvantage summed up with no ability to
+recognize rotated or slightly changed objects results in unsatisfying tracking
+results. A process of correct match and also incorrect one is displayed in the
+figure
 \ref{fig:pattern-matching-tracker}.
 
 \begin{figure}
@@ -225,74 +231,73 @@ matching and also incorrect could be viewed in the image
 \end{figure}
 
 
-Disadvantages
-- not persistent against appearance changes nor rotating, not learning
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Tracking algorithms}
+\section{Sequence-based algorithms}
 
-Using an advantage of information from previous frames could create not only
+We denote as sequence-based algorithms a class of tracking algorithms, which
+are using information from several previous and current image to track.
+
+Using the advantage of information from previous frames could create not only
 more stable but also faster trackers. Tracking preserves identity, which means
-that also in the case multiple moving objects it remains tracking the original
+that also in the case of multiple moving objects it remains to track the original
 one.
 
-Sample information we can obtain from tracking information:
-- velocity - from previous images we can estimate speed and the direction of
-  the movement. This can reduce searching area to smaller one and increasing so
-  the speed of the algorithm.
-- appearance - object may rotate and change its shape or color. Tracker able to
+Samples of the information we can obtain from tracking information:
+\begin{itemize}
+\item velocity -- from previous images we can estimate speed and the direction of
+  the movement. This information can reduce the searching area to smaller one
+  and increase the speed of the algorithm.
+\item appearance -- object may rotate and change its shape or color. Tracker able to
   learn can be persistable against such changes
+\end{itemize}
 
-Algorithm using these information can cope with occlusion - what usually
+An algorithm using this information can cope with occlusion - what usually
 detection algorithms are not able.
 
-In the next sections we will present few trackers implemented in the OpenCV. We
-provide short overview of the trackers available. At the end of the chapter
-comparison table will be provided.
+In the next sections, we will present few trackers implemented in the OpenCV. We
+provide a short overview of the trackers available.
 
-\subsection{BOOSTING tracker}
-Boosting tracker is based on online AdaBoost. It consider bounding box as
-positive sample and patches of background as negative ones. Given a new image,
-classifier is run on every pixel in the neighbourhood of the previous location
-and the score of the classifier is recorded. The location with highest score is
-choosed as a new location. 
+\subsection*{BOOSTING tracker}
+Boosting tracker is based on online AdaBoost. It considers bounding box as
+positive sample and patches of background as negative ones. For a new image, a
+classifier runs on every pixel in the neighborhood of the previous location,
+scoring every pixel. The location with the highest score is chosen as a new
+location.
 
-Advantages
-- foundation of more successful trackers 
-
-Disadvantages
-- another trackers evolved from this idea and now perform better
+This tracker is a foundation of more successful trackers. Since they evolved
+from this tracker, they perform better, and they often replace it.
 
 H Grabner, M Grabner, and H Bischof, Real-time tracking via on-line boosting, In Proc. BMVC, volume 1, pages 47– 56, 2006
 http://www.bmva.org/bmvc/2006/papers/033.pdf
 
 \todo[inline]{Pridat do literatury https://www.learnopencv.com/object-tracking-using-opencv-cpp-python/}
 
-\subsection{MIL tracker}
-The shortcut comes from Multiple Instance Learning. In comparison to the
-BOOSTING tracker, it does not keep only one image of positive example, but
-whole bunch of the images. Small neighborhood of the current position is took
-as potential positive examples. It helps tracker to cope with the occlusion.
+\subsection*{MIL tracker}
+The MIL is a shortcut for Multiple Instance Learning. In comparison to the
+BOOSTING tracker, it does not keep only one image of positive example, but the
+whole bunch of the images. Tracker considers a small neighborhood of the
+current position as possible positive examples. It helps tracker to cope with
+the occlusion.
 
-\subsection{KCF tracker}
-KCF stands for Kernelized Correlation Filters. Similarly as MIL tracker it uses
-more positive samples and their large overlapping regions. 
+\subsection*{KCF tracker}
+KCF stands for Kernelized Correlation Filters. Similarly, as the MIL tracker,
+it uses more positive samples and their large overlapping regions.
 
-\subsection{TLD tracker}
+\subsection*{TLD tracker}
 Tracking, learning and detection, these are the three components of this
-tracker. Tracker works frame to frame, detection corrects the tracker if
-necessary. The learning estimates detector's errors and updates it to avoid
+tracker. The tracker works frame to frame, and detection corrects the tracker
+if necessary. The learning estimates detector's errors and updates it to avoid
 these errors in the future.
 
-\subsection{MEDIANFLOW tracker}
+\subsection*{MEDIANFLOW tracker}
 This tracker focus on forward and backward measurements trying to minimize
 discrepancies between these two trajectories.
 
-\subsection{OpenCV note}
-All these mentioned trackers are implemented in OpenCV contribute. GOTURN
-tracker is also implemented in OpenCV, unfortunately at the time of the writing
-thesis it contains bug causing it unusable.
+\subsection*{OpenCV note}
+OpenCV-contribute implements all these sequence-based trackers GOTURN tracker
+is also implemented in OpenCV. Unfortunately, at the time of the writing
+thesis, it contains bug causing it unusable.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
