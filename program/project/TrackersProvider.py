@@ -1,6 +1,6 @@
-import logging
-import cv2
 import Config
+from TrackerFactory import TrackerFactory
+
 
 def get_tracker_uid(cam_ind, obj_ind):
     return cam_ind * Config.objects_count + obj_ind
@@ -101,11 +101,3 @@ class Tracker(object):
         x2, y2 = right_bottom_corner['x'], right_bottom_corner['y']
         return (x1, y1, x2 - x1, y2 - y1)
 
-class TrackerFactory(object):
-
-    @classmethod
-    def get_tracker(cls, tracker_type):
-        return {
-            'KCF': cv2.TrackerKCF_create(),
-            'SIMPLEBACKGROUND': None
-        }.get(tracker_type, cv2.TrackerKCF_create())
