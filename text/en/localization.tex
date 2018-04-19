@@ -40,8 +40,8 @@ After defining coordinate systems, we can compute the projection matrices for
 both cameras. We use projection matrix decomposition to get the projection matrix
 from calibration results.
 
-We decompose projection matrix as $P = K[R|T]$, where $K$ is intristic
-camera matrix and $[R|T]$ is extrinsic matrix. $R$ is a rotation matrix and
+We decompose projection matrix as $P = K(R|T)$, where $K$ is intristic
+camera matrix and $(R|T)$ is extrinsic matrix. $R$ is a rotation matrix and
 $T$ is a translation vector. We use this decomposition to compute the projection
 matrices.
 
@@ -52,11 +52,11 @@ we compute a projection matrix as:
 
 \[
  P_1 = K_1 \cdot \begin{pmatrix}
-	I_3 & | & 0_3  
+	I_{3, 3} & | & 0_3  
 \end{pmatrix}
 \]
 
-Where $K_1$ denotes first camera intrinsic parameters matrix, $I_3$ identity
+Where $K_1$ denotes first camera intrinsic parameters matrix, $I_{3,3}$ identity
 matrix 3$\times$3 and $0_3$ zero vector. Only intristic parameters matrix take
 effect on given coordinates, computing from world coordinates in the image plane of the camera.
 
@@ -66,7 +66,7 @@ used. We know the rotation matrix and translation vector between the cameras,
 being able to get coordinates of the second camera relative to the first one.
 
 We now use this information in construction of projection matrix. $P_2 = K_2
-\dot [R | T]$, where $K_2$ is second camera intristic parameters matrix, $R$
+\dot (R | T)$, where $K_2$ is second camera intristic parameters matrix, $R$
 rotation matrix and $T$ translation vector.
 
 More about the decomposition itself could be found in an article by
@@ -77,7 +77,7 @@ More about the decomposition itself could be found in an article by
 \section{Triangulation}
 Now when we know the projection matrices we can formalize our problem as
 \begin{equation}
-x_1 = P_1X, x_2 = P_2X \label{projection-statements}
+\mathrm{x_1} = P_1X, \mathrm{x_2} = P_2X \label{projection-statements}
 \end{equation}
 with the goal to find $X$. Since errors may occure during
 measurement of $x_1$, $x_2$ and calibration. In further steps we consider that
@@ -89,13 +89,11 @@ at once).
 We will now shortly describe how the triangulation is working under the hood.
 
 The results of cross product of vector itself is zero vector. We can write
-equation \ref{projection-statements} as crossproduct $x \times (PX) = 0$. We
-denote point $x = (x, y, w)$, where $w = 1$ since these coordinates are
+equation \ref{projection-statements} as crossproduct $\mathrm{x} \times (PX) = 0$. We
+denote point $\mathrm{x} = (x, y, w)$, where $w = 1$ since these coordinates are
 homogenous -- in other words up to scale factor $w$.
 
-\todo[inline]{FIX x=(x...)}
-
-We can then rewrite $x \times (PX) = 0$ in the following way:
+We can then rewrite $\mathrm{x} \times (PX) = 0$ in the following way:
 
 $$ w(p^{3T}X) - x(p^{2T}X) = 0 $$
 $$ y(p^{3T}X) - w(p^{1T}X) = 0 $$
@@ -111,7 +109,7 @@ These equations are linear in the components of X. Only two equations are
 linearly independent since the third one could be obtained as the sum $y$
 times the first row and $-x$ times the second row.
 
-Therefore an equation of form $AX = 0$ can then be composed using two points $x_1 = (x, y, 1)$ and $x_2 = (m, n, 1)$:
+Therefore an equation of form $AX = 0$ can then be composed using two points $\mathrm{x_1} = (x, y, 1)$ and $\mathrm{x_2} = (m, n, 1)$:
 
 \[
 A = \begin{pmatrix}
@@ -132,5 +130,5 @@ in \citet*{multiple-view-geometry}.
 
 \section{Implementation note}
 For the triangulation we used OpenCV function triangulatePoints($P_1$, $P_2$,
-$x_1$, $x_2$), which is based on simple triangulation method with use of DLT
+$\mathrm{x_1}$, $\mathrm{x_2}$), which is based on simple triangulation method with use of DLT
 method for solving equations.

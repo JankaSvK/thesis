@@ -1,56 +1,53 @@
-%%% Súvisiace práce
+\chapter{Related works} The subject of retrieving an object position in 3D is
+well known and ... in many papers. Usage could be found in many different ...,
+for example in the sport in controversial cases, in the robotics for better
+navigation, but also in virtual reality for more impressive effect.
 
-\chapter{Súvisiace práce}
+\section{Stereo vision systems}
 
-%%%\section{Úprava práce}
+In the paper \citet*{zheng2010study}, the authors research stereo vision. The
+proposed system has a requirement of the parallel alignment of the cameras to
+each other but also parallel to the floor. The authors test the accuracy of the
+system and also the disparity of the results in different distances. They
+provide several experiments measuring these disparities moving an object in an
+environment with one colored background.
 
-Problematike získavaniu polohy objektu v priestore sa venuje mnoho práci.
-Tomuto rozšírenému záujmu vďačíme nzvýšenému záujmu o virtuálnu realitu ako aj
-stále sa zvyšujúce požiadavky robotiky, či vyhľadávaním takejto pomoci pri
-športe.
+The paper \citet*{black2002multi} tries to solve a problem of the prediction
+the object position under full occlusion. On the other hand, the authors of the
+\citet*{yonemoto1998tracking} solve a problem of correct localization of the
+object consisting of the multiple parts. Such objects often fall apart when
+trying to include them in virtual reality. Proposed system estimated parameter
+and fixed points for each part independently. Then the system uses
+correspondence of the points within the movements.
 
-\section{Systémy priestorového videnia}
+The system of the object tracking and localization in the garage was introduced
+in the paper \citet*{ibisch2915arbitrary}. The proposed system is connected to
+few cameras sharing a part of their view. For object detection, they use a
+method of the background subtraction. Since the system's primary use is in the
+garage, they also propose a method to cope with the change of the lighting
+caused by car lights. Their primary goal is to predict possible car collisions
+and therefore provide a data for a warning system.
 
-V článku \citet*{zheng2010study} sa autori zaoberajú otázkou priestorového
-videnia. Jednou z podmienok systému je vzájomne rovnobežné postavenie kamier a
-taktiež rovnobežné postavenie k podlahe. Okrem toho predpokláda taktiež, že
-súradnice v priestore sú dobre zarovnané s optickými osami. Autori okrem
-navrhnutého systému skúmali presnosť systému v hĺbke videnia a prezentovali
-niekoľko experimentov v rôznych vzdialenostiach s dobre odlíšiteľným pozadím.
+\section{The use of the systems in the sports}
 
-Experimenty s predikciou polohy objektu napriek jeho strate z obrazu sa venuje
-článok \citet*{black2002multi}. Autori \citet*{yonemoto1998tracking} riešia
-problém komplexných objektov pozostávajúcich z niekoľkých častí. Takéto objekty
-sa častokrát pri mapovaní do virtuálnej reality rozpadajú. Navrhovaný systém
-odhaduje parametry a body sledovania samostatne na každej časti, pričom
-následne hľadá korešpondujuce dvojice.
+An excellent example of the usage of such a system is to solve controversial
+cases in the sports. One of the most famous systems is Hawk Eye (shortly
+described in \citet*{owens2003hawk}). The system provides access to the
+trajectory of the ball and can replay it to referees. This system needs an
+expensive setup equipped with high-speed cameras. The software itself is
+expensive.
 
-Systém pre sledovanie a lokalizáciu objektov v garážiach bol navrhnutý v článku
-\citet*{ibisch2015arbitrary}. Tento systém pozostáva z niekoľkých čiastočne sa
-prekrývajúcich pohľadov kamier. K detekcii objektov využíva metódu s
-porovnávaním pozadia.  Vzhľadom na to, že navrhovaný systém bol použitý do
-garáži k predchádzaniu zrážok, tak je taktiež navrhnutá metóda k rozpoznávaniu
-objektov rozšírená o redukciu šumu spôsobeného odrazom svetla. Tieto odrazy --
-a teda presvetlené miesta spôsobujú hlavne svetlá vozidiel.
+\section{The use of the systems in the robotics}
 
-\section{Využitie v športe}
-
-Systémy na získavanie polohy v priestore pomocou viacerých kamier sú dnes bežne
-používané pri športoch. Systém Hawk Eye (stručne popísaný v
-\citet*{owens2003hawk}) nielenže ponúka možnosť spracovanie súradníc, umožňuje
-ale aj spätné prehranie situácie zo záznamu. Tento systém vyžaduje
-vysokorýchlostné nákladné kamery a samotný softvér, ktorý nie je voľne
-prístupný.
-
-\section{Využitie v robotike}
-
-Táto problematika je častokrát spomínaná aj so súvislosťou robotiky. Pre učely
-súťaže RoboCup -- kategórie Soccer bolo vyvinutých niekoľko systémov pre
-získavanie polohy lopty z obrazu kamery. Tieto roboty sú častokrát vybavené
-všesmerovou kamerou (omnidirectional), ktorá poskytuje pohľad o zrkadlo a teda
-zachytáva 360° obraz. Pre zlepšenie presnosti tohto systému bola všesmerová
-kamera doplnená o obyčajnú kameru. Tento systém sa ale nachádza na pohyblivom
-robotovi, narozdiel od nášho problému statických kamier.  Taktiež využíva
-znalosť parametrov objektu. Hľadaným objektom je farebne odlišná lopta s vopred
-známou veľkosťou. Tento systém je podrobnejšie popísaný v článku
-\citet*{kappeler20103d}.
+Described principles have a great usage in robotics, for better navigation,
+object manipulating and so on. For example, for the robotic competition
+RoboCup, category Soccer many systems for ball tracking were developed. Robots
+competing in this category are usually equipped with an omnidirectional camera.
+This camera is pointing vertically up, where the light reflects against the
+mirror. This principle provides a full 360\degree image of the environment
+provided by only one camera. In this case, it is possible to track an object by
+one camera, since additional information about the ball (such as color and
+size) are provided in advance. On the other hand, such a system is not static,
+the background changes with every movement of the robot. For better precision,
+another camera may be used. For more information about it, we refer to the
+paper \citet*{kappeler20103d}. 

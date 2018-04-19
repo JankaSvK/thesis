@@ -6,14 +6,16 @@ Firstly we provide a short description of a simple straightforward tracker and
 then we describe more complicated trackers.
 
 We use the notion \emph{tracker} generally for an algorithm able to detect and
-track an object.  We differentiate between two types of tracker algorithms:
-\emph{detection based algorithms} and \emph{sequence based algorithms}.
-Detection based algorithms detect an object on each image separately. On the
-other hand, sequence-based algorithms obtain, store and process information
-from a sequence of the past images and use them for more accurate and faster
-tracking results. For this task, we evaluate some trackers in both categories.
+track an object (i.e. return an object position in the image).  We
+differentiate between two types of tracker algorithms: \emph{detection based
+algorithms} and \emph{sequence based algorithms}. Detection based algorithms
+detect an object on each image separately. On the other hand, sequence-based
+algorithms obtain, store and process information from a sequence of the past
+images and use them for more accurate and faster tracking results. For this
+task, we evaluate trackers in both categories.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \section {Detection based algorithms}
 We denote as detection based algorithms all trackers, which detect an object on
 Each image separately. These algorithms use only information obtained from
@@ -84,23 +86,6 @@ On the contrary, it can not recover even from a little light changes or camera
 movement. Also, an object moved by a human, for example, cannot be tracked
 reliably, since the tracker recognizes the hand by the tracker as moving object
 too.
-
-%\subsection{Adaptive Background Tracker}
-%
-%In order to make our background tracker robust to small movement of camera we
-%are going to update our \emph{pattern}. This could be simply done by defining \emph{pattern}
-%as the mean of last \emph{n} images.
-%
-%Advantages
-%\begin{itemize}
-%\item Robust against movements of the camera
-%\end{itemize}
-%
-%Disadvantages
-%\begin{itemize}
-%\item If the object is not moving it will disappear as becoming a part of the
-%background. After moving it will recover properly.
-%\end{itemize}
 
 \subsection{HSV tracker}
 
@@ -243,7 +228,7 @@ more stable but also faster trackers. Tracking preserves identity, which means
 that also in the case of multiple moving objects it remains to track the original
 one.
 
-Samples of the information we can obtain from tracking information:
+Samples of the information we can obtain from sequence of the images:
 \begin{itemize}
 \item velocity -- from previous images we can estimate speed and the direction of
   the movement. This information can reduce the searching area to smaller one
@@ -263,41 +248,46 @@ Boosting tracker is based on online AdaBoost. It considers bounding box as
 positive sample and patches of background as negative ones. For a new image, a
 classifier runs on every pixel in the neighborhood of the previous location,
 scoring every pixel. The location with the highest score is chosen as a new
-location.
-
-This tracker is a foundation of more successful trackers. Since they evolved
-from this tracker, they perform better, and they often replace it.
-
-H Grabner, M Grabner, and H Bischof, Real-time tracking via on-line boosting, In Proc. BMVC, volume 1, pages 47– 56, 2006
-http://www.bmva.org/bmvc/2006/papers/033.pdf
-
-\todo[inline]{Pridat do literatury https://www.learnopencv.com/object-tracking-using-opencv-cpp-python/}
+location. The implementation in OpenCV is based on \citet*{boosting}.
 
 \subsection*{MIL tracker}
 The MIL is a shortcut for Multiple Instance Learning. In comparison to the
 BOOSTING tracker, it does not keep only one image of positive example, but the
 whole bunch of the images. Tracker considers a small neighborhood of the
 current position as possible positive examples. It helps tracker to cope with
-the occlusion.
+the occlusion. OpenCV implementation is based on \citet*{mil}.
 
 \subsection*{KCF tracker}
 KCF stands for Kernelized Correlation Filters. Similarly, as the MIL tracker,
 it uses more positive samples and their large overlapping regions.
+Implementation provided by OpenCV is based on \citet*{kcf}.
 
 \subsection*{TLD tracker}
 Tracking, learning and detection, these are the three components of this
 tracker. The tracker works frame to frame, and detection corrects the tracker
 if necessary. The learning estimates detector's errors and updates it to avoid
-these errors in the future.
+these errors in the future. The implementation in OpenCV is based on \citet*{tld}.
 
 \subsection*{MEDIANFLOW tracker}
-This tracker focus on forward and backward measurements trying to minimize
-discrepancies between these two trajectories.
+This tracker focus on forward-backward error trying to minimize it. The
+implementation in OpenCV is based on \citet*{medianflow}.
+
+\subsection*{MOSSE tracker}
+MOSSE tracker is proposed for fast object tracking using correlation filter
+methods. Firstly it does Fast Fourier Transform for template and the image.
+Then an convolution operation is performed between the images and the result is
+inverted by Inverse Fast Fourier Transform (IFFT). The position is estimated by
+the highest value of the IFFT response. More about the tracker is available in
+the paper by \citet*{mosse}.
 
 \subsection*{OpenCV note}
 OpenCV-contribute implements all these sequence-based trackers GOTURN tracker
 is also implemented in OpenCV. Unfortunately, at the time of the writing
-thesis, it contains bug causing it unusable.
+thesis, it contains bug causing it unusable. An overview of OpenCV trackers is
+provided by \citet*{opencv-trackers}.
+
+\subsection*{Correlation tracker}
+For a comparison we decided to include a tracker implemented in Dlib. This correlation tracker is based on the paper by \citet*{correlation}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

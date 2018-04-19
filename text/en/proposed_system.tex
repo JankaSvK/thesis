@@ -18,3 +18,17 @@ to each other) using an automated calibration process. After calibration, the
 user marks an object to be tracked from views of each camera. The estimated
 position of the cameras and the object will be displayed. We describe each step
 of the process in the following chapters.
+
+\section{Tools}
+
+For this computer vision task, we use a \emph{OpenCV} library. OpenCV is Open
+Source Computer Vision Library with many algorithms implemented (for example
+calibration, triangulation, and so on). We use trackers which are now available
+only in \emph{contribute} version. For more information and examples of usage
+visit their webpage\footnote{\url{https://opencv.org/}}.
+
+To provide a comparison of trackers, we also include one tracker from
+\emph{Dlib}\footnote{\url{http://dlib.net/}} library. It is also open source and an
+interface for the Python is provided.  Since this library focus is on machine
+learning and it does not contain so many functions for computer vision yet than
+the OpenCV library. 
