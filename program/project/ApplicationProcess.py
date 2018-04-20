@@ -1,14 +1,10 @@
 import threading
-import time
 import numpy as np
 from Localization import Localization
-from OptionParser import *
 from QueuesProvider import *
 import Config
-from ComplexTracker import ComplexTracker
 from GUI import GUI
 from Provider import Provider
-from Tracking import Tracking
 from TrackersProvider import TrackersProvider
 
 stop_event = threading.Event()

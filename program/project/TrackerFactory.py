@@ -5,9 +5,7 @@ from trackers.TrackerSimpleBackground import TrackerSimpleBackground
 from trackers.TrackerHSV import TrackerHSV
 from trackers.TrackerCorrelation import CorrelationTracker
 
-
 class TrackerFactory(object):
-
     @classmethod
     def get_tracker(cls, tracker_type):
         return {
@@ -20,5 +18,6 @@ class TrackerFactory(object):
             'SIMPLEBACKGROUND': TrackerSimpleBackground(),
             'HSV': TrackerHSV(),
             'PATTERNMATCHING': TrackerPatternMatching(),
-            'CORRELATION': CorrelationTracker()
+            'CORRELATION': CorrelationTracker(),
+            'MOSSE': cv2.TrackerMOSSE_create()
         }.get(tracker_type, cv2.TrackerKCF_create())

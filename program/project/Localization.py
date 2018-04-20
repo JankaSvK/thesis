@@ -1,4 +1,5 @@
 import cv2
+import numpy
 import numpy as np
 import os
 
@@ -9,18 +10,23 @@ from CoordsWithTimestamp import CoordsWithTimestamp
 from QueuesProvider import QueuesProvider, Camera
 
 
+
+
 class Localization(object):
     objects_count = Config.objects_count
     rotation_matrix1 = None
     rotation_matrix2 = None
     projection_matrix1 = None
     projection_matrix2 = None
+    mono_calibration_results = None
 
     localization_precision = 5 # in milimeters
     last_located_point = None
 
     @classmethod
     def compute_projection_matrices(cls, calibration_results1, calibration_results2, stereo_calibration_results):
+        cls.mono_calibration_results = [calibration_results1, calibration_results2]
+
         stereo_rectify = False
 
         if stereo_rectify:
@@ -38,10 +44,20 @@ class Localization(object):
         if point1 is None or point2 is None:
             return None
 
+        point1 = cls.get_undistorted_point(point1, 0)
+        point2 = cls.get_undistorted_point(point1, 1)
+
         locatedPointsHom = cv2.triangulatePoints(projMatr1=cls.projection_matrix1, projMatr2=cls.projection_matrix2,
                                                  projPoints1=point1,
                                                  projPoints2=point2)
         return cls.convert_from_homogenous(locatedPointsHom)
+
+    @classmethod
+    def get_undistorted_point(cls, point, cam_ind):
+        calib_results = cls.mono_calibration_results[cam_ind]
+        point = np.array(point).reshape(1, 1, 2).astype(float)
+        undistorted = cv2.undistortPoints(point, calib_results.camera_matrix, calib_results.distortion_coeffs, P=calib_results.camera_matrix)
+        return undistorted[0][0]
 
     @classmethod
     def save_localization_data(cls):
