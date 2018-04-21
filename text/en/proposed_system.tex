@@ -1,34 +1,34 @@
 \chapter{Proposed system}
 
-To be able to locate an object with no previous information about it (such as
-size, color), two views of the same object are needed. This views can be
-achieved by one moving camera or by multiple cameras. In this thesis, we will
-take a closer look at the second approach.
+To be able to locate an object with no previous knowledge of the object (such
+as its size, color and so on), two views of the same object are needed. The
+views can be obtained by one moving camera or by multiple cameras. In this
+thesis, we take a closer look at the second approach.
 
 We propose a system with two cameras. We connect cameras via USB to a computer.
 Two cameras provide enough information for object localization and make the
-project usable also on low-budget. The camera's placement is important, but no
-precise alignment is required. Cameras should share a significant part of the
-view.
+project usable also on low-budget. The placement of the cameras is important,
+but no precise alignment is required. Cameras should share a significant part
+of the view.
 
 \todo[inline]{fotka rozostavenia}
 
-Our solution will be able to estimate the positions of the cameras (relatively
-to each other) using an automated calibration process. After calibration, the
-user marks an object to be tracked from views of each camera. The estimated
-position of the cameras and the object will be displayed. We describe each step
+Our solution is able to estimate the positions of the cameras (relatively to
+each other) using an automated calibration process. After calibration, the user
+marks an object to be tracked in the view of each camera. The estimated
+position of the cameras and the object is then displayed. We describe each step
 of the process in the following chapters.
 
 \section{Tools}
 
-For this computer vision task, we use a \emph{OpenCV} library. OpenCV is Open
-Source Computer Vision Library with many algorithms implemented (for example
+For this computer vision task, we use a \emph{OpenCV} library. OpenCV is open
+source computer vision library with many algorithms implemented (for example
 calibration, triangulation, and so on). We use trackers which are now available
 only in \emph{contribute} version. For more information and examples of usage
 visit their webpage\footnote{\url{https://opencv.org/}}.
 
 To provide a comparison of trackers, we also include one tracker from
-\emph{Dlib}\footnote{\url{http://dlib.net/}} library. It is also open source and an
-interface for the Python is provided.  Since this library focus is on machine
-learning and it does not contain so many functions for computer vision yet than
-the OpenCV library. 
+\emph{Dlib}\footnote{\url{http://dlib.net/}} library. It is also open source
+and an interface for the Python is provided.  Since this library focus is on
+machine learning and it does not contain so many functions for computer vision
+as the OpenCV library yet.

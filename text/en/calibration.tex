@@ -1,24 +1,100 @@
 \chapter{Calibration}
-\todo[inline]{Blokovy zapis}
-\todo[inline]{Stlpcove vektory}
 \todo[inline]{intrintic parameters}
+\todo[inline]{Obrazok sachovnice}
+\todo[inline]{Ake minimalne rozmery sachovnica musi mat}
+\todo[inline]{ze je lepsia asymetricka sachovnica, lebo ma len jednu osu a ze musia byt body najdene aj v spravnom poradi}
 
-%In process to get more accurate results we are going to firstly calibrate
-%cameras. This process consists of few steps to estimate camera parameters and
-%their relative position.
-%
-%More about it in Learning OpenCV.
-%
-%\section{Lens distortions}
-%
-%In this chapter we will take a closer look on lens distortion. Distortion is
-%most effected by radial distortion and tangetial distortion. Radial dostortion
-%is cause by the shape of the lens. It cause distortion on the edges of the
-%image. In the center of the image is no distortion, but coming closer to te
-%edger it arrises.
-%
-%Tangetial distortion is caused during assembling process of the camera. It is
-%almost impossible to put lens parallel to an chip.
-%
-%\section{Stereo calibration}
-%
+\todo[inline]{fancy odstavec o uvode}
+
+Since we have no information about the camera and their positions, we use an
+well known object to obtain these information.
+
+\subsection*{Math notation}
+
+A word \emph{vector} denotes a column vector in a shape of $n\times1$.
+
+A matrix operation $W = (A|B)$, where $A$ is a matrix $m \times n$ and B is a
+matrix $m \times p$, creates $W$, where first $n$ columns are the entries from
+matrix $A$ and last columns consist of the columns of the matric $B$.
+Example:
+
+\[
+A = \begin{pmatrix}
+	1 & 2 \\
+	3 & 4
+\end{pmatrix},
+B = \begin{pmatrix}
+5 \\
+6
+\end{pmatrix},
+(A|B) = \begin{pmatrix}
+	1 & 2 & 5 \\
+	3 & 4 & 6
+\end{pmatrix}
+\]
+
+\subsubsection*{Homogenous coordinates}
+
+
+
+\section{Intrinsic parameters}
+
+Intrinsic camera parameters define a transform between a world coordinates and
+the coordinates withing an image plane (in pixels). This transformation is
+influenced by many factors, physical attributes of the camera.
+
+These parameters include focal length, position of the principal point and
+distortion coefficients. All these parameters are needed to get a correct
+transformation between the point in the space and the point at the image plane.
+
+OpenCV provides us routines to obtain these information about the camera. Since
+for their description many great book were written we will only shotly describe
+the information their provide.
+
+\subsection{Camera matrix}
+The focal length and the position of the principal point are linear parameters
+of the camera.  The approach of the camera matrix which OpenCV use is to think
+as matrix 3\times3 matrix in the following format:
+
+...
+
+This matrix provides us a way to convert from world coordinates to pixel
+coordinates in the image.
+
+\subsection{Distortion coefficients}
+
+Cameras are equipted with the lenses to provide more light. Therefore the lens
+cause a various distortions. A fish-eye lenses are known for their distortion.
+Even webcamera lens have distortion, but not so visible as the camera with a
+fish-eye lens. It is important to correct these distortions.
+
+Two distortion types cause significant effect on the image. The first one is the
+radial distortion, creating barrel effect and the second one tangential.
+
+The radial distortion is caused by the lens itself. It can be usually described
+by three parameters. Highly distorted images (like from fish-eye) often needs
+more parameters.  Since our system use webcameras, we will use only three
+parameters.
+
+In the ideal camera the lens would be placed parralel to the chip. Since such a
+precision while assembling process is not possible, tangential distortion
+arrises. For this distiortion we use two parameters.
+
+We describe both distortion effects by five parameters. More about the meaning
+of the parameters could be found in \ref{learning-opencv}.
+
+An effect of the distortion could be seen on the image \ref{fig:distortion}.
+\todo[inline]{Distortion effect}
+
+\section{Stereo calibration}
+
+After perfoming a calibration of both cameras we also need information about
+their relative position to each other. This position can by described by six
+parameters, three as an angles around each axes to rotate and three for
+translation vector.
+
+Stereo calibration routine can perform also monocalibration for both cameras,
+but we use a separate results for better precision.
+
+It is important to note, that we obtain a rotation matrix and a translation
+vector from stereo calibration between the coordinate systems of the cameras.

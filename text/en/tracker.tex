@@ -1,43 +1,49 @@
 \chapter{Tracker}
 
-We considerate tracker as an algorithm to detect a position of the object in
-an image. We will present a few tested trackers and their results in this task.
-Firstly we provide a short description of a simple straightforward tracker and
+We consider a tracker to be an algorithm for detection a position of an object in
+an image. We present a few tested trackers and their results in this task.
+Firstly, we provide a short description of a simple straightforward tracker and
 then we describe more complicated trackers.
 
-We use the notion \emph{tracker} generally for an algorithm able to detect and
-track an object (i.e. return an object position in the image).  We
-differentiate between two types of tracker algorithms: \emph{detection based
-algorithms} and \emph{sequence based algorithms}. Detection based algorithms
-detect an object on each image separately. On the other hand, sequence-based
-algorithms obtain, store and process information from a sequence of the past
-images and use them for more accurate and faster tracking results. For this
-task, we evaluate trackers in both categories.
+Tracker return an object position in the image. We differentiate between two
+types of tracking algorithms: \emph{detection based algorithms} and
+\emph{sequence-based algorithms}. Detection based algorithms detect an object
+on each image separately. On the other hand, sequence-based algorithms obtain,
+store and process information from a sequence of the past images and use them
+for more accurate results, while requiring same or even less computation time
+compared to the detection based algorithms. For this task, we evaluate
+trackers in both categories.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section {Detection based algorithms}
-We denote as detection based algorithms all trackers, which detect an object on
-Each image separately. These algorithms use only information obtained from
-the current image and the information from the image on which the tracker was
+
+We denote all trackers, which detect an object on each image separately as
+detection based algorithms. These algorithms use only information obtained from
+the current image and the information from the image used while the tracker was
 initialized.
 
 \subsection{Simple Background Tracker}
 
 \emph{Simple Background Tracker} takes a photo of the background at the
 beginning and we denote it as a \emph{pattern}. In order to detect an object in
-a \emph{image}, a comparison of the \emph{image} and \emph{pattern} is taken.
+an \emph{image}, a comparison of the \emph{image} and the \emph{pattern} is done.
 We make this comparison by taking a sum of an absolute difference for each
-color (Red, Green, Blue) in the images for each pixel.
+color channel (Red, Green, Blue) in the images for each pixel.
 
 As a result, we get a mask, where higher values mean the bigger difference between
-the colors of the \emph{pattern} and \emph{image} at given pixel. We assume it
-is caused by an object in front of the camera.  As the next step we will
-binarize the mask with a given \emph{threshold}, \emph{blur} it and
-\emph{threshold} again. At this point, we will find a contour with the biggest
-area using OpenCV library. The center point of the rectangle of this contour
-will be our estimation of the position of our object in the image. The whole
-process is in the figure \ref{fig:simple-background-tracker}.
+the colors of the \emph{pattern} and the \emph{image} at given pixel. We assume it
+is caused by an object in front of the camera.
+
+One may expect to get the mask by \emph{tresholding} (see the results in
+\ref{fig:simple-background-first-threshold}). There is still a lot of noise.
+The noise is in the form of small dots and lines. Therefore we use
+\emph{blurring} to remove the noise. Then we \emph{threshold} it again to get
+binary mask (see the results in \ref{fig:simple-background-second-threshold}).
+At this point, we will find a contour with the biggest area using OpenCV
+library. The center point of the rectangle of this contour will be our
+estimation of the position of our object in the image. The whole process is in
+the figure \ref{fig:simple-background-tracker}.
 
 In the image is showed that between the photo of the background and the photo
 of the object the light slightly changed (at the edge of the puzzle pieces). It
@@ -60,6 +66,7 @@ is causing noise, which we reduce by thresholding and blurring the image.
   \begin{subfigure}[b]{0.48\linewidth}
     \includegraphics[width=\linewidth]{img/simple_background/first-thresh.jpg}
     \caption{Thresholded}
+    \label{fig:simple-background-first-threshold}
   \end{subfigure}
   \begin{subfigure}[b]{0.48\linewidth}
     \includegraphics[width=\linewidth]{img/simple_background/blurring.jpg}
@@ -68,6 +75,7 @@ is causing noise, which we reduce by thresholding and blurring the image.
   \begin{subfigure}[b]{0.48\linewidth}
     \includegraphics[width=\linewidth]{img/simple_background/second-thresh.jpg}
     \caption{Thresholded}
+    \label{fig:simple-background-second-threshold}
   \end{subfigure}
   \begin{subfigure}[b]{0.48\linewidth}
     \includegraphics[width=\linewidth]{img/simple_background/result.jpg}
@@ -95,7 +103,7 @@ bounding box. On a position request, we return a center of the largest area
 with the color of the object.
 
 We choose color coding via HSV (Hue, Saturation, Value). Unlike the RGB (Red,
-Green, Blue) coding it can describe a color as Hue value, not triple values of
+Green, Blue) coding it can describe a color as hue value, not triple values of
 mixed colors. The approach of HSV color coding preserves one value -- hue
 value,  even though the color is lighter or darker (like shadows in the image).
 On the other hand in RGB coding shadows may cause a difference in all three
@@ -109,18 +117,17 @@ to one value.
 
 We describe our algorithm in a few steps. Firstly, we convert our template
 image (bounding box) from RGB color space to HSV. Then we choose an average
-color in the template. Since the coding of Hue part is placed in the circle, it
+color in the template. Since the coding of hue part is placed in the circle, it
 is not enough to take a commonly used average. It would cause that image full
-of Warm Red (the hue value of this color is circa equal to 15) and Cool Red
-(the hue is circa 345) would average to Mid Cyan (hue: 180), instead of Red
-(hue 0).
+of warm red (the hue value of this color is circa equal to 15) and cool red
+(the hue is circa 345) would average to mid cyan (hue: 180), instead of Red
+(hue: 0).
 
 To get a more reasonable average, we take the hue value of each pixel as an
-angle. Then we compute the average of the angles. We represent each angle as a
-corresponding unit vector from the origin. We sum these vector and get a vector
-$(x, y)$. We find a corresponding angle for this vector using $arctang2$
-function.  The following formulas describe the process of getting an average
-angle.
+unit vector (represented hue value is encoded as the angle between given vector
+and vector $(1, 0)$). We sum these vectors and get a vector $(x, y)$. We find a
+corresponding angle for this vector using $arctang2$ function. The following
+formulas describe the process of getting an average angle.
 
 $$
 \begin{aligned}
@@ -157,33 +164,46 @@ the same color can be placed in the view of the camera.
 \end{figure}
 
 \subsection {Pattern matching}
+
 Pattern (or template) matching algorithm slides over the input image and
-compare the template with the patch of the input image.
+compare the template with the patch of the input image. As patch we means a
+cropped image to the size of the template.
 
-For patch and template comparison many different metrics may be used. We use
-square distance.
+For a comparison between an image and the patch we look for a function, which
+tell us how different to each other they are. Such a function is usually called
+a loss fuction. We use a function $R$ based on square distance as our loss
+function. More precisely, we take the sum of square distances of all pairs of
+corresponding pixels in the template and the patch. Therefore, we compute $R$
+as:
 
-Metric could be written as:
 $$
 R(x, y) =
 %\frac{
-\sum_{x', y'} (T(x', y') - I(x + x', y + y'))^2
+\sum_{x', y'} ||T(x', y') - I(x + x', y + y')||^2
 %}{
 %\sqrt{\sum_{x', y'} T(x', y')^2 \cdot \sum_{x', y'} I(x+x', y+y')^2}
 %}
 $$
 where $x'$ and $y'$ denotes points from the neighbourhood of the $x, y$. $T$
-denotes our pattern and $I$ denotes a patch from the input image. It simply
-sums squared distance between corresponding pixels in the pattern and the
-patch. From the computed value for each pixel the one with the lowest value
+denotes our pattern and $I$ denotes the image. 
+
+\todo[inline]{Square distance, ten vzorec hovori co?}
+\todo[inline]{Obrazok kde bude patch, pattern, image}
+
+From the computed value for each pixel the one with the lowest value
 (i.e. shortest distance) is our estimation of the position of the object.
 
-This algorithm works only on grayscale images. Since then much information is
+Finally, we choose an appropiate representation for the pixels (i.e. what
+precisely does $T(x, y)$ stand for). In general we can choose any reasonable
+vector (such as tuple of RGB channels). We choose to use a standard
+conversion to grayscale ($T(x, y)$ thus gives an intensity after such
+conversion).
+
+Because this algorithm works with the grayscale images, much information is
 lost during conversion. This disadvantage summed up with no ability to
 recognize rotated or slightly changed objects results in unsatisfying tracking
 results. A process of correct match and also incorrect one is displayed in the
-figure
-\ref{fig:pattern-matching-tracker}.
+figure \ref{fig:pattern-matching-tracker}.
 
 \begin{figure}
   \centering
@@ -223,12 +243,12 @@ figure
 We denote as sequence-based algorithms a class of tracking algorithms, which
 are using information from several previous and current image to track.
 
-Using the advantage of information from previous frames could create not only
-more stable but also faster trackers. Tracking preserves identity, which means
-that also in the case of multiple moving objects it remains to track the original
+Using the advantage of information from previous frames one could create not only
+more stable but also faster trackers. Furthermore, trackers of this class usually preserve identity, which means
+that also in the case of multiple moving objects in a frame it remains tracking the original
 one.
 
-Samples of the information we can obtain from sequence of the images:
+Examples of the information we can obtain from sequence of the images are:
 \begin{itemize}
 \item velocity -- from previous images we can estimate speed and the direction of
   the movement. This information can reduce the searching area to smaller one
@@ -237,10 +257,10 @@ Samples of the information we can obtain from sequence of the images:
   learn can be persistable against such changes
 \end{itemize}
 
-An algorithm using this information can cope with occlusion - what usually
-detection algorithms are not able.
+An algorithm using this information can cope with occlusion (one objects covers
+another) -- what usually detection algorithms are not able to do.
 
-In the next sections, we will present few trackers implemented in the OpenCV. We
+In the next sections, we will present a few trackers implemented in the OpenCV. We
 provide a short overview of the trackers available.
 
 \subsection*{BOOSTING tracker}
@@ -251,9 +271,9 @@ scoring every pixel. The location with the highest score is chosen as a new
 location. The implementation in OpenCV is based on \citet*{boosting}.
 
 \subsection*{MIL tracker}
-The MIL is a shortcut for Multiple Instance Learning. In comparison to the
+The MIL is an abbreviation for Multiple Instance Learning. In comparison to the
 BOOSTING tracker, it does not keep only one image of positive example, but the
-whole bunch of the images. Tracker considers a small neighborhood of the
+set of the images. Tracker considers a small neighborhood of the
 current position as possible positive examples. It helps tracker to cope with
 the occlusion. OpenCV implementation is based on \citet*{mil}.
 
@@ -264,12 +284,13 @@ Implementation provided by OpenCV is based on \citet*{kcf}.
 
 \subsection*{TLD tracker}
 Tracking, learning and detection, these are the three components of this
-tracker. The tracker works frame to frame, and detection corrects the tracker
-if necessary. The learning estimates detector's errors and updates it to avoid
-these errors in the future. The implementation in OpenCV is based on \citet*{tld}.
+tracker. The tracker works frame to frame, and detection is run to correct the
+tracker if necessary. The learning estimates detector's errors and updates it
+to avoid these errors in the future. The implementation in OpenCV is based on
+\citet*{tld}.
 
 \subsection*{MEDIANFLOW tracker}
-This tracker focus on forward-backward error trying to minimize it. The
+This tracker focuses on forward-backward error trying to minimize it. The
 implementation in OpenCV is based on \citet*{medianflow}.
 
 \subsection*{MOSSE tracker}
@@ -281,13 +302,14 @@ the highest value of the IFFT response. More about the tracker is available in
 the paper by \citet*{mosse}.
 
 \subsection*{OpenCV note}
-OpenCV-contribute implements all these sequence-based trackers GOTURN tracker
+OpenCV-contribute implements all these sequence-based trackers. GOTURN tracker
 is also implemented in OpenCV. Unfortunately, at the time of the writing
-thesis, it contains bug causing it unusable. An overview of OpenCV trackers is
+thesis, it contains a bug causing it unusable. An overview of OpenCV trackers is
 provided by \citet*{opencv-trackers}.
 
 \subsection*{Correlation tracker}
-For a comparison we decided to include a tracker implemented in Dlib. This correlation tracker is based on the paper by \citet*{correlation}.
+For a comparison we decided to include a tracker implemented in Dlib. This
+correlation tracker is based on the paper by \citet*{correlation}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
