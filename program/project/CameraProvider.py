@@ -22,8 +22,6 @@ class CameraProvider(object):
             self.video_recording = False
             self.video_capture = cv2.VideoCapture(self.camera_index)
 
-        #TODO: not to assert, but throw an exception and handle it
-        #assert self.video_capture.isOpened()
         logging.info("Camera `{}` on index `{}` initialized successfully".format(self.camera_name, self.camera_index))
 
     def setup_camera(self, width, height):
@@ -35,9 +33,9 @@ class CameraProvider(object):
 
         self.fps = self.video_capture.get(cv2.CAP_PROP_FPS)
 
-    def start_capturing(self):
+    def start_capturing(self, stop_event):
         logging.info("Camera `{}` on index `{}` starting.".format(self.camera_name, self.camera_index))
-        self.stop_event = t.Event()
+        self.stop_event = stop_event
         self.thread = t.Thread(target=self.capture_image, args=(self.stop_event, self.images), name="Camera" + str(self.camera_index))
         self.thread.setDaemon(True)
         self.thread.start()
@@ -57,6 +55,8 @@ class CameraProvider(object):
                     time.sleep(1 / self.fps)
                 else:
                     images.append((time.time(), frame))
+            else:
+                stop_event.set()
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.video_capture.release()
 

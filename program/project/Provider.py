@@ -28,8 +28,8 @@ class Provider(object):
                 MonoCameraCalibration(chessboard_size=ChessboardPattern.chessboard_size, image_size=(640, 480)) for _ in self.camera_providers
             ]
 
-    def start_capturing(self):
-        [ p.start_capturing() for p in self.camera_providers ]
+    def start_capturing(self, stop_event):
+        [ p.start_capturing(stop_event) for p in self.camera_providers ]
 
     def stop_capturing(self):
         [ p.stop_capturing() for p in self.camera_providers ]

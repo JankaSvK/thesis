@@ -21,7 +21,7 @@ def run_application(options):
 
     # Starting the cameras
     provider.initialize_cameras(Config.camera_initialize, [options.video_recording1, options.video_recording2])
-    provider.start_capturing()
+    provider.start_capturing(stop_event)
 
     QueuesProvider.Images = provider.images
 
@@ -82,8 +82,15 @@ def run_application(options):
     Localization.save_localization_data()
 
 def get_camera_positions():
-    camera1 = [[0, 0, 0], [0, 0, 130]]
+    length = 1000
+    camera1 = [[0, 0, 0], [0, 0, length]]
     t = provider.stereo_calibration.calibration_results.translation_matrix
-    rotated_vector = provider.stereo_calibration.calibration_results.rotation_matrix.dot(np.array([[0, 0, 100]]).T) + t
+    rotated_vector = provider.stereo_calibration.calibration_results.rotation_matrix.dot(np.array([[0, 0, length]]).T) + t
     camera2 = [t.T.tolist()[0], rotated_vector.T.tolist()[0]]
     return camera1, camera2
+
+
+
+#### TODO
+### soknci sa video, vypni sa
+### uchadzajuci cas vo videach

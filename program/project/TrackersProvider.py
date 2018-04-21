@@ -99,5 +99,10 @@ class Tracker(object):
     def create_bounding_box(self, left_upper_corner, right_bottom_corner):
         x1, y1 = left_upper_corner['x'], left_upper_corner['y']
         x2, y2 = right_bottom_corner['x'], right_bottom_corner['y']
-        return (x1, y1, x2 - x1, y2 - y1)
 
+        left_upper = min(x1, x2), min(y1, y2)
+        right_bottom = max(x1, x2), max(y1, y2)
+        width = right_bottom[0] - left_upper[0]
+        height = right_bottom[1] - left_upper[1]
+
+        return (left_upper[0], left_upper[1], width, height)
