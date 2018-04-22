@@ -123,7 +123,7 @@ class Provider(object):
             return False
 
         print("For stereo calibration available ", len(images_for_stereo1), "images.")
-        consider = 50
+        consider = len(images_for_stereo1)
         print("Considering ", consider, "images.")
         images_for_stereo1 = images_for_stereo1[:consider]
         images_for_stereo2 = images_for_stereo2[:consider]

@@ -9,9 +9,6 @@ from CalibrationResults import get_current_time
 from CoordsWithTimestamp import CoordsWithTimestamp
 from QueuesProvider import QueuesProvider, Camera
 
-
-
-
 class Localization(object):
     objects_count = Config.objects_count
     rotation_matrix1 = None

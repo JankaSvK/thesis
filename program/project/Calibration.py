@@ -6,13 +6,10 @@ from CalibrationResults import MonoCameraCalibrationResults, StereoCameraCalibra
 
 
 def check_chessboard(image, chessboard_size = None):
-    # je image obrakzkom?
-
-
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     if chessboard_size is None:
         chessboard_size = ChessboardPattern.chessboard_size
-    ret, corners = cv2.findChessboardCorners(gray, chessboard_size, flags=cv2.CALIB_CB_FAST_CHECK)
+    ret, corners = cv2.findChessboardCorners(gray, chessboard_size, flags=cv2.CALIB_CB_FAST_CHECK + cv2.CALIB_CB_ADAPTIVE_THRESH)
     return (ret, corners, gray)
 
 class MonoCameraCalibration(object):

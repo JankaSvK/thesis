@@ -82,7 +82,7 @@ def run_application(options):
     Localization.save_localization_data()
 
 def get_camera_positions():
-    length = 1000
+    length = 250
     camera1 = [[0, 0, 0], [0, 0, length]]
     t = provider.stereo_calibration.calibration_results.translation_matrix
     rotated_vector = provider.stereo_calibration.calibration_results.rotation_matrix.dot(np.array([[0, 0, length]]).T) + t

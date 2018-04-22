@@ -62,6 +62,10 @@ class GUI(object):
         self.root = tk.Tk()
         f = Figure(figsize=(5, 4), dpi=100)
         self.subplot = f.add_subplot(111, projection='3d')
+        self.subplot.set_xlim([-500, 1000])
+        self.subplot.set_ylim([-500, 1000])
+        self.subplot.set_zlim([-500, 1000])
+
         self.exit = exiting_program
         self.root.protocol("WM_DELETE_WINDOW", self.ask_quit)
 
