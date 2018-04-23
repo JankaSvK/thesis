@@ -34,7 +34,7 @@ class MonoCameraCalibrationResults(object):
         result = {}
 
         for key in self.__dict__:
-            if isinstance(self.__dict__[key], list):
+            if isinstance(self.__dict__[key], list) or self.__dict__[key] is None:
                 result[key] = None
             else:
                 result[key] = (self.__dict__[key]).tolist()

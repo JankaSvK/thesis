@@ -7,7 +7,7 @@ import Config
 import TrackersProvider
 from CalibrationResults import get_current_time
 from CoordsWithTimestamp import CoordsWithTimestamp
-from QueuesProvider import QueuesProvider, Camera
+from QueuesProvider import QueuesProvider
 
 class Localization(object):
     objects_count = Config.objects_count
@@ -107,3 +107,12 @@ class Localization(object):
     @classmethod
     def convert_from_homogenous(cls, coords):
         return (coords[:-1] / coords[-1])[:, 0]
+
+    @classmethod
+    def get_camera_positions(cls, rotation_matrix, translation_vector):
+        vector_length = 250
+        camera1 = [[0, 0, 0], [0, 0, vector_length]]
+
+        rotated_vector = rotation_matrix.dot(np.array([[0, 0, vector_length]]).T) + translation_vector
+        camera2 = [translation_vector.T.tolist()[0], rotated_vector.T.tolist()[0]]
+        return camera1, camera2

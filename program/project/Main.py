@@ -10,7 +10,7 @@ if options.objects_count is not None:
 
 ## Starting application
 import threading
-from ApplicationProcess import run_application, stop_event, provider
+from ApplicationProcess import run_application, stop_event
 t = threading.Thread(target = run_application, name="Application", args=(options,))
 t.setDaemon(True)
 t.start()
@@ -18,4 +18,4 @@ t.start()
 stop_event.wait()
 
 ## Exiting application
-t.join(3.0)
+t.join(1.0)

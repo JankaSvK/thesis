@@ -1,3 +1,5 @@
+import time
+
 import Config
 from TrackerFactory import TrackerFactory
 
@@ -41,6 +43,7 @@ class TrackersProvider(object):
                     tracker.initialization_event.clear()
                 else:
                     if tracker.tracker is None:
+                        time.sleep(0.001)
                         continue
                     tracker.track()
 
@@ -90,7 +93,7 @@ class Tracker(object):
         if len(self.image_stream) == 0:
             return None
 
-        time, image = self.image_stream[-1]
+        time, image, _ = self.image_stream[-1]
         return time, image
 
     def get_bounding_box_center(self, bbox):

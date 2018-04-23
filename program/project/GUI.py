@@ -1,4 +1,3 @@
-import signal
 import threading
 import tkinter as tk
 import threading, sys, os
@@ -23,10 +22,13 @@ from Arrow3D import Arrow3D
 from Provider import Provider
 from QueuesProvider import QueuesProvider
 from TrackersProvider import get_tracker_uid
+import tkinter.scrolledtext as tkst
 
 
 class GUI(object):
-    def __init__(self, tracked_points):
+    def __init__(self, tracked_points, console_output = []):
+        self.outputted_messages = 0
+        self.last_outputted_message = 0
         self.rgbcolors = [(1, 0, 0), (0, 0, 1), (0, 1, 0), (0.5, 0.5, 0.5), (0.1, 0.2, 0.5)]
         self.tracked_points = tracked_points
         self.stop_event = False
@@ -34,6 +36,7 @@ class GUI(object):
         self.objects_count = Config.objects_count
         self.last_drawn_points = [(None, None) for _ in range(self.objects_count)]
         self.tracker_buttons = []
+        self.console_output = console_output
 
     def draw_cameras(self, cameras):
         for i, cam in enumerate(cameras):
@@ -62,9 +65,9 @@ class GUI(object):
         self.root = tk.Tk()
         f = Figure(figsize=(5, 4), dpi=100)
         self.subplot = f.add_subplot(111, projection='3d')
-        self.subplot.set_xlim([-500, 1000])
-        self.subplot.set_ylim([-500, 1000])
-        self.subplot.set_zlim([-500, 1000])
+#        self.subplot.set_xlim([-500, 1000])
+#        self.subplot.set_ylim([-500, 1000])
+#        self.subplot.set_zlim([-500, 1000])
 
         self.exit = exiting_program
         self.root.protocol("WM_DELETE_WINDOW", self.ask_quit)
@@ -76,7 +79,8 @@ class GUI(object):
 
         count = len(self.streams)
         self.create_labels_for_streams(count)
-
+        self.console = tkst.ScrolledText(self.root, height=10)
+        self.console.grid(column=0, row=2, columnspan=3, sticky="nsew")
 
         self.graph = FigureCanvasTkAgg(f, master=self.root)
 
@@ -98,6 +102,10 @@ class GUI(object):
             for i, event in enumerate(self.trackers_initialization_events):
                 if not event.is_set():
                     self.tracker_buttons[i].config(relief='raised')
+
+            if self.console_output and len(self.console_output) > self.outputted_messages:
+                self.console.insert(tk.END, self.console_output[self.outputted_messages] + '\n')
+                self.outputted_messages += 1
 
             self.root.update_idletasks()
             self.root.update()
@@ -125,6 +133,7 @@ class GUI(object):
                 image = self.create_empty_image()
             else:
                 img = stream[-1]
+                img = (img[0], img[1])
                 self.add_tracker_information(i, img)
                 image = self.process_image(img)
 
@@ -170,7 +179,7 @@ class GUI(object):
             for i, label in enumerate(self.video_labels):
                 label.grid(row = 0, column = i)
         self.create_buttons()
-        self.graph.get_tk_widget().grid(row = 0, column = len(self.video_labels))
+        self.graph.get_tk_widget().grid(row = 0, column = len(self.video_labels), stick="nsew")
 
 
     def create_empty_image(self):# TODO fix resolution
@@ -187,7 +196,7 @@ class GUI(object):
                               command = bind_tracker)
                 b.grid(row = 0, column = obj_ind)
                 self.tracker_buttons.append(b)
-            f.grid(row = 1, column = cam_ind)
+            f.grid(row = 1, column = cam_ind, stick="w")
 
 if __name__ == '__main__':
     provider = Provider([0, 1])

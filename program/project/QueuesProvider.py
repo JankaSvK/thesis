@@ -24,11 +24,3 @@ class QueuesProvider(object):
     @classmethod
     def add_mouse_click(cls, window_index, x, y):
         cls.MouseClicks[window_index].append({'x': x, 'y': y})
-
-class CameraQueues(object):
-    def __init__(self, i):
-        self.mouse_clicks = QueuesProvider.MouseClicks[i]
-#        self.images = QueuesProvider.Images[i]
-        self.tracked_points = QueuesProvider.TrackedPoints2D[i]
-
-Camera = [CameraQueues(i) for i in Config.camera_indexes]

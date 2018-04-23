@@ -25,9 +25,9 @@ def parse_options():
                       help="Stereo calibration results", metavar="FILE")
 
     # Video recordings on input
-    parser.add_option("--video_recording1", dest="video_recording1",
+    parser.add_option("--video1", dest="video1",
                       help="Video recording for the first camera", metavar="FILE")
-    parser.add_option("--video_recording2", dest="video_recording2",
+    parser.add_option("--video2", dest="video2",
                       help="Video recording for the second camera", metavar="FILE")
 
     # Tracker

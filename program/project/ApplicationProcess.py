@@ -1,14 +1,17 @@
 import threading
+from collections import deque
+
 import numpy as np
+
+from CalibrationsProvider import CalibrationsProvider
+from CamerasProvider import CamerasProvider
 from Localization import Localization
 from QueuesProvider import *
 import Config
 from GUI import GUI
-from Provider import Provider
 from TrackersProvider import TrackersProvider
 
 stop_event = threading.Event()
-provider = Provider()
 
 def run_application(options):
     if options.camera1 is not None:
@@ -16,38 +19,47 @@ def run_application(options):
     if options.camera2 is not None:
         Config.camera_initialize[1] = options.camera2
 
-
     trackers_initialization_events = [threading.Event() for _ in range(Config.objects_count * 2)]
+    console_messages = []
 
     # Starting the cameras
-    provider.initialize_cameras(Config.camera_initialize, [options.video_recording1, options.video_recording2])
-    provider.start_capturing(stop_event)
+    QueuesProvider.Images = [deque([], maxlen=500) for _ in range(Config.camera_count())]
 
-    QueuesProvider.Images = provider.images
+    if options.video1 is None or options.video2 is None:
+        videos = None
+    else:
+        videos = [options.video1, options.video2]
+
+    cameras_provider = CamerasProvider(QueuesProvider.Images, stop_event, Config.camera_initialize, videos) #TODO: missing recordings
+    cameras_provider.initialize_capturing()
+    cameras_provider.start_capturing()
 
     # Starting GUI
-    gui = GUI(QueuesProvider.TrackedPoints2D)
+    gui = GUI(QueuesProvider.TrackedPoints2D, console_output=console_messages)
     guiThread = threading.Thread(target=gui.start,
-                                 args=(provider.images, stop_event, trackers_initialization_events, QueuesProvider.LocalizatedPoints3D), name="GUI")
+                                 args=(QueuesProvider.Images, stop_event, trackers_initialization_events, QueuesProvider.LocalizatedPoints3D), name="GUI")
     guiThread.start()
 
+    # Calibration
+    calibration_provider = CalibrationsProvider(cameras_provider, stop_event, console_messages)
+    console_messages.append("Calibration jupiii")
     # Mono camera calibration
-    while not stop_event.is_set() and not provider.calibrate_cameras(
-            use_saved=[options.calibration_results1, options.calibration_results2]):
+    saved_calibration_data = [options.calibration_results1, options.calibration_results2]
+    while not stop_event.is_set() and not calibration_provider.mono_calibrate(saved_calibration_data):
         pass
 
     # Stereo camera calibration
-    while not stop_event.is_set() and not provider.calibrate_pairs(use_saved=options.stereo_calibration_results):
+    while not stop_event.is_set() and not calibration_provider.stereo_calibrate(options.stereo_calibration_results):
         pass
 
     # Checking if it should be exited
     if stop_event.is_set():
-        provider.stop_capturing()
+        cameras_provider.capturing_thread.join(1)
         return
 
     # Tracking initialization
     trackers_provider = TrackersProvider(
-        images1 = provider.images[0], images2 = provider.images[1],
+        images1 = QueuesProvider.Images[0], images2 = QueuesProvider.Images[1],
         mouse_clicks = QueuesProvider.MouseClicks,
         coordinates = QueuesProvider.TrackedPoints2D,
         stop_event = stop_event,
@@ -60,16 +72,17 @@ def run_application(options):
 
     # Computing matrices for localization
     Localization.compute_projection_matrices(
-        provider.calibs[0].calibration_results,
-        provider.calibs[1].calibration_results,
-        provider.stereo_calibration.calibration_results
+        calibration_provider.mono_calibration_results[0],
+        calibration_provider.mono_calibration_results[1],
+        calibration_provider.stereo_calibration_results
     )
 
     # Wait until gui fully initialized
     gui.initialized.wait()
 
     # Adding camera position to GUI
-    camera1, camera2 = get_camera_positions()
+    stereo_results = calibration_provider.stereo_calibration_results
+    camera1, camera2 = Localization.get_camera_positions(stereo_results.rotation_matrix, stereo_results.translation_matrix)
     gui.draw_cameras([camera1, camera2])
 
     # Endless localization
@@ -78,19 +91,4 @@ def run_application(options):
             Localization.localize_point(i)
 
     # Exiting program
-    provider.stop_capturing()
     Localization.save_localization_data()
-
-def get_camera_positions():
-    length = 250
-    camera1 = [[0, 0, 0], [0, 0, length]]
-    t = provider.stereo_calibration.calibration_results.translation_matrix
-    rotated_vector = provider.stereo_calibration.calibration_results.rotation_matrix.dot(np.array([[0, 0, length]]).T) + t
-    camera2 = [t.T.tolist()[0], rotated_vector.T.tolist()[0]]
-    return camera1, camera2
-
-
-
-#### TODO
-### soknci sa video, vypni sa
-### uchadzajuci cas vo videach
