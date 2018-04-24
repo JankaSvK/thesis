@@ -20,7 +20,6 @@ def run_application(options):
         Config.camera_initialize[1] = options.camera2
 
     trackers_initialization_events = [threading.Event() for _ in range(Config.objects_count * 2)]
-    console_messages = []
 
     # Starting the cameras
     QueuesProvider.Images = [deque([], maxlen=500) for _ in range(Config.camera_count())]
@@ -35,14 +34,18 @@ def run_application(options):
     cameras_provider.start_capturing()
 
     # Starting GUI
-    gui = GUI(QueuesProvider.TrackedPoints2D, console_output=console_messages)
-    guiThread = threading.Thread(target=gui.start,
-                                 args=(QueuesProvider.Images, stop_event, trackers_initialization_events, QueuesProvider.LocalizatedPoints3D), name="GUI")
+    gui = GUI(stop_event = stop_event,
+              objects_count = Config.objects_count,
+              tracked_points = QueuesProvider.TrackedPoints2D,
+              trackers_initialization_events = trackers_initialization_events,
+              image_streams = QueuesProvider.Images,
+              localization_data = QueuesProvider.LocalizatedPoints3D,
+              console_output = QueuesProvider.ConsoleMessages)
+    guiThread = threading.Thread(target=gui.start, args=(), name="GUI")
     guiThread.start()
 
     # Calibration
-    calibration_provider = CalibrationsProvider(cameras_provider, stop_event, console_messages)
-    console_messages.append("Calibration jupiii")
+    calibration_provider = CalibrationsProvider(cameras_provider, stop_event, QueuesProvider.ConsoleMessages)
     # Mono camera calibration
     saved_calibration_data = [options.calibration_results1, options.calibration_results2]
     while not stop_event.is_set() and not calibration_provider.mono_calibrate(saved_calibration_data):

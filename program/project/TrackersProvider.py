@@ -7,6 +7,9 @@ from TrackerFactory import TrackerFactory
 def get_tracker_uid(cam_ind, obj_ind):
     return cam_ind * Config.objects_count + obj_ind
 
+def get_tracker_by_uid(uid):
+    return (int(uid / Config.objects_count), int(uid % Config.objects_count))
+
 class TrackersProvider(object):
     def __init__(self, images1, images2, mouse_clicks, coordinates, stop_event, initialization_events, tracker_type = 'KCF', number_of_tracked_objects = 1):
         self.image_streams = [images1, images2]
@@ -21,7 +24,6 @@ class TrackersProvider(object):
         for cam_ind, image_stream in enumerate(self.image_streams):
             for obj_ind in range(self.object_count):
                 uid = get_tracker_uid(cam_ind, obj_ind)
-                print("Append tacker with uid=", uid, "cam_ind=", cam_ind, "obj_ind=", obj_ind)
                 self.trackers.append(
                     Tracker(cam_ind=cam_ind, obj_ind=obj_ind,
                             tracker_type = tracker_type,
@@ -73,8 +75,6 @@ class Tracker(object):
     def track(self):
         time, position = self.get_object_position()
         self.coordinates.append((time, position))
-        #if self.camera_id == 1:
-        #    print("Added new coordinates", position)
 
     def get_object_position(self, image = None):
         if image is None:

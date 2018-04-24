@@ -31,7 +31,3 @@ class Image(dict):
     
     def __iter__(self):
         return iter(self[key] for key in self._index_mapping)
-
-print("42")
-
-#Image = collections.namedtuple('Image', ['time', 'image', 'chessboard'])
