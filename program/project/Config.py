@@ -34,10 +34,10 @@ maximum_images_for_monocalibration = 40
 maximum_images_for_monocalibration_sampling = 2 * maximum_images_for_monocalibration
 
 # Minimum number of the images for stereo calibration
-minimum_images_for_stereocalibration = 30
+minimum_images_for_stereocalibration = 20
 
 # Maximum number of the images for stereo calibration. If more exists, a sample set of them is taken.
-maximum_images_for_stereocalibration = 80
+maximum_images_for_stereocalibration = 60
 
 # A size of the sampling set. Bigger takes more time to find, but provides higher variation to the images.
 maximum_images_for_stereocalibration_sampling = 3 * maximum_images_for_stereocalibration

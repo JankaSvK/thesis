@@ -51,17 +51,17 @@ class StereoCameraCalibrationResults(object):
             import_json(self, jsonFile)
 
             self.rotation_matrix = numpy.array(self.rotation_matrix)
-            self.translation_matrix = numpy.array(self.translation_matrix)
+            self.translation_vector = numpy.array(self.translation_vector)
         else:
             self.rotation_matrix = rotation_matrix
-            self.translation_matrix = translation_matrix
+            self.translation_vector = translation_matrix
             self.essential_matrix = essential_matrix
             self.fundamental_matrix = fundamental_matrix
 
             self.reprojection_error = reprojection_error
 
     def camera_distance(self):
-        return numpy.linalg.norm(self.translation_matrix)
+        return numpy.linalg.norm(self.translation_vector)
 
     def save(self):
         result = {}
@@ -81,7 +81,7 @@ class StereoCameraCalibrationResults(object):
 
     def __str__(self):
         output = "Rotation matrix\n" + str(self.rotation_matrix)
-        output += "\nTranslation matrix\n" + str(self.translation_matrix)
+        output += "\nTranslation matrix\n" + str(self.translation_vector)
         output += "\nEnssential matrix\n" + str(self.essential_matrix)
         output += "\nFundamental matrix\n" + str(self.fundamental_matrix)
         output += "\nReprojection error\n" + str(self.reprojection_error)

@@ -49,6 +49,7 @@ def run_application(options):
     QueuesProvider.Threads.append(cameras_provider.capturing_thread)
 
     # Calibration
+    QueuesProvider.ConsoleMessages.append("Starting calibration process. Move with the chessboard in camera view.")
     calibration_provider = CalibrationsProvider(cameras_provider, stop_event, QueuesProvider.ConsoleMessages)
     # Mono camera calibration
     saved_calibration_data = [options.calibration_results1, options.calibration_results2]
@@ -89,7 +90,7 @@ def run_application(options):
     gui.initialized.wait()
     # Adding camera position to GUI
     stereo_results = calibration_provider.stereo_calibration_results
-    camera1, camera2 = Localization.get_camera_positions(stereo_results.rotation_matrix, stereo_results.translation_matrix)
+    camera1, camera2 = Localization.get_camera_positions(stereo_results.rotation_matrix, stereo_results.translation_vector)
     gui.draw_cameras([camera1, camera2])
     # Endless localization
     while not stop_event.is_set():

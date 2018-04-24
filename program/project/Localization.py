@@ -30,9 +30,9 @@ class Localization(object):
             cls.rotation_matrix1, cls.rotation_matrix2, cls.projection_matrix1, cls.projection_matrix2, _, _, _ = cv2.stereoRectify(
                 calibration_results1.camera_matrix, calibration_results1.distortion_coeffs,
                 calibration_results2.camera_matrix, calibration_results2.distortion_coeffs,
-                (640, 480), stereo_calibration_results.rotation_matrix, stereo_calibration_results.translation_matrix, alpha=0)
+                (640, 480), stereo_calibration_results.rotation_matrix, stereo_calibration_results.translation_vector, alpha=0)
         else:
-            rt = np.append(stereo_calibration_results.rotation_matrix, stereo_calibration_results.translation_matrix, axis = 1)
+            rt = np.append(stereo_calibration_results.rotation_matrix, stereo_calibration_results.translation_vector, axis = 1)
             cls.projection_matrix2 = calibration_results2.camera_matrix.dot(rt)
             cls.projection_matrix1 = calibration_results1.camera_matrix.dot(np.append(np.identity(3), np.zeros((3, 1)), axis = 1))
 

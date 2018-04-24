@@ -51,7 +51,7 @@ class CalibrationsProvider(object):
                 images_with_chessboard = random.sample(images_with_chessboard, self.maximum_images_for_monocalibration)
 
             chessboards = [i.chessboard for i in images_with_chessboard]
-            object_points_for_chessboards = [self.object_points_for_chessboard() for i in range(len(images_with_chessboard))]
+            object_points_for_chessboards = [self.object_points_for_chessboard() for _ in range(len(images_with_chessboard))]
 
             print("Images used", len(images_with_chessboard))
             self.console_output.append("Starting a calibration of camera " + str(cam_ind + 1) + " on " + str(len(images_with_chessboard)) + " images.")
@@ -95,11 +95,13 @@ class CalibrationsProvider(object):
 
         if len(images) > self.maximum_images_for_stereocalibration:
             images = random.sample(images, self.maximum_images_for_stereocalibration)
-        self.console_output.append("Computing the stereo caibration from a sample of " + str(len(images)) + " images.")
+
+        print([(i[0].time, i[1].time) for i in images])
+        self.console_output.append("Computing the stereo calibration from a sample of " + str(len(images)) + " images.")
 
         imgpoints1 = [i[0].chessboard for i in images]
         imgpoints2 = [i[1].chessboard for i in images]
-        objpoints = [self.object_points_for_chessboard() for i in range(len(imgpoints1))]
+        objpoints = [self.object_points_for_chessboard() for _ in range(len(imgpoints1))]
 
         print(len(imgpoints1), "images used for stereo calibration")
         print("Starting to compute stereo calibration")
@@ -112,7 +114,7 @@ class CalibrationsProvider(object):
                                 cameraMatrix2=self.mono_calibration_results[1].camera_matrix,
                                 distCoeffs2=self.mono_calibration_results[1].distortion_coeffs,
                                 imageSize=(1, 1),
-                                criteria=(cv2.TERM_CRITERIA_MAX_ITER + cv2.TERM_CRITERIA_EPS, 100, 1e-5)
+                                criteria=(cv2.TERM_CRITERIA_MAX_ITER + cv2.TERM_CRITERIA_EPS, 100, 1e-4)
             )
         print("Stereo calibration computed")
         self.stereo_calibration_results = StereoCameraCalibrationResults(r, t, None, None, rerror)
@@ -159,7 +161,8 @@ class CalibrationsProvider(object):
     def find_chessboard(self, image):
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         ok, corners = cv2.findChessboardCorners(
-            gray, self.chessboard_inner_corners, flags=cv2.CALIB_CB_FAST_CHECK + cv2.CALIB_CB_ADAPTIVE_THRESH)
+            gray, self.chessboard_inner_corners,
+            flags=cv2.CALIB_CB_FAST_CHECK + cv2.CALIB_CB_NORMALIZE_IMAGE + cv2.CALIB_CB_ADAPTIVE_THRESH)
 
         inner_corners_count = self.chessboard_inner_corners[0] * self.chessboard_inner_corners[1]
         if ok and len(corners) == inner_corners_count: # only fully described chessboards are accepted
@@ -204,5 +207,6 @@ class CalibrationsProvider(object):
                 if len(images_for_stereo) >= self.stereocalibration_sample_size:
                     return images_for_stereo
                 runner2 += 1
+                break
 
         return images_for_stereo
