@@ -2,7 +2,6 @@ import random
 
 import cv2
 import numpy as np
-import ChessboardPattern
 import Config
 from CalibrationResults import MonoCameraCalibrationResults, StereoCameraCalibrationResults
 
@@ -197,7 +196,7 @@ class CalibrationsProvider(object):
                 # images are in range of the accepted time
                 current_image2 = images2[runner2]
                 if current_image2.chessboard is None:
-                    corners = self.find_chessboard(image)
+                    corners = self.find_chessboard(current_image2.image)
                     if corners is not None:
                         images2[runner2].chessboard = corners
                     else:

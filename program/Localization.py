@@ -110,7 +110,7 @@ class Localization(object):
 
     @classmethod
     def get_camera_positions(cls, rotation_matrix, translation_vector):
-        vector_length = 250
+        vector_length = 500
         camera1 = [[0, 0, 0], [0, 0, vector_length]]
 
         rotated_vector = rotation_matrix.dot(np.array([[0, 0, vector_length]]).T) + translation_vector
