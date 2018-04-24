@@ -1,9 +1,7 @@
 import threading
 import tkinter as tk
 import threading, sys, os
-
 import functools
-
 import matplotlib
 import numpy as np
 import time
@@ -16,7 +14,6 @@ from mpl_toolkits.mplot3d import Axes3D
 from queue import Queue
 import cv2
 from PIL import Image, ImageTk
-
 import Config
 from Arrow3D import Arrow3D
 from QueuesProvider import QueuesProvider

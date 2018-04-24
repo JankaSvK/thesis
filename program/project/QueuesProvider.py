@@ -25,3 +25,5 @@ class QueuesProvider(object):
     @classmethod
     def add_mouse_click(cls, window_index, x, y):
         cls.MouseClicks[window_index].append({'x': x, 'y': y})
+
+    Threads = [] # Only for debugging purposes!

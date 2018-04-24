@@ -33,6 +33,7 @@ def run_application(options):
     cameras_provider.initialize_capturing()
     cameras_provider.start_capturing()
 
+
     # Starting GUI
     gui = GUI(stop_event = stop_event,
               objects_count = Config.objects_count,
@@ -44,13 +45,15 @@ def run_application(options):
     guiThread = threading.Thread(target=gui.start, args=(), name="GUI")
     guiThread.start()
 
+    QueuesProvider.Threads.append(guiThread)
+    QueuesProvider.Threads.append(cameras_provider.capturing_thread)
+
     # Calibration
     calibration_provider = CalibrationsProvider(cameras_provider, stop_event, QueuesProvider.ConsoleMessages)
     # Mono camera calibration
     saved_calibration_data = [options.calibration_results1, options.calibration_results2]
     while not stop_event.is_set() and not calibration_provider.mono_calibrate(saved_calibration_data):
         pass
-
     # Stereo camera calibration
     while not stop_event.is_set() and not calibration_provider.stereo_calibrate(options.stereo_calibration_results):
         pass
@@ -59,7 +62,6 @@ def run_application(options):
     if stop_event.is_set():
         cameras_provider.capturing_thread.join(1)
         return
-
     # Tracking initialization
     trackers_provider = TrackersProvider(
         images1 = QueuesProvider.Images[0], images2 = QueuesProvider.Images[1],
@@ -71,7 +73,10 @@ def run_application(options):
         number_of_tracked_objects = Config.objects_count
     )
     trackers_provider_thread = threading.Thread(target=trackers_provider.track, name="Trackers")
+    trackers_provider_thread.setDaemon(True)
     trackers_provider_thread.start()
+
+    QueuesProvider.Threads.append(trackers_provider_thread)
 
     # Computing matrices for localization
     Localization.compute_projection_matrices(
@@ -82,12 +87,10 @@ def run_application(options):
 
     # Wait until gui fully initialized
     gui.initialized.wait()
-
     # Adding camera position to GUI
     stereo_results = calibration_provider.stereo_calibration_results
     camera1, camera2 = Localization.get_camera_positions(stereo_results.rotation_matrix, stereo_results.translation_matrix)
     gui.draw_cameras([camera1, camera2])
-
     # Endless localization
     while not stop_event.is_set():
         for i in range(Config.objects_count):
