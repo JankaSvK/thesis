@@ -1,9 +1,9 @@
 import random
-
 import cv2
 import numpy as np
 import Config
 from CalibrationResults import MonoCameraCalibrationResults, StereoCameraCalibrationResults
+
 
 class CalibrationsProvider(object):
     def __init__(self, cameras_provider, stop_event, console_output):
@@ -30,7 +30,7 @@ class CalibrationsProvider(object):
         self.time_threshold = Config.time_threshold_for_correspondence
         self.skipping_time = Config.skipping_time
 
-    def mono_calibrate(self, saved_results = None):
+    def mono_calibrate(self, saved_results=None):
         if saved_results is None:
             saved_results = [None, None]
 
@@ -50,10 +50,12 @@ class CalibrationsProvider(object):
                 images_with_chessboard = random.sample(images_with_chessboard, self.maximum_images_for_monocalibration)
 
             chessboards = [i.chessboard for i in images_with_chessboard]
-            object_points_for_chessboards = [self.object_points_for_chessboard() for _ in range(len(images_with_chessboard))]
+            object_points_for_chessboards = [self.object_points_for_chessboard() for _ in
+                                             range(len(images_with_chessboard))]
 
             print("Images used", len(images_with_chessboard))
-            self.console_output.append("Starting a calibration of camera " + str(cam_ind + 1) + " on " + str(len(images_with_chessboard)) + " images.")
+            self.console_output.append("Starting a calibration of camera " + str(cam_ind + 1) + " on " + str(
+                len(images_with_chessboard)) + " images.")
             print("Starting to compute calibration")
             ok, mtx, dist, _, _ = cv2.calibrateCamera(
                 objectPoints=object_points_for_chessboards,
@@ -69,24 +71,28 @@ class CalibrationsProvider(object):
                 print("Camera ", cam_ind + 1, " calibrated successfuly")
                 self.console_output.append("Camera " + str(cam_ind + 1) + " calibrated successfully.")
             else:
-                self.console_output.append("Camera " + str(cam_ind + 1) + " calibration did not succedeed. Will be repeated.")
+                self.console_output.append(
+                    "Camera " + str(cam_ind + 1) + " calibration did not succedeed. Will be repeated.")
         return all(x is not None for x in self.mono_calibration_results)
 
     def object_points_for_chessboard(self):
         if self.object_points is None:
             objp = np.zeros((self.chessboard_inner_corners[0] * self.chessboard_inner_corners[1], 3), np.float32)
             objp[:, :2] = np.mgrid[0:self.chessboard_inner_corners[0],
-                          0:self.chessboard_inner_corners[1]].T.reshape(-1, 2) * self.chessboard_square_size
+                                   0:self.chessboard_inner_corners[1]].T.reshape(-1, 2) * self.chessboard_square_size
             self.object_points = objp
         return self.object_points
 
-    def stereo_calibrate(self, saved_results = None):
+    def stereo_calibrate(self, saved_results=None):
         if saved_results is not None:
-            self.stereo_calibration_results = StereoCameraCalibrationResults(jsonFile = saved_results)
+            self.stereo_calibration_results = StereoCameraCalibrationResults(jsonFile=saved_results)
             return True
 
         self.console_output.append("Looking for corresponding images for stereocalibration.")
-        images = self.find_images_for_stereo_calibration()
+        # images = self.find_images_for_stereo_calibration()
+        import itertools
+        images = list(
+            itertools.islice(self.find_images_for_stereo_calibration(), self.maximum_images_for_stereocalibration))
         self.console_output.append(str(len(images)) + " tuple of images available for stereo calibration.")
         if len(images) < self.minimum_images_for_stereo_calibration:
             self.console_output.append("Not enough images for stereo calibration")
@@ -103,7 +109,7 @@ class CalibrationsProvider(object):
 
         print(len(imgpoints1), "images used for stereo calibration")
         print("Starting to compute stereo calibration")
-        rerror, _, _, _, _, r, t, _, _ =\
+        rerror, _, _, _, _, r, t, _, _ = \
             cv2.stereoCalibrate(objectPoints=objpoints,
                                 imagePoints1=imgpoints1,
                                 imagePoints2=imgpoints2,
@@ -113,7 +119,7 @@ class CalibrationsProvider(object):
                                 distCoeffs2=self.mono_calibration_results[1].distortion_coeffs,
                                 imageSize=(1, 1),
                                 criteria=(cv2.TERM_CRITERIA_MAX_ITER + cv2.TERM_CRITERIA_EPS, 100, 1e-4)
-            )
+                                )
         print("Stereo calibration computed")
         self.stereo_calibration_results = StereoCameraCalibrationResults(r, t, None, None, rerror)
         self.stereo_calibration_results.save()
@@ -122,7 +128,8 @@ class CalibrationsProvider(object):
                                    str(self.stereo_calibration_results.camera_distance() / 10)
                                    + " centimenters. Reprojection error is " + str(rerror))
 
-        print("Cameras are", self.stereo_calibration_results.camera_distance() / 10, "centimenters apart. Reprojection error is", rerror)
+        print("Cameras are", self.stereo_calibration_results.camera_distance() / 10,
+              "centimenters apart. Reprojection error is", rerror)
         return True
 
     def get_images_with_chessboard(self, images_queue, maximum):
@@ -138,14 +145,14 @@ class CalibrationsProvider(object):
             time, image, chessboard = images[i]
             if time - time_of_last_image < self.skipping_time:
                 continue
-            if chessboard is False: # chessboard was not found in previous runs
+            if chessboard is False:  # chessboard was not found in previous runs
                 continue
-            if chessboard is not None: # chessboard was found in previous runs
+            if chessboard is not None:  # chessboard was found in previous runs
                 images_with_chessboard.append(images[i])
                 time_of_last_image = time
                 continue
 
-            chessboard = self.find_chessboard(image) # run chessboard check
+            chessboard = self.find_chessboard(image)  # run chessboard check
 
             if chessboard is not None:
                 images[i].chessboard = chessboard
@@ -163,7 +170,7 @@ class CalibrationsProvider(object):
             flags=cv2.CALIB_CB_FAST_CHECK + cv2.CALIB_CB_NORMALIZE_IMAGE + cv2.CALIB_CB_ADAPTIVE_THRESH)
 
         inner_corners_count = self.chessboard_inner_corners[0] * self.chessboard_inner_corners[1]
-        if ok and len(corners) == inner_corners_count: # only fully described chessboards are accepted
+        if ok and len(corners) == inner_corners_count:  # only fully described chessboards are accepted
             criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
             corners2 = cv2.cornerSubPix(gray, corners, (5, 5), (-1, -1), criteria)
             return corners2
@@ -173,40 +180,27 @@ class CalibrationsProvider(object):
     def find_images_for_stereo_calibration(self):
         images1 = [i for i in self.images[0] if i.chessboard is not False]
         images2 = [i for i in self.images[1] if i.chessboard is not False]
-        images_for_stereo = []
+        images_iter = [iter(images1), iter(images2)]
 
-        last_image_time = 0
-        runner2 = 0
-        for runner1, (time, image, chessboard) in enumerate(images1):
-            if time - last_image_time < self.skipping_time:
-                continue
-            if chessboard is None:
-                corners = self.find_chessboard(image)
-                if corners is not None:
-                    images1[runner1].chessboard = corners
-                else:
-                    images1[runner1].chessboard = False
-                    continue
+        images = [next(x) for x in images_iter]
+        earlier = images[0].time > images[1].time
 
-            # at image1 is a chessboard, can we find corresponding image from the second one?
-            while runner2 < len(images2) and images2[runner2].time <= time - self.time_threshold:
-                # images are too old to the one from first camera
-                runner2 += 1
-            while runner2 < len(images2) and images2[runner2].time <= time + self.time_threshold:
-                # images are in range of the accepted time
-                current_image2 = images2[runner2]
-                if current_image2.chessboard is None:
-                    corners = self.find_chessboard(current_image2.image)
-                    if corners is not None:
-                        images2[runner2].chessboard = corners
-                    else:
-                        images2[runner2].chessboard = False
-                        runner2 += 1
-                        continue
-                images_for_stereo.append((images1[runner1], images2[runner2]))
-                if len(images_for_stereo) >= self.stereocalibration_sample_size:
-                    return images_for_stereo
-                runner2 += 1
-                break
+        last_time = 0
 
-        return images_for_stereo
+        while True:
+            while images[earlier].time <= last_time + self.skipping_time:
+                images[earlier] = next(images_iter[earlier])
+                earlier = images[0].time > images[1].time
+            if images[not earlier].time - images[earlier].time < self.time_threshold:
+                for image in images:
+                    if image.chessboard is None:
+                        image.chessboard = self.find_chessboard(image.image)
+                        if image.chessboard is None:
+                            image.chessboard = False
+                if all(x.chessboard is not False for x in images):
+                    last_time = images[not earlier].time
+                    yield images[0], images[1]
+            images[earlier] = next(images_iter[earlier])
+            earlier = images[0].time > images[1].time
+
+        # co sa stane ak chcem viac nez tu ma k dispozicii?

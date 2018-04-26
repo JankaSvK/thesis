@@ -113,6 +113,8 @@ class GUI(object):
         self.initialization_buttons[cam_ind]['buttons'][obj_ind].config(relief='sunken')
         QueuesProvider.MouseClicks[cam_ind] = []
         self.trackers_initialization_events[uid].set()
+        self.console_output.append("To select an object, draw a rectangle by clicking on its top left and bottom right corner.")
+
     def ask_quit(self):
         self.stop_event.set()
 
@@ -139,6 +141,7 @@ class GUI(object):
             # Add messages to output
             if self.console_output and len(self.console_output) > self.outputted_messages:
                 self.console.insert(tk.END, self.console_output[self.outputted_messages] + '\n')
+                self.console.see(tk.END)
                 self.outputted_messages += 1
 
             self.root.update_idletasks()

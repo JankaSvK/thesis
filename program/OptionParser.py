@@ -3,7 +3,6 @@ from optparse import OptionParser
 def parse_options():
     parser = OptionParser()
 
-
     # Setting cameras
     parser.add_option("--camera_input1", dest="camera1",
                       help="Index of camera to be run as left camera", metavar="NUMBER")
@@ -11,7 +10,7 @@ def parse_options():
                       help="Index of camera to be run as left camera", metavar="NUMBER")
 
     # Defining how many objects will be tracked
-    parser.add_option("--number_of_objects", dest="objects_count",
+    parser.add_option("-o", "--number_of_objects", dest="objects_count", type="int",
                       help="Number of objects to be tracked.", metavar="NUMBER")
 
     # Mono calibration results as an input
@@ -31,7 +30,7 @@ def parse_options():
                       help="Video recording for the second camera", metavar="FILE")
 
     # Tracker
-    parser.add_option("--tracker", dest="tracker",
+    parser.add_option("-t", "--tracker", dest="tracker",
                       help="The algorithm used for tracking", metavar="TRACKER")
 
     (options, args) = parser.parse_args()

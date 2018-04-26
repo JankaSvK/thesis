@@ -1,8 +1,5 @@
 import threading
 from collections import deque
-
-import numpy as np
-
 from CalibrationsProvider import CalibrationsProvider
 from CamerasProvider import CamerasProvider
 from Localization import Localization
@@ -12,6 +9,7 @@ from GUI import GUI
 from TrackersProvider import TrackersProvider
 
 stop_event = threading.Event()
+
 
 def run_application(options):
     if options.camera1 is not None:
@@ -29,19 +27,19 @@ def run_application(options):
     else:
         videos = [options.video1, options.video2]
 
-    cameras_provider = CamerasProvider(QueuesProvider.Images, stop_event, Config.camera_initialize, videos) #TODO: missing recordings
+    cameras_provider = CamerasProvider(QueuesProvider.Images, stop_event, Config.camera_initialize,
+                                       videos)
     cameras_provider.initialize_capturing()
     cameras_provider.start_capturing()
 
-
     # Starting GUI
-    gui = GUI(stop_event = stop_event,
-              objects_count = Config.objects_count,
-              tracked_points = QueuesProvider.TrackedPoints2D,
-              trackers_initialization_events = trackers_initialization_events,
-              image_streams = QueuesProvider.Images,
-              localization_data = QueuesProvider.LocalizatedPoints3D,
-              console_output = QueuesProvider.ConsoleMessages)
+    gui = GUI(stop_event=stop_event,
+              objects_count=Config.objects_count,
+              tracked_points=QueuesProvider.TrackedPoints2D,
+              trackers_initialization_events=trackers_initialization_events,
+              image_streams=QueuesProvider.Images,
+              localization_data=QueuesProvider.LocalizatedPoints3D,
+              console_output=QueuesProvider.ConsoleMessages)
     guiThread = threading.Thread(target=gui.start, args=(), name="GUI")
     guiThread.start()
 
@@ -65,19 +63,22 @@ def run_application(options):
         return
     # Tracking initialization
     trackers_provider = TrackersProvider(
-        images1 = QueuesProvider.Images[0], images2 = QueuesProvider.Images[1],
-        mouse_clicks = QueuesProvider.MouseClicks,
-        coordinates = QueuesProvider.TrackedPoints2D,
-        stop_event = stop_event,
-        initialization_events = trackers_initialization_events,
-        tracker_type = options.tracker,
-        number_of_tracked_objects = Config.objects_count
+        images1=QueuesProvider.Images[0], images2=QueuesProvider.Images[1],
+        mouse_clicks=QueuesProvider.MouseClicks,
+        coordinates=QueuesProvider.TrackedPoints2D,
+        stop_event=stop_event,
+        initialization_events=trackers_initialization_events,
+        tracker_type=options.tracker,
+        number_of_tracked_objects=Config.objects_count
     )
     trackers_provider_thread = threading.Thread(target=trackers_provider.track, name="Trackers")
     trackers_provider_thread.setDaemon(True)
     trackers_provider_thread.start()
 
     QueuesProvider.Threads.append(trackers_provider_thread)
+
+    QueuesProvider.ConsoleMessages.append(
+        "You can now select objects for tracking. Click on the button and click on top left corner and bottom right of the bounding box for the object.")
 
     # Computing matrices for localization
     Localization.compute_projection_matrices(
@@ -90,7 +91,8 @@ def run_application(options):
     gui.initialized.wait()
     # Adding camera position to GUI
     stereo_results = calibration_provider.stereo_calibration_results
-    camera1, camera2 = Localization.get_camera_positions(stereo_results.rotation_matrix, stereo_results.translation_vector)
+    camera1, camera2 = Localization.get_camera_positions(stereo_results.rotation_matrix,
+                                                         stereo_results.translation_vector)
     gui.draw_cameras([camera1, camera2])
     # Endless localization
     while not stop_event.is_set():

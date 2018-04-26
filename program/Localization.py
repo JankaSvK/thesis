@@ -1,8 +1,6 @@
 import cv2
-import numpy
 import numpy as np
 import os
-
 import Config
 import TrackersProvider
 from CalibrationResults import get_current_time

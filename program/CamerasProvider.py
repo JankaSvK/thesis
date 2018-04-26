@@ -1,7 +1,5 @@
 import cv2
-import time
 import threading as t
-
 import Config
 from Image import Image
 import time

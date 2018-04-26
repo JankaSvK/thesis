@@ -1,5 +1,4 @@
 import cv2
-
 from trackers.TrackerPatternMatching import TrackerPatternMatching
 from trackers.TrackerSimpleBackground import TrackerSimpleBackground
 from trackers.TrackerHSV import TrackerHSV
