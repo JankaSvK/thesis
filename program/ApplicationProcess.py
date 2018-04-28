@@ -1,5 +1,8 @@
 import threading
 from collections import deque
+
+import time
+
 from CalibrationsProvider import CalibrationsProvider
 from CamerasProvider import CamerasProvider
 from Localization import Localization
@@ -77,6 +80,11 @@ def run_application(options):
 
     QueuesProvider.Threads.append(trackers_provider_thread)
 
+    if Config.initial_bounding_boxes is not None:
+        for i, tracker in enumerate(trackers_provider.trackers):
+            bbox = Config.initial_bounding_boxes[tracker.camera_id][tracker.object_id]
+            tracker.initialize_tracker(bbox)
+
     QueuesProvider.ConsoleMessages.append(
         "You can now select objects for tracking. Click on the button and click on top left corner and bottom right of the bounding box for the object.")
 
@@ -94,10 +102,13 @@ def run_application(options):
     camera1, camera2 = Localization.get_camera_positions(stereo_results.rotation_matrix,
                                                          stereo_results.translation_vector)
     gui.draw_cameras([camera1, camera2])
+
+
     # Endless localization
     while not stop_event.is_set():
         for i in range(Config.objects_count):
             Localization.localize_point(i)
+        time.sleep(Localization.time_threshold_skip)
 
     # Exiting program
     Localization.save_localization_data()

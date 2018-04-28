@@ -1,4 +1,5 @@
 import time
+from threading import Thread
 
 import Config
 from TrackerFactory import TrackerFactory
@@ -33,7 +34,6 @@ class TrackersProvider(object):
 
     def track(self):
         while not self.stop_event.is_set():
-
             for tracker in self.trackers:
                 if tracker.initialization_event.is_set():
                     if len(self.mouse_clicks[tracker.camera_id]) < 2:
@@ -45,9 +45,9 @@ class TrackersProvider(object):
                     tracker.initialization_event.clear()
                 else:
                     if tracker.tracker is None:
-                        time.sleep(0.001)
                         continue
                     tracker.track()
+            time.sleep(0)
 
 class Tracker(object):
     def __init__(self, tracker_type, cam_ind, obj_ind, coordinates, image_stream, initialization_event):
@@ -56,6 +56,7 @@ class Tracker(object):
         self.image_stream = image_stream
         self.tracker_type = tracker_type
         self.initialization_event = initialization_event
+        self.last_image_time = -1
 
         self.object_id = obj_ind
         self.camera_id = cam_ind
@@ -74,12 +75,16 @@ class Tracker(object):
 
     def track(self):
         time, position = self.get_object_position()
+        if time == False:
+            return
         self.coordinates.append((time, position))
 
     def get_object_position(self, image = None):
         if image is None:
             time, image = self.get_newest_image()
-            #print(self.camera_id, id(image), id(self))
+            if time == self.last_image_time:
+                return False, False
+            self.last_image_time = time
 
         ok, bbox = self.tracker.update(image)
 
@@ -91,7 +96,7 @@ class Tracker(object):
 
     def get_newest_image(self):
         if len(self.image_stream) == 0:
-            return None
+            return None, None # TODO throw an exception an catch that localization was unsuccessful
 
         time, image, _ = self.image_stream[-1]
         return time, image

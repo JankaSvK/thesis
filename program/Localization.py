@@ -17,6 +17,9 @@ class Localization(object):
 
     localization_precision = 5 # in milimeters
     last_located_point = None
+    last_located_point_time = [-1 for i in range(objects_count)]
+    time_threshold_skip = 1/20
+    time_threshold_correspondence = 1/10
 
     @classmethod
     def compute_projection_matrices(cls, calibration_results1, calibration_results2, stereo_calibration_results):
@@ -56,8 +59,13 @@ class Localization(object):
 
     @classmethod
     def save_localization_data(cls):
-        for i in range(cls.objects_count):
+        times = [x[0].time for x in QueuesProvider.LocalizatedPoints3D if x]
+        if times:
+            first_point_time = min(times)
+        else:
+            return
 
+        for i in range(cls.objects_count):
             if len(QueuesProvider.LocalizatedPoints3D[i]) == 0:
                 return
 
@@ -66,6 +74,7 @@ class Localization(object):
 
             with open(filename, 'w') as output:
                for position in QueuesProvider.LocalizatedPoints3D[i]:
+                   position.time -= first_point_time
                    output.write(str(position) + '\n')
 
     @classmethod
@@ -82,9 +91,13 @@ class Localization(object):
         if point1 is None or point2 is None or point1[0] is None or point2[0] is None:
             return
 
-        if abs(point1[0] - point2[0]) > 1/10:
+        if abs(point1[0] - point2[0]) > cls.time_threshold_correspondence:
             return
-            # TODO: find in past points the correct one
+
+        time = (point1[0] + point2[0]) / 2
+        if time - cls.last_located_point_time[object_id] < cls.time_threshold_skip:
+            return # TODO mozno nejaky sleep
+        cls.last_located_point_time[object_id] = time
 
         located_point = Localization.get_3d_coordinates(point1[1],
                                                         point2[1])
@@ -93,8 +106,7 @@ class Localization(object):
             return
 
         if cls.moved_more_than(cls.last_located_point, located_point, cls.localization_precision):
-            # TODO: tricky - many positions at the same time
-            with_timestamp = CoordsWithTimestamp(timestamp= (point1[0] + point2[0]) / 2, coords=located_point)
+            with_timestamp = CoordsWithTimestamp(timestamp=time, coords=located_point)
             QueuesProvider.LocalizatedPoints3D[object_id].append(with_timestamp)
             cls.last_located_point = located_point
 

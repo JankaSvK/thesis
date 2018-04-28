@@ -47,9 +47,8 @@ class TrackerHSV(object):
 
         mask = cv2.inRange(hsv_image, self.lower_bound, self.upper_bound)
         if self.lower_bound[0] < 0 or self.upper_bound[0] >= 180:
-            # TODO: cervena nefunguje
             if self.lower_bound[0] < 0:
-                mask_add = cv2.inRange(hsv_image, [180, 0, 0] + self.lower_bound, self.highest_point)
+                mask_add = cv2.inRange(hsv_image, [180, 0, 0] + self.lower_bound, numpy.array(self.highest_point).astype('float'))
             else:
                 mask_add = cv2.inRange(hsv_image, self.lowest_point, self.upper_bound - [180, 0, 0])
             mask = cv2.bitwise_or(mask_add, mask)

@@ -3,7 +3,6 @@ import cv2
 import time
 
 import Config
-import QueuesProvider
 from OptionParser import parse_options
 options = parse_options()
 

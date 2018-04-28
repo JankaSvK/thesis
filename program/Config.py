@@ -16,6 +16,12 @@ objects_count = 1
 image_width = 640
 image_height = 480
 
+# If it is None, the trackers will wait for interaction.
+# Otherwise it can be setted to a list of bouding boxes - Bounding_boxes[camera_index][object_index]
+# Therefore it should contains 2 * objects_count entries
+# Bouding box is a [x, y, width, height]
+initial_bounding_boxes = [[[0, 0, 1, 1], [150, 100, 100, 100]], [[100, 100, 50, 50], [200, 200, 20, 20]]]
+
 ### Calibration settings
 
 # Number of chessboard inner corners. The order does not matter.
