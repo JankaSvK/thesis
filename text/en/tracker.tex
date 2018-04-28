@@ -167,7 +167,8 @@ the same color can be placed in the view of the camera.
 
 Pattern (or template) matching algorithm slides over the input image and
 compare the template with the patch of the input image. As patch we means a
-cropped image to the size of the template.
+cropped image to the size of the template (displayed in the figure
+\ref{fig:patternmatching-naming}.
 
 For a comparison between an image and the patch we look for a function, which
 tell us how different to each other they are. Such a function is usually called
@@ -188,7 +189,13 @@ where $x'$ and $y'$ denotes points from the neighbourhood of the $x, y$. $T$
 denotes our pattern and $I$ denotes the image. 
 
 \todo[inline]{Square distance, ten vzorec hovori co?}
-\todo[inline]{Obrazok kde bude patch, pattern, image}
+\begin{figure}[h]
+	\centering
+	\def\svgwidth{0.9\linewidth}
+	\input{img/pattern_matching/naming.pdf_tex}
+	\caption{Naming convention showed on an example}
+	\label{fig:patternmatching-naming}
+\end{figure}
 
 From the computed value for each pixel the one with the lowest value
 (i.e. shortest distance) is our estimation of the position of the object.
@@ -311,18 +318,3 @@ provided by \citet*{opencv-trackers}.
 For a comparison we decided to include a tracker implemented in Dlib. This
 correlation tracker is based on the paper by \citet*{correlation}.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%\section{Comparison of trackers}
-%
-%\subsubsection{Experiment with simplyfied environment}
-%
-%Given a video sequence XYZ second long we studied an accuracy of trackers. The background is one colored and moving object is a red circle.
-%
-%\todo[inline]{ Robot sledujúci čiaru do štvorca s červeným kruhom z vrchu (kamery sa dívajú zvrchu). Porovnanie bude uvedené ako čiary, ktoré sú nakreslené pomocou zachytených bodov.}
-%
-%\subsubsection{Experiment in complex environment}
-%
-%Background consisted of many colors and patterns. Moving object has a pattern and is partially colored as the background.
-%
-%\todo[inline]{ Vyskytli sa veci, ako, že stratil polohu? V akom percente? Mám ako rozumne vyjadriť presnosť tých súradníc lepšie než od oka?}

@@ -31,4 +31,46 @@ To provide a comparison of trackers, we also include one tracker from
 \emph{Dlib}\footnote{\url{http://dlib.net/}} library. It is also open source
 and an interface for the Python is provided.  Since this library focus is on
 machine learning and it does not contain so many functions for computer vision
-as the OpenCV library yet.
+as the OpenCV library yet
+
+\section{Notations}
+
+Following chapter describes some procedures using math notion. To avoid
+ambiguity we list them here.
+
+\subsubsection*{Vector}
+A word \emph{vector} denotes a column vector in a shape of $n\times1$.
+
+\subsubsection*{Block matrix}
+A matrix operation $W = (A|B)$, where $A$ is a matrix $m \times n$ and B is a
+matrix $m \times p$, creates $W$, where first $n$ columns are the entries from
+matrix $A$ and last columns consist of the columns of the matric $B$.
+Example:
+
+\[
+A = \begin{pmatrix}
+        1 & 2 \\
+        3 & 4
+\end{pmatrix},
+B = \begin{pmatrix}
+5 \\
+6
+\end{pmatrix},
+(A|B) = \begin{pmatrix}
+        1 & 2 & 5 \\
+        3 & 4 & 6
+\end{pmatrix}
+\]
+
+\subsubsection*{Homogenous coordinates}
+
+In computer vision often homogenous coordinates instead of Cartesian are used.
+These coordinates have one element added. The meaning of this element is a
+scale factor.  Therefore, one point could be described with in an infinit ways
+of writing the coordinates. As the advantage, they can sipmplify many
+operation. Often it is possible to solve a task as a matrix multiplication, if
+the point is represented homogenous coordinates.
+
+For homogenous coordinates in three dimensional space holds:
+$$ (x, y, z, 1)^T = (sx, sy, sz, s)^T $$
+Similartly it works in 2D.
