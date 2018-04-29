@@ -1,5 +1,7 @@
-\chapter{Experiments} For the designed system we considered multiple experiments to
-verify its stability and precision.
+\chapter{Experiments} 
+
+For the designed system we considered multiple experiments to
+verify its accuracy..
 
 In further text, we will mention an autonomous robot able to follow a black
 line.  It was used for our experiments but could be replaced by any other
@@ -7,19 +9,42 @@ object. The advantage of an autonomous robot is repetitive of its movements and
 also no other distractions in the scene except the moving object. The robot has
 a cylindrical shape with 5~cm in diameter and height of 2~cm.
 
-\section{Trackers comparison} We tested all trackers in two situations. Since
-all used trackers were computability admissible, their complexity will not be
-examined. The project goal is to track a moving object. Therefore we consider
-these qualities: stability in a fast moving object, recovery from full
-...zmiznutia z obrazovky..., precision.
+%\section{Trackers comparison} 
+%
+%We tested all trackers in two situations. Since
+%all used trackers were computability admissible, their complexity will not be
+%examined. The project goal is to track a moving object. Therefore we consider
+%these qualities: stability in a fast moving object, recovery from full
+%...zmiznutia z obrazovky..., precision.
+%
+%Since some trackers use feature points, we provide two testing scenarios. First
+%is a common object to track -- red circle. The second experiment consists of
+%tracking robot - sample usage of the designed system. Both are evaluated on a white
+%background and also on noisy background.
 
-Since some trackers use feature points, we provide two testing scenarios. First
-is a common object to track -- red circle. The second experiment consists of
-tracking robot - sample usage of the designed system. Both are evaluated on a white
-background and also on noisy background.
+%\section{Localization precision}
 
-\section{Localization precision} After evaluating experiments on tracker a
-further step was to test the precision of the overall system.
+\section{Distances}
+
+The results of localization depends on two factors: calibration and tracking.
+We decided to firstly estimate errors caused by calibration process.
+
+
+
+\section{Distances on the square}
+
+Firstly, we were interested how accurate is localization. In order to ommit a
+tracker errors, we prepared a static setup.  We placed four marks on the
+ground. Both cameras had all four points in the view. The marks formed a
+square, with a length of 30~cm per side.
+
+Then we runned our programme for each point to get an estimated position. We
+computed a norm between each two points and we display results in the figure
+\ref{fig:squre-distances}.
+
+\section{Distances on the cube}
+As a next step, we were interested if the precision is the same also using
+non-planar object. We choosed a cube as our object.
 
 \subsection{Hausdorff distance} To tell how close or far are two
 curves apart we used Hausdorff distance.

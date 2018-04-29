@@ -2,8 +2,11 @@ export TEXINPUTS=../tex//:
 
 all: thesis.pdf
 
+options.txt: ../../program/Main.py
+	python3 ../../program/Main.py -h > options.txt
+
 # LaTeX must be run multiple times to get references right
-thesis.pdf: thesis.tex $(wildcard *.tex) bibliography.bib thesis.xmpdata
+thesis.pdf: thesis.tex $(wildcard *.tex) bibliography.bib thesis.xmpdata options.txt
 	pdflatex $<
 	bibtex thesis
 	pdflatex $<
