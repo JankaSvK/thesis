@@ -1,8 +1,6 @@
 import threading
 from collections import deque
-
 import time
-
 from CalibrationsProvider import CalibrationsProvider
 from CamerasProvider import CamerasProvider
 from Localization import Localization
@@ -56,7 +54,9 @@ def run_application(options):
     saved_calibration_data = [options.calibration_results1, options.calibration_results2]
     while not stop_event.is_set() and not calibration_provider.mono_calibrate(saved_calibration_data):
         pass
+
     # Stereo camera calibration
+    QueuesProvider.ConsoleMessages.append("Starting stereo calibration. Please move wtih a chessboard, but keep it visicble in both cameras.")
     while not stop_event.is_set() and not calibration_provider.stereo_calibrate(options.stereo_calibration_results):
         pass
 

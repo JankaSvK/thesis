@@ -88,14 +88,15 @@ class CalibrationsProvider(object):
             self.stereo_calibration_results = StereoCameraCalibrationResults(jsonFile=saved_results)
             return True
 
-        self.console_output.append("Looking for corresponding images for stereocalibration.")
-        # images = self.find_images_for_stereo_calibration()
+        if self.stereo_calibration_results is not None:
+            return True
+
+        self.console_output.append("Looking for images for stereo calibration.")
         import itertools
         images = list(
             itertools.islice(self.find_images_for_stereo_calibration(), self.maximum_images_for_stereocalibration))
-        self.console_output.append(str(len(images)) + " tuple of images available for stereo calibration.")
         if len(images) < self.minimum_images_for_stereo_calibration:
-            self.console_output.append("Not enough images for stereo calibration")
+            self.console_output.append("Not enough images for stereo calibration.")
             return False
 
         if len(images) > self.maximum_images_for_stereocalibration:
@@ -178,9 +179,16 @@ class CalibrationsProvider(object):
             return None
 
     def find_images_for_stereo_calibration(self):
-        images1 = [i for i in self.images[0] if i.chessboard is not False]
-        images2 = [i for i in self.images[1] if i.chessboard is not False]
-        images_iter = [iter(images1), iter(images2)]
+        images_iter = []
+        for j in range(2):
+            while True:
+                try:
+                    images_i = list(self.images[j])
+                except RuntimeError as err:
+                    pass
+                else:
+                    break
+            images_iter.append(x for x in images_i if x is not False)
 
         images = [next(x) for x in images_iter]
         earlier = images[0].time > images[1].time
@@ -197,10 +205,9 @@ class CalibrationsProvider(object):
                         image.chessboard = self.find_chessboard(image.image)
                         if image.chessboard is None:
                             image.chessboard = False
-                if all(x.chessboard is not False for x in images):
-                    last_time = images[not earlier].time
+                            break
+                if all((x.chessboard is not False and x.chessboard is not None) for x in images):
                     yield images[0], images[1]
+                last_time = images[not earlier].time
             images[earlier] = next(images_iter[earlier])
             earlier = images[0].time > images[1].time
-
-        # co sa stane ak chcem viac nez tu ma k dispozicii?

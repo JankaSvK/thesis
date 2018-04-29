@@ -36,7 +36,7 @@
   }%
   \providecommand\rotatebox[2]{#2}%
   \ifx\svgwidth\undefined%
-    \setlength{\unitlength}{5575.3805518bp}%
+    \setlength{\unitlength}{2556.85931396bp}%
     \ifx\svgscale\undefined%
       \relax%
     \else%
@@ -48,11 +48,11 @@
   \global\let\svgwidth\undefined%
   \global\let\svgscale\undefined%
   \makeatother%
-  \begin{picture}(1,0.55782213)%
+  \begin{picture}(1,0.55782208)%
     \put(0,0){\includegraphics[width=\unitlength,page=1]{img/pattern_matching/naming.pdf}}%
-    \put(0.23368965,0.03779878){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.28773794\unitlength}\raggedright patch\end{minipage}}}%
-    \put(0.8793687,0.19079783){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.24731193\unitlength}\raggedright template\\ \end{minipage}}}%
-    \put(0.66686746,0.05079995){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.18429498\unitlength}\raggedright image\end{minipage}}}%
-    \put(0.87808517,0.15219199){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.12841198\unitlength}\raggedright (pattern)\end{minipage}}}%
+    \put(0.23368964,0.03779879){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.28773791\unitlength}\raggedright patch\end{minipage}}}%
+    \put(0.87936864,0.19079783){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.24731191\unitlength}\raggedright template\\ \end{minipage}}}%
+    \put(0.66686741,0.05079996){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.18429496\unitlength}\raggedright image\end{minipage}}}%
+    \put(0.8780851,0.15219198){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.12841197\unitlength}\raggedright (pattern)\end{minipage}}}%
   \end{picture}%
 \endgroup%

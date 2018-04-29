@@ -45,6 +45,12 @@ In the folder \verb+program/+ we find an entry point for our application
 in figure \ref{fig:application}). With no options provided, the program will
 run on the first two cameras available.
 
+\begin{figure}
+	\frame{\includegraphics[width=\linewidth]{img/application.png}}
+	\label{fig:application}
+	\caption{Application window}
+\end{figure}
+
 \subsection{Calibration}
 As a first step, calibration is expected. We need a calibration pattern --
 chessboard, which could be printed. For given chessboard, edit values in
@@ -113,12 +119,14 @@ Results of each calibration and localization are saved.
 All calibration results are in the directory \verb+program/calib_results+. The
 directory has following structure:
 
+\begin{figure}
 \dirtree{%
 .1 calib{\_}results/.
 .2 stereo{\_}calib{\_}results/.
 .2 1/.
 .2 2/.
  }
+ \end{figure}
 
 The results will be automatically saved into corresponding directory. The
 naming convention is: \verb+{year}-{month}-{day}-at-{hour}-{minute}.json+,
@@ -133,3 +141,10 @@ the index of the object.
 Saved localization data consist of the four columns separated by tabs. Each
 line represents succesful localization. In the first column is the time. In the
 rest three columns coordinates are stored (x, y, z).
+
+\subsection{Capturing the videos} 
+
+Capturing and saving videos provide additional program located in
+\verb+program/helpers/video_capture.py+. It will automatically capture video
+from all available cameras and save it into \verb+captured_videos+. The
+capturing can be exited by pressing the key "q".

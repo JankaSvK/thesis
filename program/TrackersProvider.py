@@ -41,6 +41,8 @@ class TrackersProvider(object):
 
                     clicks = self.mouse_clicks[tracker.camera_id][-2:]
                     bbox = tracker.create_bounding_box(*clicks)
+                    if len(bbox) != 4:
+                        continue
                     tracker.initialize_tracker(bbox)
                     tracker.initialization_event.clear()
                 else:

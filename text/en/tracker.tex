@@ -188,7 +188,6 @@ $$
 where $x'$ and $y'$ denotes points from the neighbourhood of the $x, y$. $T$
 denotes our pattern and $I$ denotes the image. 
 
-\todo[inline]{Square distance, ten vzorec hovori co?}
 \begin{figure}[h]
 	\centering
 	\def\svgwidth{0.9\linewidth}
@@ -201,10 +200,10 @@ From the computed value for each pixel the one with the lowest value
 (i.e. shortest distance) is our estimation of the position of the object.
 
 Finally, we choose an appropiate representation for the pixels (i.e. what
-precisely does $T(x, y)$ stand for). In general we can choose any reasonable
-vector (such as tuple of RGB channels). We choose to use a standard
-conversion to grayscale ($T(x, y)$ thus gives an intensity after such
-conversion).
+precisely does $T(x, y)$ and $I(x, y)$ stand for). In general we can choose any
+reasonable vector (such as tuple of RGB channels). We choose to use a standard
+conversion to grayscale ($T(x, y)$ and $I(x, y)$ thus give an intensity after
+such conversion).
 
 Because this algorithm works with the grayscale images, much information is
 lost during conversion. This disadvantage summed up with no ability to

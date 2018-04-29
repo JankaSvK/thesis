@@ -50,6 +50,7 @@ class GUI(object):
     def create_gui_objects(self):
         self.root = tk.Tk()
         self.root.protocol("WM_DELETE_WINDOW", self.ask_quit)
+        self.root.title("Thesis")
 
         for cam_ind in range(self.camera_count):
 

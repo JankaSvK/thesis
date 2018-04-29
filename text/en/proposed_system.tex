@@ -9,9 +9,13 @@ We propose a system with two cameras. We connect cameras via USB to a computer.
 Two cameras provide enough information for object localization and make the
 project usable also on low-budget. The placement of the cameras is important,
 but no precise alignment is required. Cameras should share a significant part
-of the view.
+of the view (see an example of the setup in the figure \ref{fig:camera-setup}).
 
-\todo[inline]{fotka rozostavenia}
+\begin{figure}
+	\includegraphics[width=\linewidth]{img/camera-positions.jpg}
+	\label{fig:camera-setup}
+	\caption{Example of camera setup}
+\end{figure}
 
 Our solution is able to estimate the positions of the cameras (relatively to
 each other) using an automated calibration process. After calibration, the user
@@ -73,4 +77,6 @@ the point is represented homogenous coordinates.
 
 For homogenous coordinates in three dimensional space holds:
 $$ (x, y, z, 1)^T = (sx, sy, sz, s)^T $$
-Similartly it works in 2D.
+Similartly it works for coordinates in any n-dimensional space. In conversion
+from Cartesian to homogenous we simply add new elemnt at the end equal to one.
+In the opposite direction, we divide first $n-1$ values by the $n$th.

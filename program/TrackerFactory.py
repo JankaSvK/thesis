@@ -1,22 +1,29 @@
 import cv2
-from trackers.TrackerPatternMatching import TrackerPatternMatching
-from trackers.TrackerSimpleBackground import TrackerSimpleBackground
-from trackers.TrackerHSV import TrackerHSV
-from trackers.TrackerCorrelation import CorrelationTracker
 
 class TrackerFactory(object):
     @classmethod
     def get_tracker(cls, tracker_type):
-        return {
-            'KCF': cv2.TrackerKCF_create(),
-            'MIL': cv2.TrackerMIL_create(),
-            'BOOSTING': cv2.TrackerBoosting_create(),
-            'TLD': cv2.TrackerTLD_create(),
-            'MEDIANFLOW': cv2.TrackerMedianFlow_create(),
-#            'GOTURN': cv2.TrackerGOTURN_create(),
-            'SIMPLEBACKGROUND': TrackerSimpleBackground(),
-            'HSV': TrackerHSV(),
-            'PATTERNMATCHING': TrackerPatternMatching(),
-            'CORRELATION': CorrelationTracker(),
-            'MOSSE': cv2.TrackerMOSSE_create()
-        }.get(tracker_type, cv2.TrackerKCF_create())
+        if tracker_type == 'MIL':
+            return cv2.TrackerMIL_create()
+        if tracker_type == 'BOOSTING':
+            return cv2.TrackerBoosting_create()
+        if tracker_type == 'TLD':
+            return cv2.TrackerTLD_create()
+        if tracker_type == 'MEDIANFLOW':
+            return cv2.TrackerMedianFlow_create()
+        if tracker_type == 'SIMPLEBACKGROUND':
+            from trackers.TrackerSimpleBackground import TrackerSimpleBackground
+            return TrackerSimpleBackground()
+        if tracker_type == 'HSV':
+            from trackers.TrackerHSV import TrackerHSV
+            return TrackerHSV()
+        if tracker_type == 'PATTERNMATCHING':
+            from trackers.TrackerPatternMatching import TrackerPatternMatching
+            return TrackerPatternMatching()
+        if tracker_type == 'CORRELATION':
+            from trackers.TrackerCorrelation import CorrelationTracker
+            return CorrelationTracker()
+        if tracker_type == 'MOSSE':
+            return cv2.TrackerMOSSE_create()
+        else:
+            return cv2.TrackerKCF_create()
