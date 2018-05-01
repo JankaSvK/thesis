@@ -12,7 +12,7 @@ def get_tracker_by_uid(uid):
     return (int(uid / Config.objects_count), int(uid % Config.objects_count))
 
 class TrackersProvider(object):
-    def __init__(self, images1, images2, mouse_clicks, coordinates, stop_event, initialization_events, tracker_type = 'KCF', number_of_tracked_objects = 1):
+    def __init__(self, images1, images2, mouse_clicks, coordinates, stop_event, initialization_events, console_output, tracker_type = 'KCF', number_of_tracked_objects = 1):
         self.image_streams = [images1, images2]
         self.object_count = number_of_tracked_objects
         self.tracker_type = tracker_type
@@ -20,6 +20,7 @@ class TrackersProvider(object):
         self.initialization_events = initialization_events
         self.coordinates = coordinates
         self.stop_event = stop_event
+        self.console_output = console_output
 
         self.trackers = []
         for cam_ind, image_stream in enumerate(self.image_streams):

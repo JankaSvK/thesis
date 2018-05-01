@@ -52,6 +52,8 @@ class StereoCameraCalibrationResults(object):
 
             self.rotation_matrix = numpy.array(self.rotation_matrix)
             self.translation_vector = numpy.array(self.translation_vector)
+            self.fundamental_matrix = numpy.array(self.fundamental_matrix)
+            self.essential_matrix = numpy.array(self.essential_matrix)
         else:
             self.rotation_matrix = rotation_matrix
             self.translation_vector = translation_vector

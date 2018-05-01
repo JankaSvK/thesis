@@ -6,7 +6,7 @@ import time
 
 
 class CamerasProvider(object):
-    def __init__(self, images_queues, stop_event, camera_indexes = None, video_recordings = None):
+    def __init__(self, images_queues, stop_event, console_output, camera_indexes = None, video_recordings = None):
         self.camera_indexes = camera_indexes
         self.images = images_queues
         self.captures = []
@@ -18,6 +18,7 @@ class CamerasProvider(object):
         self.width = Config.image_width
         self.height = Config.image_height
         self.start_of_the_thread = None
+        self.console_output = console_output
 
         if video_recordings is None and camera_indexes is None:
             raise RuntimeError("Camera source has to be specified")
@@ -76,7 +77,7 @@ class CamerasProvider(object):
             self.number_of_read[shorter] += 1
             ok = self.capture_and_save_image(shorter)
             if not ok:
-                #self.stop_event.set()
+                self.console_output.append("Video ended.")
                 break
         self.stop_capturing()
 
@@ -95,4 +96,7 @@ class CamerasProvider(object):
         for cam_ind, capture in enumerate(self.captures):
             capture.set(cv2.CAP_PROP_FRAME_WIDTH, self.width)
             capture.set(cv2.CAP_PROP_FRAME_HEIGHT, self.height)
+            capture.set(cv2.CAP_PROP_AUTOFOCUS, 0)  # turn the autofocus off
+            #capture.set(cv2.CAP_PROP_SETTINGS, 1) # open properties window
+
             self.fps[cam_ind] = capture.get(cv2.CAP_PROP_FPS)

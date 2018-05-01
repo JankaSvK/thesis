@@ -25,14 +25,14 @@ image_height = 480
 # Otherwise it can be setted to a list of bouding boxes - Bounding_boxes[camera_index][object_index]
 # Therefore it should contains 2 * objects_count entries
 # Bouding box is a [x, y, width, height]
-initial_bounding_boxes = [[[0, 0, 1, 1], [150, 100, 100, 100]], [[100, 100, 50, 50], [200, 200, 20, 20]]]
+# Sample value for two objects: [[[0, 0, 1, 1], [150, 100, 100, 100]], [[100, 100, 50, 50], [200, 200, 20, 20]]]
 initial_bounding_boxes = None
 
 ### Calibration settings
 
 # Minimum numbers of images for mono calibration.
 # Can not be less than 3
-minimum_images_for_monocalibration = 10
+minimum_images_for_monocalibration = 20
 
 # Maximum number of images for stereo calibration. If more has been found, a sample set of them is taken.
 maximum_images_for_monocalibration = 30

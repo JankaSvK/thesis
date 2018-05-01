@@ -110,7 +110,7 @@ class CalibrationsProvider(object):
 
         print(len(imgpoints1), "images used for stereo calibration")
         print("Starting to compute stereo calibration")
-        rerror, _, _, _, _, r, t, _, _ = \
+        rerror, _, _, _, _, r, t, e, f = \
             cv2.stereoCalibrate(objectPoints=objpoints,
                                 imagePoints1=imgpoints1,
                                 imagePoints2=imgpoints2,
@@ -122,7 +122,7 @@ class CalibrationsProvider(object):
                                 criteria=(cv2.TERM_CRITERIA_MAX_ITER + cv2.TERM_CRITERIA_EPS, 100, 1e-4)
                                 )
         print("Stereo calibration computed")
-        self.stereo_calibration_results = StereoCameraCalibrationResults(r, t, None, None, rerror)
+        self.stereo_calibration_results = StereoCameraCalibrationResults(r, t, e, f, rerror)
         self.stereo_calibration_results.save()
 
         self.console_output.append("Stereo calibration finished. Estimated distance between the cameras is " +
@@ -179,6 +179,7 @@ class CalibrationsProvider(object):
             return None
 
     def find_images_for_stereo_calibration(self):
+        # Lists can mutate during interation. It occurs occasionaly. Therefore, if it happens, the process is repeated.
         images_iter = []
         for j in range(2):
             while True:
@@ -190,9 +191,10 @@ class CalibrationsProvider(object):
                     break
             images_iter.append(x for x in images_i if x is not False)
 
+
+
         images = [next(x) for x in images_iter]
         earlier = images[0].time > images[1].time
-
         last_time = 0
 
         while True:

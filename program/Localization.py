@@ -14,6 +14,7 @@ class Localization(object):
     projection_matrix1 = None
     projection_matrix2 = None
     mono_calibration_results = None
+    fundamental_matrix = None
 
     localization_precision = 5 # in milimeters
     last_located_point = None
@@ -24,6 +25,7 @@ class Localization(object):
     @classmethod
     def compute_projection_matrices(cls, calibration_results1, calibration_results2, stereo_calibration_results):
         cls.mono_calibration_results = [calibration_results1, calibration_results2]
+        cls.fundamental_matrix = stereo_calibration_results.fundamental_matrix
 
         stereo_rectify = False
 
@@ -31,11 +33,13 @@ class Localization(object):
             cls.rotation_matrix1, cls.rotation_matrix2, cls.projection_matrix1, cls.projection_matrix2, _, _, _ = cv2.stereoRectify(
                 calibration_results1.camera_matrix, calibration_results1.distortion_coeffs,
                 calibration_results2.camera_matrix, calibration_results2.distortion_coeffs,
-                (640, 480), stereo_calibration_results.rotation_matrix, stereo_calibration_results.translation_vector, alpha=0)
+                (640, 480), stereo_calibration_results.rotation_matrix, stereo_calibration_results.translation_vector)
         else:
             rt = np.append(stereo_calibration_results.rotation_matrix, stereo_calibration_results.translation_vector, axis = 1)
-            cls.projection_matrix2 = calibration_results2.camera_matrix.dot(rt)
-            cls.projection_matrix1 = calibration_results1.camera_matrix.dot(np.append(np.identity(3), np.zeros((3, 1)), axis = 1))
+#            cls.projection_matrix2 = calibration_results2.camera_matrix.dot(rt)
+            cls.projection_matrix2 = rt
+#            cls.projection_matrix1 = calibration_results1.camera_matrix.dot(np.append(np.identity(3), np.zeros((3, 1)), axis = 1))
+            cls.projection_matrix1 = np.eye(3, 4)
 
     @classmethod
     def get_3d_coordinates(cls, point1, point2):
@@ -43,7 +47,10 @@ class Localization(object):
             return None
 
         point1 = cls.get_undistorted_point(point1, 0)
-        point2 = cls.get_undistorted_point(point1, 1)
+        point2 = cls.get_undistorted_point(point2, 1)
+
+        point1 = np.reshape(point1, [1, 1, 2])
+        point2 = np.reshape(point2, [1, 1, 2])
 
         locatedPointsHom = cv2.triangulatePoints(projMatr1=cls.projection_matrix1, projMatr2=cls.projection_matrix2,
                                                  projPoints1=point1,
@@ -54,7 +61,8 @@ class Localization(object):
     def get_undistorted_point(cls, point, cam_ind):
         calib_results = cls.mono_calibration_results[cam_ind]
         point = np.array(point).reshape(1, 1, 2).astype(float)
-        undistorted = cv2.undistortPoints(point, calib_results.camera_matrix, calib_results.distortion_coeffs, P=calib_results.camera_matrix)
+        undistorted = cv2.undistortPoints(point, calib_results.camera_matrix, calib_results.distortion_coeffs) # , P=calib_results.camera_matrix
+        print(undistorted)
         return undistorted[0][0]
 
     @classmethod
@@ -96,12 +104,12 @@ class Localization(object):
 
         time = (point1[0] + point2[0]) / 2
         if time - cls.last_located_point_time[object_id] < cls.time_threshold_skip:
-            return # TODO mozno nejaky sleep
+            return
         cls.last_located_point_time[object_id] = time
 
         located_point = Localization.get_3d_coordinates(point1[1],
                                                         point2[1])
-
+        print(point1, point2)
         if located_point is None:
             return
 
@@ -109,6 +117,7 @@ class Localization(object):
             with_timestamp = CoordsWithTimestamp(timestamp=time, coords=located_point)
             QueuesProvider.LocalizatedPoints3D[object_id].append(with_timestamp)
             cls.last_located_point = located_point
+        print(located_point)
 
     @classmethod
     def moved_more_than(cls, old, new, distance):

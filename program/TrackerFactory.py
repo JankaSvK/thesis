@@ -25,5 +25,8 @@ class TrackerFactory(object):
             return CorrelationTracker()
         if tracker_type == 'MOSSE':
             return cv2.TrackerMOSSE_create()
+        if tracker_type == 'EXPERIMENTS':
+            from trackers.TrackerExperiments import TrackerExperiments
+            return TrackerExperiments()
         else:
             return cv2.TrackerKCF_create()

@@ -28,7 +28,7 @@ def run_application(options):
     else:
         videos = [options.video1, options.video2]
 
-    cameras_provider = CamerasProvider(QueuesProvider.Images, stop_event, Config.camera_initialize,
+    cameras_provider = CamerasProvider(QueuesProvider.Images, stop_event, QueuesProvider.ConsoleMessages, Config.camera_initialize,
                                        videos)
     cameras_provider.initialize_capturing()
     cameras_provider.start_capturing()
@@ -70,6 +70,7 @@ def run_application(options):
         mouse_clicks=QueuesProvider.MouseClicks,
         coordinates=QueuesProvider.TrackedPoints2D,
         stop_event=stop_event,
+        console_output=QueuesProvider.ConsoleMessages,
         initialization_events=trackers_initialization_events,
         tracker_type=options.tracker,
         number_of_tracked_objects=Config.objects_count

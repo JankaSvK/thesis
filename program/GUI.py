@@ -1,3 +1,4 @@
+import random
 import threading
 import tkinter as tk
 import threading, sys, os
@@ -46,6 +47,9 @@ class GUI(object):
         self.outputted_messages = 0
 
         self.rgb_colors_for_objects = [(1, 0, 0), (0, 0, 1), (0, 1, 0), (0.5, 0.5, 0.5), (0.1, 0.2, 0.5)]
+        if len(self.rgb_colors_for_objects) < self.objects_count:
+            for _ in range(self.objects_count - len(self.rgb_colors_for_objects)):
+                self.rgb_colors_for_objects.append([random.random() for _ in range(3)])
 
     def create_gui_objects(self):
         self.root = tk.Tk()
