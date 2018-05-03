@@ -46,6 +46,8 @@ class GUI(object):
         self.console_output = console_output
         self.outputted_messages = 0
 
+        self.buttons_per_line = 5
+
         self.rgb_colors_for_objects = [(1, 0, 0), (0, 0, 1), (0, 1, 0), (0.5, 0.5, 0.5), (0.1, 0.2, 0.5)]
         if len(self.rgb_colors_for_objects) < self.objects_count:
             for _ in range(self.objects_count - len(self.rgb_colors_for_objects)):
@@ -97,7 +99,7 @@ class GUI(object):
             buttons = buttons_pack['buttons']
             frame.grid(row=1, column = cam_ind, stick="w")
             for obj_ind, button in enumerate(buttons):
-                button.grid(row = 0, column = obj_ind)
+                button.grid(row = obj_ind // self.buttons_per_line, column = obj_ind % self.buttons_per_line)
 
         # Place Console output
         self.console.grid(column=0, row = 2, columnspan=3, sticky="nsew")

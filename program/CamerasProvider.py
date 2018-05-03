@@ -67,7 +67,7 @@ class CamerasProvider(object):
     def capture_from_videos(self):
         self.number_of_read = [0, 0]
         while not self.stop_event.is_set():
-            times = [self.number_of_read[i] / self.fps[i] for i in range(2)]
+            times = [self.number_of_read[i] / self.check_fps(self.fps[i]) for i in range(2)]
             shorter = int(times[0] > times[1]) # get index of minimum
 
             time_to_sleep = times[shorter] - (time.time() - self.start_of_the_thread)
@@ -80,6 +80,11 @@ class CamerasProvider(object):
                 self.console_output.append("Video ended.")
                 break
         self.stop_capturing()
+
+    def check_fps(self, fps):
+        if fps is None or fps == 0:
+            fps = 30
+        return fps
 
     def capture_and_save_image(self, cam_index):
         ok, frame = self.captures[cam_index].read()

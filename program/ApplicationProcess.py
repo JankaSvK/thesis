@@ -109,7 +109,7 @@ def run_application(options):
     while not stop_event.is_set():
         for i in range(Config.objects_count):
             Localization.localize_point(i)
-        time.sleep(Localization.time_threshold_skip)
+        time.sleep(0)
 
     # Exiting program
     Localization.save_localization_data()

@@ -27,3 +27,19 @@ class QueuesProvider(object):
         cls.MouseClicks[window_index].append({'x': x, 'y': y})
 
     Threads = [] # Only for debugging purposes!
+
+class TrackedPoint(object):
+    def __init__(self):
+        self.timestamp = None
+        self.coordinates = None
+
+class ImageEntry(object):
+    def __init__(self):
+        self.timestamp = None
+        self.chessboard = None
+        self.image = None
+
+class LocalizationPoint(object):
+    def __init__(self):
+        self.timestamp = None
+        self.coordinates = None
