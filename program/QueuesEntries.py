@@ -9,6 +9,8 @@ class Point(object):
         if self.timestamp is None:
             self.timestamp = time.time()
 
+    def __str__(self):
+        return '{}  {}  {}  {}'.format(self.timestamp, *self.coordinates)
 
 class ImageEntry(object):
     def __init__(self, image, timestamp=None):

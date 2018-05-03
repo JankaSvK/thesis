@@ -157,7 +157,7 @@ class GUI(object):
 
     def draw_located_point(self, object_id):
         if 0 != len(QueuesProvider.LocalizatedPoints3D[object_id]):
-            point = QueuesProvider.LocalizatedPoints3D[object_id][-1].coords
+            point = QueuesProvider.LocalizatedPoints3D[object_id][-1].coordinates
 
             last_drawn, last_scattered = self.last_drawn_points[object_id]
             if last_drawn is None or np.linalg.norm(point - last_drawn) > self.minimal_distance:

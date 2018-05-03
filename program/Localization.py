@@ -4,7 +4,7 @@ import os
 import Config
 import TrackersProvider
 from CalibrationResults import get_current_time
-from CoordsWithTimestamp import CoordsWithTimestamp
+from QueuesEntries import Point
 from QueuesProvider import QueuesProvider
 
 class Localization(object):
@@ -55,7 +55,7 @@ class Localization(object):
 
     @classmethod
     def save_localization_data(cls):
-        times = [x[0].time for x in QueuesProvider.LocalizatedPoints3D if x]
+        times = [x[0].timestamp for x in QueuesProvider.LocalizatedPoints3D if x]
         if times:
             first_point_time = min(times)
         else:
@@ -69,9 +69,9 @@ class Localization(object):
             os.makedirs(os.path.dirname(filename), exist_ok=True)
 
             with open(filename, 'w') as output:
-               for position in QueuesProvider.LocalizatedPoints3D[i]:
-                   position.time -= first_point_time
-                   output.write(str(position) + '\n')
+               for point in QueuesProvider.LocalizatedPoints3D[i]:
+                   point.timestamp -= first_point_time
+                   output.write(str(point) + '\n')
 
     @classmethod
     def localize_point(cls, object_id):
@@ -98,10 +98,9 @@ class Localization(object):
             return
 
         if cls.moved_more_than(cls.last_located_point, located_point, cls.localization_precision):
-            with_timestamp = CoordsWithTimestamp(timestamp=time, coords=located_point)
-            QueuesProvider.LocalizatedPoints3D[object_id].append(with_timestamp)
+            point = Point(located_point, time)
+            QueuesProvider.LocalizatedPoints3D[object_id].append(point)
             cls.last_located_point = located_point
-        print(located_point)
 
     @classmethod
     def moved_more_than(cls, old, new, distance):
