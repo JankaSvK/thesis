@@ -1,12 +1,12 @@
 \chapter{Calibration}
 
-Our goal to create a system which does not need any information about a
-position of the cameras. Since we do not know how far away cameras are, nor
-angles, we firstly use calibration to obtain this information.
+Our goal to create a system which does not need any prior information about the
+position of cameras. Since we do not know how far away the cameras are, nor
+angles between them, we firstly use calibration to obtain this information.
 
 By calibrating cameras with a well describable pattern, we can obtain
-information about the single camera, like what distortion its lens cause, or
-how to world points are projected to an image plane of the camera.
+information about the single camera, such as what distortion its lens cause, or
+how the world points are projected to an image plane of the camera.
 
 After discovering these parameters for both cameras, we will continue on stereo
 calibration. Stereo calibration will provide us information about their
@@ -20,9 +20,9 @@ only results obtained from calibration essential to us.
 
 Each camera type is different. Moreover, each camera of a specific type is
 different due to a manufacturing process. Therefore we introduce intrinsic
-camera parameters, which helps us a model of the camera precisely.
+camera parameters, which help us to model the camera precisely.
 
-Intrinsic camera parameters define a transform between a world coordinates and
+Intrinsic camera parameters define a transformation between the world coordinates and
 the coordinates within an image plane (in pixels). Physical attributes of the
 camera influence this transformation.
 
@@ -38,11 +38,11 @@ world coordinates (with the origin in the camera) to image plane coordinates
 available, we can obtain 2D coordinates by simple multiplication by camera
 matrix.
 
-As a next step, we describe camera matrix obtained by OpenCV calibration
+As a next step, we describe the camera matrix obtained by OpenCV calibration
 procedure.
 
-The approach of the camera matrix which OpenCV use is to represent it as a
-matrix $3\times3$ matrix in the following format: 
+The approach of the camera matrix, which OpenCV uses is to represent it as a
+matrix $3\times3$ in the following format: 
 
 \[
 \begin{pmatrix}
@@ -52,24 +52,27 @@ matrix $3\times3$ matrix in the following format:
 \end{pmatrix}
 \]
 
-Where $f_x$, $f_y$ denotes focal length expressed in pixel units. It is usually
+Where $f_x$, $f_y$ denote focal lengths expressed in pixel units. It is usual
 to introduce two of them, separately for both axes, since pixels usually are
-not a perfect square but rather rectangle. Therefore same focal length has
+not perfect squares but rather rectangles. Therefore the same focal length, has
 different length in pixel units over a given ax.
 
-Parameters $c_x$ and $c_y$ defines coordinates in image plane where the
-principal point intersects the image. It should be the center of the image, but
-assembling process of the camera might cause a small displacement.
+We refer the ray of the view of the camera as the principal ray. The point
+where this ray intersects the image plane is called principal
+point\footnote{For more information visit \url{https://en.wikipedia.org/wiki/Pinhole_camera_model\#The_geometry_and_mathematics_of_the_pinhole_camera}}.
+Parameters $c_x$ and $c_y$ define coordinates of the principal point in the
+image plane.  It should be the center of the image, but assembling process of
+the camera might cause a small displacement.
 
 \subsection{Distortion coefficients}
 
-Cameras are equipped with the lenses to provide more light. Therefore the lens
-causes various distortions. Fish-Eye lenses are known for their distortion.
-Even web camera lens has distortion, but not so visible as the camera with a
-fish-eye lens. It is important to correct these distortions.
+Cameras are equipped with lenses to obtain sharp image instead of blurry. The
+lens may causes various distortions. Fish-Eye lenses are known for their
+distortion.  Even web camera lens has distortion, but not as visible as the
+camera with a fish-eye lens. It is important to correct these distortions.
 
 Two distortion types cause a significant effect on the image. The first one is
-the radial distortion, creating barrel effect and the second one tangential.
+the radial distortion, creating barrel effect and the second one tangential distortion.
 
 The radial distortion is caused by the camera lens (the effect of radial
 distortion is displayed in the image \ref{fig:distortion}). It can usually be
@@ -78,7 +81,7 @@ often need more parameters. Since our system use webcameras, we will use only
 three parameters.
 
 In the ideal camera, the lens would be placed parallel to the chip. Since such
-precision, while assembling process is not possible, tangential distortion
+precision is not possible, due to an assembling process, tangential distortion
 arises. For this distortion, we use two parameters.
 
 We describe both distortion effects by five parameters. More about the meaning
@@ -97,16 +100,26 @@ of the parameters could be found in \ref{learning-opencv}.
 	\label{fig:distortion}
 \end{figure}
 
-We can now describe transformation process in one camera by multiplication by
-camera matrix and then correcting the results by distortion coefficients. With
-these parameters, we can continue on stereo calibration.
+These nine parameters (four for camera matrix and five for distortion
+coefficients) describe the camera model. They may be used for example for
+projecting point from 3D space to image coordinates in the camera (OpenCV
+functin \verb+projectPoints+). We will use them, to get better results for
+stereo calibration and for localization, since they provide us a more accurate
+model of the camera.
+
+%We can now describe the transformation process in one camera by multiplication by
+%the camera matrix and then correcting the results by distortion coefficients. With
+%these parameters, we can continue on stereo calibration.
+
+%\todo[inline]{Ale co se pronasobi tou matici?}
+%\todo[inline]{Napis sem ten vzorecek}
 
 \section{Stereo calibration}
 
-After performing a calibration of both cameras, we also need information about
-their relative position to each other. This position can be described by six
-parameters, three as an angle around each ax to rotate and three for
-translation vector.
+After performing a calibration of both cameras separately, we also need
+information about their relative position to each other. This position can be
+described by six parameters, three as an angle around each ax to rotate and
+three for translation vector.
 
 Stereo calibration routine in OpenCV can also perform monocalibration for both
 cameras, but we pre-calibrate cameras on itself for better precision and better
@@ -117,9 +130,9 @@ only important previously mentioned rotation matrix and translation vector.
 
 \section{Calibration process}
 
-Now we know what we expect from calibration process. However, we still need to
+Now we know what we expect from the calibration process. However, we still need to
 perform this calibration. For the calibration, we use an object which is well
-known and easy to describe. In OpenCV is commonly used chessboard, since it is
+known and easy to describe. In OpenCV chessboard is commonly used, since it is
 a planar object (easy to reproduce by printing) and well described. OpenCV also
 provides methods for automatic finding chessboard in the picture, so no human
 intervention is needed to select chessboard corners from the image (an example
@@ -133,16 +146,18 @@ also use chessboard pattern for calibration.
 	\label{fig:chessboard}
 \end{figure}
 
-\subsection{How many images?} Now we know, we can use a chessboard to calibrate
-our cameras. However, still, the question of how many images are needed for the
+\subsection{How many images?} 
+
+Now we know that, we can use a chessboard to calibrate
+the cameras. However, the question of how many images are needed for the
 calibration remains. We discuss only the images where the full chessboard is
 found. For enough information from each image, we need a chessboard with at
 least $3\times3$ inner corners. It is better to have a chessboard with even,
 and odd dimension (for example 7$\times$ 8 inner corners) since it has only one
 symmetry axis, and the pose of the object can be detected correctly. It is
-important that chessboard indeed has squares, not rectangles (so it is better
+important that the chessboard indeed has squares, not rectangles (so it is better
 to check it after printing). A bigger chessboard is easier to recognize, so we
-recommend format A4.
+recommend at least format A4.
 
 We need only one image for computing distortion coefficients. However, for
 camera matrix, we need at least two images. For stereo calibration, we need at

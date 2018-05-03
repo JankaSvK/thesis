@@ -1,26 +1,104 @@
 \chapter{Implementation internals}
 
-%In this chapter we provide an overview of the whole application. The motivation
-%is to give you an idea how the program is working and help you to get oriented
-%in the code.
-%
-%\section{Application parts}
-%This application has few different parts. All of them have own file and
-%sometimes even own thread for processing.
-%
-%\subsubsection*{Start}
-%
-%\subsubsection*{ApplicationProcess}
-%
-%\subsubsection*{Cameras provider}
-%
-%\subsubsection*{Graphical user interface}
-%
-%\subsubsection*{Calibrations provider}
-%
-%\subsubsection*{Trackers provider}
-%
-%\subsubsection*{Localization provider}
-%
-%\section{Adding a new tracker}
-%
+In this chapter we provide an overview of the whole application. The motivation
+is to give you an idea how the program is working and help you to get oriented
+in the code.
+
+\section{Application parts}
+This application has few different parts. All of them have own file and
+sometimes even own thread for processing. We firstly shortly descibes queues, which are used to pass the information between different threads (and they create a skelet of the program) and then we will take closer look on the code itself.
+
+\subsection{Queues and lists}
+
+We use queues and lists as a way to communicate between the threads. Usually
+one thread only write to the queue and another only read.
+
+\subsubsection{Images Queue}
+
+Images queue is the containing captured images. We store only the last 500
+pictures for each camera, the oldest pictures are automatically thrown away by
+using \vebr+dequeue+. Using common webcamera with 30 FPS it store the last 16
+seconds of the record.
+
+\subsubsubsection*{Image}
+Each image contains these information:
+- timestamp -- the time when the image was captured. The time is seconds since the epoch.
+- image -- contains 3 channel two dimensional array containing captured image
+- chessboard
+
+Chessboard can contain these values:
+- False -- the chessboard was not found on the image
+- None -- no information about the chessboard
+- [NumPy array] -- if the chessboard was found successfuly, it contains returned corners 
+
+\subsubsection{Tracked points}
+
+
+
+\subsubsection{Localization points}
+
+\subsubsection{Console output}
+
+
+\subsubsection*{Start}
+
+
+
+
+\subsubsection*{ApplicationProcess}
+
+
+
+\subsubsection*{Cameras provider}
+
+Cameras provider is important from the beginning. Being in separate thread, it captures images while the program is running and saving them into Images queue. 
+
+
+\subsubsection*{Graphical user interface}
+
+
+
+
+\subsubsection*{Calibrations provider}
+
+
+
+\subsubsection*{Trackers provider}
+
+
+
+\subsubsection*{Localization provider}
+
+\section{Queues}
+
+stop event
+
+\section{Adding a new tracker}
+In this application you can test different trackers and their ability to track
+an object in this task. It is possible to add a new tracker and use it.
+
+We recommend to include a tracker into a directory with all other trackers
+(\verb+program/trackers+). We keep a naming convention, so we start the name of
+the tracker with a prefix "Tracker".
+
+It is important to remember, that for each object in each camera view a new
+instance of the tracker will be initialized.
+
+Tracker is expected to be a class which implements two methods:
+\verb+init(image, bounding_box)+ and \verb+update(image)+.
+
+Image will be provided as a three channel two dimensional NumPy array. Bounding
+box is represented by four numbers, in the following order:
+\verb+(x, y, width, height)+. Coordinates \verb+(x, y)+ represents top left corner of the bouding
+box and \verb+width+, \verb+height+ its dimension.
+
+The function \verb+init+ should return \verb+True+ or \verb+False+, depending
+if the initialization was finished successfuly.
+
+The function \verb+update+ should return tuple \verb+(state, bouding{\_}box)+.
+If the tracker is able to locate the object, it should return state equal to
+\verb+True+ and corresponding bounding box in the same format as used during
+initialization. However, if the object was not found, a tuple \verb+(False, None)+ should be returned.
+
+As the last step, we add a new tracker to \verb+program/TrackersFactory.py+. We
+associate its name as a string to the tracker's class.

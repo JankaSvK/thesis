@@ -1,58 +1,72 @@
 \chapter{Related works} 
 
 The subject of retrieving an object position in 3D is well known and discussed
-in many papers. Usage could be found in many different areas, for example in
-sport in hard to decide cases, in the robotics for better navigation, but
-also in virtual reality for more impressive effect.
+in many papers. Usage can be found in many different areas, for example in
+sports in unclear situation, in the robotics for better navigation and
+also in augumented reality for more impressive effect.
+
+\todo[inline]{Mozno este napises o tom, ako potom mozes postavit postavicku na spravne miesto}
 
 \section{Stereo vision systems}
 
-In the paper \citet*{zheng2010study}, the authors research stereo vision. The
-proposed system has a requirement of the parallel alignment of the cameras to
-each other but also parallel to the floor. The authors test the accuracy of the
+In the paper by \citet*{zheng2010study}, the authors research stereo vision. The
+proposed system has a requirement of the parallel alignment of cameras both to
+each other and also parallel to the floor. The authors test the accuracy of the
 system and also the disparity of the results in different distances. They
 provide several experiments measuring these disparities moving an object in an
-environment with one colored background.
+environment with one-color background.
 
-The paper \citet*{black2002multi} tries to solve a problem of the prediction
+The paper by \citet*{black2002multi} tries to solve a problem of the prediction
 the object position under full occlusion. The authors of the
 \citet*{yonemoto1998tracking} solve a problem of correct localization of the
-object consisting of the multiple parts. Such objects often fall apart when
+object consisting of multiple parts. Such objects often fall apart when
 trying to include them in virtual reality (for example a snowman can be mapped
-as three balls apart of each other). Proposed system estimated parameters and
+as three balls apart of each other). The proposed system estimated parameters and
 fixed points for each part independently. Then the system uses correspondence
 of the points within the movements.
 
-The system of the object tracking and localization in the garage was introduced
-in the paper \citet*{ibisch2015arbitrary}. The proposed system uses few cameras
-that share a part of their view. For object detection, they use a method of the
+The system for the object tracking and localization in the garage was introduced
+in the paper \citet*{ibisch2015arbitrary}. The proposed system uses a few cameras
+that share parts of their views. For object detection, they use a method of the
 background subtraction. Since the system's primary use is in the garage, they
-also propose a method to cope with the change of the lighting caused by car
+also propose a method to cope with the change of lighting caused by car
 lights. Their primary goal is to predict possible car collisions and therefore
-provide a data for a warning system.
+to provide a data for a warning system.
 
 \section{Use of the systems in sports}
 
-An excellent example of an usage of such a system is to solve cases in sports,
-where sight of the naked human eye is inconclusive. Over the last few years,
-one of the most famous systems is Hawk Eye (shortly described in
-\citet*{owens2003hawk}). The system provides access to the trajectory of the
-ball and can replay it to referees. Furthermore, event most popular soccer
-competitions are experimenting with system for detecting if the ball cross the
-goal line or not.  This system needs an expensive setup equipped with
-high-speed cameras. The software itself is of high price.
+An excellent example of an usage of a system for tracking an object in 3D space
+is to solve unclear situations in sports, where sight of the naked human
+eye is inconclusive. Over the last few years, one of the most famous systems is
+Hawk Eye (shortly described in \citet*{owens2003hawk}). The system provides
+access to the trajectory of the ball and can replay it to referees.
+Furthermore, even the most popular soccer competitions are experimenting with
+the system for detecting if the ball crosses the goal line or not.  This system needs
+an expensive setup equipped with high-speed cameras an the software itself is of
+high price.
 
 \section{Use of the systems in robotics}
 
-Described principles have a great usage in robotics, for better navigation,
-object manipulating and so on. For example, for the robotic competition
-RoboCup, category Soccer many systems for ball tracking were developed. Robots
+The principles described in previous sections have a extensive usage in
+robotics, for better navigation, object manipulating and so on. For example,
+for the robotic competition
+RoboCup, the category Soccer many systems for ball tracking were developed. Robots
 competing in this category are usually equipped with an omnidirectional camera.
 This camera is pointing vertically up, where the image reflects in a mirror.
 This principle provides a full 360\degree image of the environment provided by
 only one camera. In this case, it is possible to track an object by single
 camera, since additional information about the ball (such as color and size)
-are provided in advance. On the other hand, such a system is not static, the
+is provided in advance. On the other hand, such a system is not static, the
 background changes with every movement of the robot. Nevertheless, usage of
-additional camera may significatly improve the precision.. For more information
-about it, we refer to the paper \citet*{kappeler20103d}. 
+additional camera may significatly improve the precision. For more information
+about it, we refer to the paper \citet*{kappeler20103d}.
+
+\section{Our approach}
+
+After a review previously mentioned papers, we followed the idea of stereo
+vision provided by two cameras. We decided to propose a system which does not
+need any prior information about the object, but needs to be selected by the
+user. Also, we decided to test several cameras setups, not requiring specific
+one. Since, not many papers mention the tracking method which was used, we will
+try several to find the best available option. Due to great potential of the
+system in robotics, we will test our system also with a autonomous robot.

@@ -12,12 +12,12 @@ object in world coordinates from a tuple of coordinates from the images taken by
 cameras.
 
 \section{Projection matrices}
-Projection matrices provide us a way to transform world coordinates to image
+Projection matrices provide a way to transform world coordinates to image
 coordinates. The first step is to find out projection matrices for both
 cameras, and then we will use them for solving the triangulation problem.
 
 We define a projection matrix as a transformation matrix $P$, such that: $x = P
-\dot X$, where $X$ denotes a vector of size 4$\times$1 -- homogenous world coordinates
+ X$, where $X$ denotes a vector of size 4$\times$1 -- homogenous world coordinates
 of the object and $x$ denotes homogenous object coordinates in the image plane
 of the camera -- a vector 3$\times$1.
 
@@ -31,24 +31,24 @@ displayed in the figure \ref{fig:coordinate-system}.
 \begin{figure}
 \centering
 \includegraphics{img/camera-positions}
-\caption{Cameras layout and coordinate system}
+\caption{Cameras layout and the coordinate system}
 \label{fig:coordinate-system}
 \end{figure}
 
 \subsection{Computing projection matrices}
 After defining coordinate systems, we can compute the projection matrices for
 both cameras. We use projection matrix decomposition to get the projection matrix
-from calibration results.
+from the calibration results.
 
-We decompose projection matrix as $P = K(R|T)$, where $K$ is intristic
+We compose the projection matrix as $P = K(R|T)$, where $K$ is intristic
 camera matrix and $(R|T)$ is extrinsic matrix. $R$ is a rotation matrix and
-$T$ is a translation vector. We use this decomposition to compute the projection
+$T$ is a translation vector. We use this composition to compute the projection
 matrices.
 
 \emph{First camera}
 Since we set the origin of the world coordinate system in the first camera,
 the camera has no rotation nor translation to the coordinate system. Therefore
-we compute a projection matrix as:
+we compute the projection matrix as:
 
 \[
  P_1 = K_1 \cdot \begin{pmatrix}
@@ -56,20 +56,20 @@ we compute a projection matrix as:
 \end{pmatrix}
 \]
 
-Where $K_1$ denotes first camera intrinsic parameters matrix, $I_{3,3}$ identity
+Where $K_1$ denotes intrinsic parameters matrix of the first camera, $I_{3,3}$ identity
 matrix 3$\times$3 and $0_3$ zero vector. Only intristic parameters matrix take
 effect on given coordinates, computing from world coordinates in the image plane of the camera.
 
 \emph{Second camera}
-For the second camera projection matrix, stereo calibration results will be
-used. We know the rotation matrix and translation vector between the cameras,
+For the second camera's projection matrix, stereo calibration results will be
+used. We know the rotation matrix and the translation vector between the cameras,
 being able to get coordinates of the second camera relative to the first one.
 
-We now use this information in construction of projection matrix. $P_2 = K_2
-\dot (R | T)$, where $K_2$ is second camera intristic parameters matrix, $R$
+We now use this information in construction of the projection matrix, $P_2 = K_2
+\dot (R | T)$, where $K_2$ is intristic parameters matrix of the second camera, $R$
 rotation matrix and $T$ translation vector.
 
-More about the decomposition itself could be found in an article by
+More about the decomposition itself can be found in an article by
 \citet{computervisionblog}.
 
 \section{Triangulation}
@@ -77,13 +77,15 @@ Now when we know the projection matrices we can formalize our problem as
 \begin{equation}
 \mathrm{x_1} = P_1X, \mathrm{x_2} = P_2X \label{projection-statements}
 \end{equation}
-with the goal to find $X$. Since errors may occure during
+with the goal to find $X$. However, errors may occure during
 measurement of $x_1$, $x_2$ and calibration. In further steps we consider that
 calibration results are provided with high accurancy compared to measurement of
-$x_1$ and $x_2$ (that is the reason to have longer calibration with more images
+$x_1$ and $x_2$ (that is the reason to have longer calibration time with more images
 at once).
 
 \subsection{Simple linear triangulation}
+\todo[inline]{Tu sa stratil a treba to teda prepisat}
+
 We will now shortly describe how the triangulation is working under the hood.
 
 The results of cross product of vector itself is zero vector. We can write

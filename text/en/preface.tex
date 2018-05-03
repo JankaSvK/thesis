@@ -7,19 +7,52 @@ people have been creating machines and programs that solve problems more
 efficiently than human.
 
 From the beginning, a human has two eyes. He is equipped with stereo vision.
-Moreover, human can use it from the beginning of his life, able to estimate how
-far and where the object is.
+Moreover, man can use it from the beginning of his life. Two eyes provide
+stereo vision, which is useful to estimate how far and where exactly in 3D
+space is an observed object.
 
 Our goal is to propose a system that will be capable of similar results using a
-computer and web cameras. System like that can be used to monitor and track
-movement of the objects. For example, it can provide a trajectory of the
-quadcopter flight, or another autonomous robot. These obtained data can be
-used for additional analysis.
+computer and web cameras. The system can be used to monitor and track movement
+of the objects. For example, it can provide a trajectory of the quadcopter
+flight, or another autonomous robot. These obtained data can be used for
+additional analysis.
 
-Therefore, we solve a problem of object detection, tracking, and stereo vision
-by providing an image stream from two cameras. We focus on an overall process
-from the camera calibration, through object detection in both cameras to
-estimation of the object position in 3D.
+To achieve the above goal, we need to solve a problem of object detection,
+tracking, and stereo vision by providing an image stream from two cameras. We
+focus on an overall process from the camera calibration, through object
+detection in both cameras to estimation of the object position in 3D space.
+
+This thesis will be divided by the three steps to achieve our goal. The first
+step is to obtain information about the cameras. The Calibration chapter covers the
+process of obtaining a parameters to describe camera model by viewing specific
+pattern. Enough images of specific pattern provide enough information to get
+the parameters describing a camera.  Furthermore, positions of the pattern
+where both cameras see the pattern can be used for a stereo calibration. The
+stereo calibration provide information about the relative position of the
+cameras to each other. This relative position and the camera parameters we will
+later use in the localization process.
+
+The second step is to track an object. Firstly, user defines the object and
+then the object position estimation is provided by tracker algorithm. Many
+different approaches may be used. We differenciate between the tracking
+algorithms which work with a sequence of the images (sequence-based) and the
+algorithms working only with one image (detection-based). We provide several
+tracking algorithms from both groups. At the end of the chapter, we provide a
+comparison of mentioned trackers.
+
+The chapter Localization covers a steps needed to estimate a position of the
+object in three-dimensional space. At the beginning of the chapter, we choose
+and describe coordinate system, using results from stereo calibration. Then we
+derive projection matrices, which transforms from the world coordinates to the
+image coordinates. As a next step we introduce simple triangulation, which
+estimates the position of the object in 3D by providing calibration results,
+projection matrices and the coordinates of the object in both camera images.
 
 At the end of the thesis, we provide results of an evaluation of the proposed
-system.
+system. In the first experiments, we ommit a trackers and we evaluate a
+accuracy of the calibration and localization. Final experiments presents
+results from the tests of the program as a whole, from calibration through
+tracking until localization. 
+
+In the appendix we include user documentation for running the program and
+programmer documentation for better understanding of the code.

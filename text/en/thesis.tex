@@ -58,6 +58,7 @@
 \usepackage{listings}
 \usepackage{forest}
 \usepackage{dirtree}
+\usepackage{tikz}
 %%% Basic information on the thesis
 
 % Thesis title in English (exactly as in the formal assignment)
@@ -90,12 +91,30 @@
 % An optional dedication: you can thank whomever you wish (your supervisor,
 % consultant, a person who lent the software, etc.)
 \def\Dedication{%
-Dedication.
+This thesis is dedicated to all students who were or are strugling with the
+thesis as me and to their friend, families who supports them. I encourage you
+to not to give up and continue.
+
+I want to acknowledge and thank my supervisor for the topic and for the
+patience during last two years. A great appreciation belongs to Michal Koutný
+as my consultant, since he was the one who helped me with the toughest
+beginning. A great appreciation belongs to my dearest, since he was with me
+during the dark and bright days during writing this thesis. I thank my parents,
+for never ending support. They gave me the opportunity to study. To all my
+friends thank you for your understanding and ecouragement in many, many
+moments of crisis. Also thank to Martin for lending me a robot for the
+experiments.
 }
 
 % Abstract (recommended length around 80-200 words; this is not a copy of your thesis assignment!)
 \def\Abstract{%
-Abstract.
+The purpose of this project is to propose and implement a system for object
+localization using a stereo vision -- two cameras. The system computes relative
+position of the cameras to each other using a calibration pattern. Then the user
+selects the object to track. Different algorithms can be used for the tracking.
+The tracking algorithms available are detection-based and also sequence-based.
+When the object is found in the view of both cameras, it estimates a position
+in three dimensional space of the object using triangulation.
 }
 
 % 3 to 5 keywords (recommended), each enclosed in curly braces

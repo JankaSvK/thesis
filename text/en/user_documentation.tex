@@ -1,9 +1,16 @@
 \chapter{User documentation}
+The purpose of this project is to propose and implement a system for object
+localization using a stereo vision -- two cameras. The system computes relative
+position of the cameras to each other using calibration pattern.  Then user
+selects the object to track. Different algorithms can be used for the tracking.
+The tracking algortihms available are detection-based and also sequence-based.
+When the object is found in the view of the both cameras, a position in three
+dimensional space is estimated. 
 This part of the documentation is focused on the end user. We introduce
 installation details and manual for program usage.
 
 \section{Installation guide}
-This section documents the process of downloading til running the program.
+This section documents the process of downloading until running the program.
 
 \subsection{Downloading the code}
 The code is available at \url{https://github.com/JankaSvK/thesis}.
@@ -12,14 +19,16 @@ The code is available at \url{https://github.com/JankaSvK/thesis}.
 The software was tested on a system with Intel(R) Core(TM) i5-7300HQ CPU
 (2.50GHz, 2496 Mhz, 4Core), 16GB RAM running Microsoft Windows 10 Enterprise.
 Minimal requirements are lower, but the copmutation power reflects on frequency
-of getting localization results. However, it is multiplatform.
+of getting localization results. Also, we tested the program on the Ubuntu
+16.04.
 
-Also two cameras are needed. We tested using a Logitech V-U0018 and Genius
+Two cameras are needed. We tested using a Logitech V-U0018 and Genius
 islim 1322AF. A laptop camera may be used too. Requirements for the cameras
-are $640\times320$ px resolution and 20 FPS.
+are $640\times320$ px resolution and 20 FPS. We advise to turn off the
+autofocus, since it changes the focal length.
 
 \subsection{Dependencies}
-Following packages are required to run the application. We also provide
+The following packages are required to run the application. We also provide
 versions of packages used to create and test our implementation.
 
 \begin{center}
@@ -51,16 +60,19 @@ run on the first two cameras available.
 	\caption{Application window}
 \end{figure}
 
+\todo[inline]{treba popisat ako maju vyzerat ta dvojica inner corners a co je vlastne inner corners}
 \subsection{Calibration}
 As a first step, calibration is expected. We need a calibration pattern --
-chessboard, which could be printed. For given chessboard, edit values in
-\verb+program/Config.py+. Change the value of \verb+chessboard_inner_corners+
-to a number of \emph{inner} corners of your chessboard. Also change
-\verb+chessboard_square_size+ to the size of your square in millimiters. It is
-important to check, if printed chessboard has squares, not rectangles, since
-the printer can slightly scale the image while preprocessing for printing.
+chessboard (example in the figure \ref{fig:chessboard}), which could be
+printed. For given chessboard, edit values in \verb+program/Config.py+. Change
+the value of \verb+chessboard_inner_corners+ to a number of \emph{inner}
+corners of your chessboard. Also change \verb+chessboard_square_size+ to the
+size of your square in millimiters. It is important to check, if printed
+chessboard has squares, not rectangles, since the printer can slightly scale
+the image while preprocessing for printing. Moreover, calibration assumes it is
+a plannar object, so glue it to the box or another solid object.
 
-For calibration we provide rich set of views of the chessboard. It is important
+For calibration we provide a rich set of views of the chessboard. It is important
 to move with it, capture it from various angles, distances and in different
 parts of the image. Richer set of views increase robustness of the calibration.
 
@@ -85,7 +97,7 @@ view. Note that, not all trackers are able to recognise losing the object.
 
 \subsection{Localization}
 After initialization of the trackers, localization will start automatically.
-The results are displayed in the graph on the right. We can rotate graph by
+The results are displayed in the graph on the right. We can rotate the graph by
 grabbing it by mouse in its window. The dot represents current position and the
 line represent the trajectory.
 
@@ -94,8 +106,8 @@ Results from localization are automatically saved.
 \section{Additionals}
 
 Different options may be passed to the program (\ref{code:options}). In case no option
-is passed program runs on first two available cameras. Firstly calibration for
-each camera is done and then stereo calibration. As a tracker is used \verb+KCF+ by default.
+is passed, the program runs on first two available cameras. Firstly, calibration for
+each camera is done and then stereo calibration. As a tracker \verb+KCF+ is used by default.
 
 \begin{figure}
 \lstset{basicstyle=\ttfamily\footnotesize,breaklines=true,frame=lrtb}
@@ -117,7 +129,7 @@ Results of each calibration and localization are saved.
 
 \subsubsection{Calibration results}
 All calibration results are in the directory \verb+program/calib_results+. The
-directory has following structure:
+directory has the following structure:
 
 \begin{figure}
 \dirtree{%
@@ -138,7 +150,7 @@ be saved into \verb+program/localization_data/+. The naming convention for the
 file is the same as for the calibration results. However, a suffix is added --
 the index of the object.
 
-Saved localization data consist of the four columns separated by tabs. Each
+Saved localization data consists of the four columns separated by tabs. Each
 line represents succesful localization. In the first column is the time. In the
 rest three columns coordinates are stored (x, y, z).
 
