@@ -35,4 +35,3 @@ class ImageEntry(object):
 
     def chessboard_checked(self):
         return self._chessboard_checked
-

@@ -77,7 +77,7 @@ class CamerasProvider(object):
             self.number_of_read[shorter] += 1
             ok = self.capture_and_save_image(shorter)
             if not ok:
-                self.console_output.append("Video ended.")
+                self.console_output.append("Video ended. The views will not be updated.")
                 break
         self.stop_capturing()
 

@@ -23,12 +23,8 @@ class QueuesProvider(object):
         return cls.LocalizatedPoints3D[point_index]
 
     @classmethod
-    def get_mouse_click(cls, window_index, index=-1):
-        return cls.MouseClicks[window_index][index]
-
-    @classmethod
     def add_mouse_click(cls, window_index, x, y):
-        cls.MouseClicks[window_index].append({'x': x, 'y': y})
+        cls.MouseClicks[window_index].append((x, y))
 
     Threads = []  # Only for debugging purposes!
 
