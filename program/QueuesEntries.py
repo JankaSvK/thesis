@@ -25,6 +25,9 @@ class ImageEntry(object):
         self._chessboard = chessboard
         self._chessboard_checked = True
 
+    def get_chessboard(self):
+        return self._chessboard
+
     def contains_chessboard(self):
         return True if self._chessboard is not None else False
 

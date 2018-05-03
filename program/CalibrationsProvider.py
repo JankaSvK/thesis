@@ -49,7 +49,7 @@ class CalibrationsProvider(object):
             if len(images_with_chessboard) > self.maximum_images_for_monocalibration:
                 images_with_chessboard = random.sample(images_with_chessboard, self.maximum_images_for_monocalibration)
 
-            chessboards = [i.chessboard for i in images_with_chessboard]
+            chessboards = [i.get_chessboard() for i in images_with_chessboard]
             object_points_for_chessboards = [self.object_points_for_chessboard() for _ in
                                              range(len(images_with_chessboard))]
 
@@ -95,6 +95,7 @@ class CalibrationsProvider(object):
         import itertools
         images = list(
             itertools.islice(self.find_images_for_stereo_calibration(), self.maximum_images_for_stereocalibration))
+        print(len(images))
         if len(images) < self.minimum_images_for_stereo_calibration:
             self.console_output.append("Not enough images for stereo calibration.")
             return False
@@ -104,8 +105,8 @@ class CalibrationsProvider(object):
 
         self.console_output.append("Computing the stereo calibration from a sample of " + str(len(images)) + " images.")
 
-        imgpoints1 = [i[0].chessboard for i in images]
-        imgpoints2 = [i[1].chessboard for i in images]
+        imgpoints1 = [i[0].get_chessboard() for i in images]
+        imgpoints2 = [i[1].get_chessboard() for i in images]
         objpoints = [self.object_points_for_chessboard() for _ in range(len(imgpoints1))]
 
         print(len(imgpoints1), "images used for stereo calibration")
@@ -134,7 +135,6 @@ class CalibrationsProvider(object):
         return True
 
     def get_images_with_chessboard(self, images_queue, maximum):
-        found = 0
         images = list(images_queue)
         i = -1
         time_of_last_image = 0
@@ -147,17 +147,17 @@ class CalibrationsProvider(object):
 
             if image_entry.timestamp - time_of_last_image < self.skipping_time:
                 continue
-            if image_entry.chessboard_checked and not image_entry.contains_chessboard:  # chessboard was not found in previous runs
+            if image_entry.chessboard_checked() and not image_entry.contains_chessboard():  # chessboard was not found in previous runs
                 continue
-            if image_entry.contains_chessboard:  # chessboard was found in previous runs
+            if image_entry.contains_chessboard():  # chessboard was found in previous runs
                 images_with_chessboard.append(image_entry)
                 time_of_last_image = image_entry.timestamp
                 continue
 
             image_entry.add_chessboard(self.find_chessboard(image_entry.image))
 
-            if image_entry.contains_chessboard:
-                images_with_chessboard.append(images[i])
+            if image_entry.contains_chessboard():
+                images_with_chessboard.append(image_entry)
                 time_of_last_image = image_entry.timestamp
         return images_with_chessboard
 
@@ -186,7 +186,7 @@ class CalibrationsProvider(object):
                     pass
                 else:
                     break
-            images_iter.append(x for x in images_i if x.chessboard_checked() and not x.contains_chessboard())
+            images_iter.append(x for x in images_i if not x.chessboard_checked() or x.contains_chessboard())
 
         images = [next(x) for x in images_iter]
         earlier = images[0].timestamp > images[1].timestamp

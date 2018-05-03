@@ -72,7 +72,11 @@ class Tracker(object):
             image = self.get_newest_image().image
 
         self.tracker = TrackerFactory.get_tracker(self.tracker_type)
-        ok = self.tracker.init(image, bbox)
+
+        try:
+            ok = self.tracker.init(image, bbox)
+        except (RuntimeError, SystemError):
+            print("Initialization failed. Try again.")
 
     def track(self):
         time, position = self.get_object_position()
