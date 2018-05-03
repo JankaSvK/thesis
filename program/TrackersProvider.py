@@ -69,9 +69,7 @@ class Tracker(object):
         print("Initializing tracker on camera", self.camera_id, "at object", self.object_id)
 
         if image is None:
-            time, image = self.get_newest_image()
-            if image is None:
-                return False
+            image = self.get_newest_image().image
 
         self.tracker = TrackerFactory.get_tracker(self.tracker_type)
         ok = self.tracker.init(image, bbox)
@@ -83,8 +81,11 @@ class Tracker(object):
         self.coordinates.append((time, position))
 
     def get_object_position(self, image = None):
+        time = None
         if image is None:
-            time, image = self.get_newest_image()
+            image_entry = self.get_newest_image()
+            image, time = image_entry.image, image_entry.timestamp
+
             if time == self.last_image_time:
                 return False, False
             self.last_image_time = time
@@ -99,10 +100,9 @@ class Tracker(object):
 
     def get_newest_image(self):
         if len(self.image_stream) == 0:
-            return None, None # TODO throw an exception an catch that localization was unsuccessful
+            raise RuntimeError("Initialization of the tracker unsuccessful.")
 
-        time, image, _ = self.image_stream[-1]
-        return time, image
+        return self.image_stream[-1]
 
     def get_bounding_box_center(self, bbox):
         return int(bbox[0] + bbox[2] / 2), int(bbox[1] + bbox[3] / 2)

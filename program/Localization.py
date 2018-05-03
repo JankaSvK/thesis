@@ -16,7 +16,7 @@ class Localization(object):
     mono_calibration_results = None
     fundamental_matrix = None
 
-    localization_precision = 5 # in milimeters
+    localization_precision = 5 # in millimeters
     last_located_point = None
     last_located_point_time = [-1 for i in range(objects_count)]
     time_threshold_skip = 1/20
@@ -27,43 +27,31 @@ class Localization(object):
         cls.mono_calibration_results = [calibration_results1, calibration_results2]
         cls.fundamental_matrix = stereo_calibration_results.fundamental_matrix
 
-        stereo_rectify = False
-
-        if stereo_rectify:
-            cls.rotation_matrix1, cls.rotation_matrix2, cls.projection_matrix1, cls.projection_matrix2, _, _, _ = cv2.stereoRectify(
-                calibration_results1.camera_matrix, calibration_results1.distortion_coeffs,
-                calibration_results2.camera_matrix, calibration_results2.distortion_coeffs,
-                (640, 480), stereo_calibration_results.rotation_matrix, stereo_calibration_results.translation_vector)
-        else:
-            rt = np.append(stereo_calibration_results.rotation_matrix, stereo_calibration_results.translation_vector, axis = 1)
-#            cls.projection_matrix2 = calibration_results2.camera_matrix.dot(rt)
-            cls.projection_matrix2 = rt
-#            cls.projection_matrix1 = calibration_results1.camera_matrix.dot(np.append(np.identity(3), np.zeros((3, 1)), axis = 1))
-            cls.projection_matrix1 = np.eye(3, 4)
+        rt = np.append(stereo_calibration_results.rotation_matrix, stereo_calibration_results.translation_vector, axis = 1)
+        cls.projection_matrix2 = calibration_results2.camera_matrix.dot(rt)
+        cls.projection_matrix1 = calibration_results1.camera_matrix.dot(np.eye(3, 4))
 
     @classmethod
-    def get_3d_coordinates(cls, point1, point2):
-        if point1 is None or point2 is None:
+    def get_3d_coordinates(cls, *points):
+        if any(point is None for point in points) or len(points) != 2:
             return None
 
-        point1 = cls.get_undistorted_point(point1, 0)
-        point2 = cls.get_undistorted_point(point2, 1)
-
-        point1 = np.reshape(point1, [1, 1, 2])
-        point2 = np.reshape(point2, [1, 1, 2])
+        # OpenCv function works with a set of points. In our case we have only one point per camera,
+        # therefore we reshape into required format
+        points = [np.array(point).reshape(1, 1, 2).astype(float) for point in points]
+        points = [cls.get_undistorted_point(point, i) for i, point in enumerate(points)]
 
         locatedPointsHom = cv2.triangulatePoints(projMatr1=cls.projection_matrix1, projMatr2=cls.projection_matrix2,
-                                                 projPoints1=point1,
-                                                 projPoints2=point2)
+                                                 projPoints1=points[0],
+                                                 projPoints2=points[1])
         return cls.convert_from_homogenous(locatedPointsHom)
 
     @classmethod
     def get_undistorted_point(cls, point, cam_ind):
         calib_results = cls.mono_calibration_results[cam_ind]
-        point = np.array(point).reshape(1, 1, 2).astype(float)
-        undistorted = cv2.undistortPoints(point, calib_results.camera_matrix, calib_results.distortion_coeffs) # , P=calib_results.camera_matrix
-        print(undistorted)
-        return undistorted[0][0]
+        undistorted = cv2.undistortPoints(point, calib_results.camera_matrix, calib_results.distortion_coeffs,
+                                          P=calib_results.camera_matrix) # without setting P normalized points would be returned
+        return undistorted
 
     @classmethod
     def save_localization_data(cls):

@@ -139,29 +139,26 @@ class CalibrationsProvider(object):
         i = -1
         time_of_last_image = 0
         images_with_chessboard = []
-        while not self.stop_event.is_set() and found < maximum:
+        while not self.stop_event.is_set() and len(images_with_chessboard) < maximum:
             i += 1
             if len(images) <= i:
                 break
-            time, image, chessboard = images[i]
-            if time - time_of_last_image < self.skipping_time:
+            image_entry = images[i]
+
+            if image_entry.timestamp - time_of_last_image < self.skipping_time:
                 continue
-            if chessboard is False:  # chessboard was not found in previous runs
+            if image_entry.chessboard_checked and not image_entry.contains_chessboard:  # chessboard was not found in previous runs
                 continue
-            if chessboard is not None:  # chessboard was found in previous runs
-                images_with_chessboard.append(images[i])
-                time_of_last_image = time
+            if image_entry.contains_chessboard:  # chessboard was found in previous runs
+                images_with_chessboard.append(image_entry)
+                time_of_last_image = image_entry.timestamp
                 continue
 
-            chessboard = self.find_chessboard(image)  # run chessboard check
+            image_entry.add_chessboard(self.find_chessboard(image_entry.image))
 
-            if chessboard is not None:
-                images[i].chessboard = chessboard
+            if image_entry.contains_chessboard:
                 images_with_chessboard.append(images[i])
-                time_of_last_image = time
-                found += 1
-            else:
-                images[i].chessboard = False
+                time_of_last_image = image_entry.timestamp
         return images_with_chessboard
 
     def find_chessboard(self, image):
@@ -189,27 +186,22 @@ class CalibrationsProvider(object):
                     pass
                 else:
                     break
-            images_iter.append(x for x in images_i if x is not False)
-
-
+            images_iter.append(x for x in images_i if x.chessboard_checked() and not x.contains_chessboard())
 
         images = [next(x) for x in images_iter]
-        earlier = images[0].time > images[1].time
+        earlier = images[0].timestamp > images[1].timestamp
         last_time = 0
 
         while True:
-            while images[earlier].time <= last_time + self.skipping_time:
+            while images[earlier].timestamp <= last_time + self.skipping_time:
                 images[earlier] = next(images_iter[earlier])
-                earlier = images[0].time > images[1].time
-            if images[not earlier].time - images[earlier].time < self.time_threshold:
+                earlier = images[0].timestamp > images[1].timestamp
+            if images[not earlier].timestamp - images[earlier].timestamp < self.time_threshold:
                 for image in images:
-                    if image.chessboard is None:
-                        image.chessboard = self.find_chessboard(image.image)
-                        if image.chessboard is None:
-                            image.chessboard = False
-                            break
-                if all((x.chessboard is not False and x.chessboard is not None) for x in images):
+                    if not image.chessboard_checked():
+                        image.add_chessboard(self.find_chessboard(image.image))
+                if all(x.contains_chessboard() for x in images):
                     yield images[0], images[1]
-                last_time = images[not earlier].time
+                last_time = images[not earlier].timestamp
             images[earlier] = next(images_iter[earlier])
-            earlier = images[0].time > images[1].time
+            earlier = images[0].timestamp > images[1].timestamp

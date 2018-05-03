@@ -30,7 +30,7 @@ class GUI(object):
         self.stop_event = stop_event
         self.trackers_initialization_events = trackers_initialization_events
 
-        self.streams = image_streams
+        self.image_streams = image_streams
         self.video_views = []
 
         self.objects_count = objects_count
@@ -63,7 +63,8 @@ class GUI(object):
             # Create camera view windows
             video_view = tk.Label(self.root)
             click_bind = functools.partial(self.click_callback, id = cam_ind)
-            video_view.bind("<Button-1>", click_bind)
+            mouse_left_button = "<Button-1>"
+            video_view.bind(mouse_left_button, click_bind)
             self.video_views.append(video_view)
 
             # Create buttons for tracker initialization
@@ -172,11 +173,11 @@ class GUI(object):
                 self.graph.show()
 
     def update_cameras_views(self):
-        for i, stream in enumerate(self.streams):
+        for i, stream in enumerate(self.image_streams):
             if len(stream) == 0:
                 image = self.create_empty_image()
             else:
-                time, image = stream[-1].time, stream[-1].image
+                image = stream[-1].image
                 self.add_tracker_information(i, image)
                 image = self.process_image_for_displaying(image)
 

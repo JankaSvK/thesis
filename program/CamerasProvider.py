@@ -1,8 +1,8 @@
 import cv2
 import threading as t
 import Config
-from Image import Image
 import time
+from QueuesEntries import ImageEntry
 
 
 class CamerasProvider(object):
@@ -89,10 +89,11 @@ class CamerasProvider(object):
     def capture_and_save_image(self, cam_index):
         ok, frame = self.captures[cam_index].read()
         if ok:
-            image = Image(time = time.time(), image=frame, chessboard=None)
+            image_entry = ImageEntry(frame)
+
             if self.stop_event.is_set():
                 return False
-            self.images[cam_index].append(image)
+            self.images[cam_index].append(image_entry)
             return True
         else:
             return False
