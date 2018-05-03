@@ -2,6 +2,7 @@ import time
 from threading import Thread
 
 import Config
+from QueuesEntries import Point
 from TrackerFactory import TrackerFactory
 
 
@@ -82,7 +83,9 @@ class Tracker(object):
         time, position = self.get_object_position()
         if time == False:
             return
-        self.coordinates.append((time, position))
+
+        point = Point(position, time)
+        self.coordinates.append(point)
 
     def get_object_position(self, image = None):
         time = None

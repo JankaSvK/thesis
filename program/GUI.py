@@ -194,7 +194,7 @@ class GUI(object):
 
             color = self.bgr_to_rgb_color_and_scale(self.rgb_colors_for_objects[obj_id])
 
-            time, coords = tracked_points[-1]
+            time, coords = tracked_points[-1].timestamp, tracked_points[-1].coordinates
             if coords is None:
                 cv2.putText(image,
                             "Object " + str(obj_id + 1) + " was not found",

@@ -84,20 +84,16 @@ class Localization(object):
         point1 = points0[-1]
         point2 = points1[-1]
 
-        if point1 is None or point2 is None or point1[0] is None or point2[0] is None:
+        if abs(point1.timestamp - point2.timestamp) > cls.time_threshold_correspondence:
             return
 
-        if abs(point1[0] - point2[0]) > cls.time_threshold_correspondence:
-            return
-
-        time = (point1[0] + point2[0]) / 2
+        time = (point1.timestamp + point2.timestamp) / 2
         if time - cls.last_located_point_time[object_id] < cls.time_threshold_skip:
             return
         cls.last_located_point_time[object_id] = time
 
-        located_point = Localization.get_3d_coordinates(point1[1],
-                                                        point2[1])
-        print(point1, point2)
+        located_point = Localization.get_3d_coordinates(point1.coordinates,
+                                                        point2.coordinates)
         if located_point is None:
             return
 
