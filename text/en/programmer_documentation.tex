@@ -6,7 +6,10 @@ in the code.
 
 \section{Application parts}
 This application has few different parts. All of them have own file and
-sometimes even own thread for processing. We firstly shortly descibes queues, which are used to pass the information between different threads (and they create a skelet of the program) and then we will take closer look on the code itself.
+sometimes even own thread for processing. We firstly shortly descibes queues,
+which are used to pass the information between different threads (and they
+create a skelet of the program) and then we will take closer look on the code
+itself.
 
 \subsection{Queues and lists}
 
@@ -15,44 +18,94 @@ one thread only write to the queue and another only read.
 
 \subsubsection{Images Queue}
 
-Images queue is the containing captured images. We store only the last 500
-pictures for each camera, the oldest pictures are automatically thrown away by
-using \vebr+dequeue+. Using common webcamera with 30 FPS it store the last 16
-seconds of the record.
+Images queue is the containing captured images with some additional
+information. We store only the last 500 pictures for each camera, the oldest
+pictures are automatically thrown away by using \verb+dequeue+. Using common
+webcamera with 30 FPS it store the last 16 seconds of the record.
 
-\subsubsubsection*{Image}
-Each image contains these information:
+\subsubsection*{Image entry}
+
+Each image entry in Images queue contains these information:
 - timestamp -- the time when the image was captured. The time is seconds since the epoch.
 - image -- contains 3 channel two dimensional array containing captured image
-- chessboard
-
-Chessboard can contain these values:
-- False -- the chessboard was not found on the image
-- None -- no information about the chessboard
-- [NumPy array] -- if the chessboard was found successfuly, it contains returned corners 
+- chessboard{\_}checked -- if the chessboard was already checked on the image.
+  Since the OpenCV functiono \verb+findChessboardCorners+ takes a lot of time,
+  it helps to only run only once this fucntion on each image.
+- chessboard -- if the chessboard was found, this is set to the chessboard
+  corners coordinates from the image.
 
 \subsubsection{Tracked points}
 
+For each combination of the camera and the tracked object we create a list to
+save results from corresponding tracker. This is kept as a list of lists
+containing Point.
 
+Point consists of the timestamp (similar to the Image entry) and coordinates.
 
 \subsubsection{Localization points}
 
+For each object we create a list for localization results. Into this list we
+save a Point -- an object with timestamp and coordinates. The point is inserted
+to the corresponding queue by object{\_}id.
+
 \subsubsection{Console output}
 
+To provide a console with the information in the application window we use a
+list for logging an information. Everything appended to this queue will be
+displayed in the text box. Only strings can be appended.
 
-\subsubsection*{Start}
+\subsubsection{Mouse clicks}
+
+Each mouse click with the left in the camera view is recorded and saved to this
+queue. For each camera view we create a separate list, into which we append
+coordinates of the mouse click.
+
+\subsubsection*{Main.py}
+
+This file is an entry point for our application. It sets the count of the
+objects. Important is \verb+stop_event+. We assume that, all threads will stop
+when \verb+stop_event+ is set. We set it any time, when the application should
+be closed (unhandled exception, closing the application window, etc.).
+
+This entry point is the only one non-daemon thread. It creates a new thread for
+the application to run and waits until the end of the program. To all other
+threads, the stop event will be passed as an argument. We use only one stop
+event to stop the whole application.
 
 
+\subsubsection*{ApplicationProcess.py}
 
+This part of the program is responsible for the running all of the other parts.
+It runs them step by step, starting with the initialization of the cameras and
+ending with the localization process. The steps will be more covered in the
+following sections.
 
-\subsubsection*{ApplicationProcess}
+The steps are
+- initialization of the cameras -- CamerasProvider
+- initilaization of the GUI -- GUI
+- performing mono calibration and stereocalibration -- CalibrationsProvider
+- initilization trackers -- TrackersProvider
+- computing data for showing cameras and localization - Localization
+- localizating all the objects - Localization
 
-
+This process is encapsuladet in the thread created by the Main. During the
+process, some of the tasks are encapsulated in the own threads. At the end this
+thread is used for localization.
 
 \subsubsection*{Cameras provider}
 
-Cameras provider is important from the beginning. Being in separate thread, it captures images while the program is running and saving them into Images queue. 
+Cameras provider runs in a separate thread. Based on the options it will
+capture the images from the cameras or from the video files. Capturing is
+stopped, when the stop event is set, as a final step it releases the cameras or
+the video files.
 
+In case that the input is provided by video files, waiting points are added, to
+not to run ahead the videos. In case that computation of the other parts slow
+down the application, the provider will capture an image from the video, which
+is behind (that means, videos with different FPS may be used).
+
+\todo[inline]{Asi sa nezmensuju obrazky ked su z kamery a neviem ci to staci takto samo}
+\todo[inline]{Ten capture caka na tu fotku?}
 
 \subsubsection*{Graphical user interface}
 

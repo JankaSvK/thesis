@@ -1,0 +1,20 @@
+Usage: Main.py [options]
+
+Options:
+  -h, --help            show this help message and exit
+  --camera_input1=NUMBER
+                        Index of camera to be run as left camera
+  --camera_input2=NUMBER
+                        Index of camera to be run as left camera
+  -o NUMBER, --number_of_objects=NUMBER
+                        Number of objects to be tracked.
+  --calibration_results1=FILE
+                        Calibration results for the first camera
+  --calibration_results2=FILE
+                        Calibration results for the second camera
+  --stereo_calibration_results=FILE
+                        Stereo calibration results
+  --video1=FILE         Video recording for the first camera
+  --video2=FILE         Video recording for the second camera
+  -t TRACKER, --tracker=TRACKER
+                        The algorithm used for tracking
