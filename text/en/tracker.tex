@@ -324,143 +324,173 @@ correlation tracker is based on the paper by \citet*{correlation}.
 
 \section{Trackers evaluation}
 
-In previous section we mention many different trackers. They differs in the
-approach to the video stream and obtaining informationn from it. As we
-mentioned earlier, some of them work with just one image, other ones with
-sequence of the images. In this section we will provide a comparison between
-them. Our goal is to find the best performing one among them.
+In the previous section, we described many different trackers. Now we provide
+their evaluation of several experiments. Our goal is to find the
+best-performing ones. The trackers differ in the approach to obtain information
+from the video stream, so it is important to test them under real conditions.
 
-Firstly, we list qualities we measure and are important to us:
+Firstly, we define the key abilities which are essential for our project. Then
+we provide a description and the results from several experiments. At the end
+of this section, in conclusion, we provide few pieces of advice how to choose
+the best tracker for a specific environment.
+
+\subsection*{Key abilities of the tracker}
+
+The trackers differ, therefore they can outperform others in some specific
+situations. To be able to compare two trackers, we provide a list of the most
+important to us in our project.
+
 \begin{itemize}
 	\item Accuracy
 	\item Speed
 	\item Ability to recover from the occlusion
-	\item Bonus: ability to track more objects
+	\item Ability to track multiple objects
 \end{itemize}
 
-It is important to have an \emph{accurate} tracker. The accuracy of the tracker highly
-impact on the results of the localization and small imprecision may results in
-estimating a position of the object few centimenters away.
+Following paragraphs describe their importance and also the way we measure them
+in our experiments.
 
-Complexity of the tracker may impact its \emph{speed} negatively. Usually, more
-complex tracker take more time to process the image. Our system focus on live
-localization process, therefore it is important to have fast tracker. Slow
-tracker may cause in love system missing the images, since it is not able to
-run "live". Therefore, it may result also in bad accuracy, because the tracker
-may loose the object, since it is skipping the images in between.
+\subsubsection*{Accuracy}
 
-As our last criteria we set \emph{ability to recover from the occlusion}. As
-occlusion we mean partially or fully covering the tracked object by another
-object. This ability is not crucial, but it might come handy, if the tracked
-object leave the area of the view of the camera.
+The good tracker has to be accurate. Tracker which is not accurate does not
+satisfy its purpose. Furthermore, the accuracy is important to obtain good
+localization results, since the inaccuracy of the estimated position of the
+object in the image cause inaccuracy in the estimated position in the 3D space.
 
-In order to test our trackers we tested them on videos with same conditions.
-The description of the experiments and the results obtained follow.
+It is quite difficult to say what is accuracy in the tracker case. Hence, we
+measure \emph{inaccuracy} instead. Inaccuracy in our case is represented by the
+distance (in pixels) from the true position of the object and the one provided
+by the tracker. Higher values mean less accurate tracker.
 
-\subsection{Autonomous robot following a black line}
+To obtain robust results (not depending on one image), we take many images and
+compute the inaccuracy for each of them. Then the mean of this inaccuracy is
+the estimated inaccuracy for the tracker. The value is dependend on the
+resolution of the images. In our case we use images 640 $\times$ 480 px.
 
-It is important to know to what purpose will be our project serves. We focus on
-the robots and tracing their movement in the 3D space. We decided to test our
-tracker in such simplified environment with moving autonomous robot.
+The last problem remaining is to get the right position of the object. One
+approach is to get the position by selecting the object by a human. This
+approach is very time consuming because only a one-minute long video contains
+approximately 1800 frames.
 
-Our experiment consisted of the robot following the black line -- in shape of
-the oval (figure \ref{fig:robot-oval}). We initialized all trackers to the same
-bounding box (which is displayed by blue line on the image), setting our object
-to track. Only exception is SIMPLEBACKGROUND tracker, which needs an image
-without an object for initialization, therefore we provided it to it
-separately.
+Instead of this approach, we select the best tracker. We do it by looking at
+the tracking results on the video, and we choose the one which tracked the
+whole video correctly. This representative tracker has imprecision equal to 0.
+The inaccuracy of the other trackers is computed as a distance between the
+selected object by this tracker and the representative tracker. 
+
+\subsubsection*{Speed/Computational time}
+
+Trackers differ not only in their accuracy but naturally also in the time
+needed to process an image to find the object. To measure the tracker's speed,
+we measure this time. We measure it as a number of ticks passed during calling
+tracker update (get the position on the given image). Then we take the number
+of the ticks per second and divide it by the number of ticks needed for tracker
+update. This way we obtain the number of the images that could be processed in
+one second by this tracker. Again, we do it on many images and then take a mean
+of these values.
+
+For the number of images that could be processed in one second, we use a
+shortcut FPS, coming from Frames Per Second. A higher number means a higher
+speed of the tracker, therefore less time needed for each image.
+
+This value is highly dependable on the computer and the operating system.
+Therefore, we use the value of FPS as a rough guess.
+
+\todo[inline]{Mozno napisat na akom stroji bolo toto ratane}
+
+Choosing a tracker by its speed is important. We consider a tracker too slow if
+it is not able to track alive (>30~FPS). Even if the tracker has 30~FPS in the
+experiment, it might be too slow in the application, since it has to perform
+many other tasks. Slow tracker cause lag the whole application since much
+computational power is used for the tracking.
+
+\subsubsection*{Recovering from the occlusion}
+
+We refer to occlusion as a partially or fully covering tracked object by
+another one, or leaving the view of the camera.
+
+During the tracking, it might come handy to have a tracker, which can recover
+from the occlusion. It is not easy, to keep the object visible in both cameras.
+Therefore, we are interested also in the ability to recover from the occlusion.
+
+To test this ability, we watched the videos with tracking results and decided
+if it can recover or not.
+
+As another useful ability is to detect if the object was lost. It is better to
+report object loss than providing incorrect results. We tested it together with
+recovering.
+
+\subsubsection*{Tracking multiple objects}
+
+As an addition to our project, our program can localize multiple objects. When
+working with multiple objects, it is important to remember that not all
+trackers may be able to track correctly multiple objects at the same time.
+
+More problem arises if the tracking objects occlude each other since not all
+trackers can handle it.
+
+We observed this ability by the human eye.
+
+With tracking multiple objects, the speed of the program may decrease rapidly.
+It is important to remember, that each object in each camera view has own
+tracker. Therefore the tracking part takes more time.
+
+In the next section, we provide an overview of the experiment used to estimate
+tracker abilities.
+
+%%%%%%%%%%%%
+
+\subsection{Experiments and the results}
+
+We know describe the experiments use to measure tracker's statistics. Since the
+main use of our project can be to track a robots and record their trajectory,
+we decided to test the trackers under similar circumstances.
+
+In some experiments we use autonomous robot, which has the shape of oval, 3~cm
+height and having 6~cm in diameter. This robot is able to follow a black line.
+We used a oval as the shape of the line (see the figure \ref{fig:robot-oval}).
+
+In order to test the trackers under same conditions, we recorded a video of the
+robot. We then found the bounding box for the object at the start and
+initialized the trackers on the same video with same bounding box at the
+beginning. We made only some exception because of the requirements of the some
+trackers, which are mentioned in the corresponding experiment.
+
+\subsubsection{Speed and accuracy}
+
+The first experiment is to estimate tracker's speed and accuracy. We used a
+video of the moving robot in shape of oval. For the accuracy measurement we
+choosed a Simple Background tracker as our representative, since it provided an
+excellent example of the correct tracking on this video. The representative
+tracker is always displayed as a red bounding box and the blue is used for
+tested tracker.
+
+Since the Simple Background trackers need an empty background, when
+initializing, we passed an image without a robot to it.
 
 \begin{figure}
 \centering
 \includegraphics[width=0.6\linewidth]{img/robot-oval.png}
-\label{fig:robot-oval}
 \caption{Selecting object to track on the video}
+\label{fig:robot-oval}
 \end{figure}
 
 We consider this experiment as quite difficult for the trackers, since the
 robot is not only moving, but also quite fast changing its appearance. In a
-second or two, its top platform is mirrored.
-
-On the other hand, we provide clear background with no noise, to be able to see
-a behaviour of the trackers.
+second or two, its top platform is mirrored. On the other hand, the object does
+not change size and the background is very clear.
 
 The results of the experiment are available in the table \ref{table:experiment-robot}.
 
 \begin{table}
 \centering
 \begin{tabular}{l|l|l}
-Tracker	& FPS & Accuracy \\
+Tracker	& FPS & Inaccuracy (px) \\
 \hline
 \input{experiments/trackers.txt}
 \end{tabular}
+\caption{Estimation of the trackers speed and inaccuracy.}
 \label{table:experiment-robot}
-\caption{Results of the trackers evaluation}
-\end{table}
-
-\subsubsection*{Explanation of the measured results}
-
-\emph{FPS} is a shortcut for "Frames Per Second". In the experiment, we measured
-how many ticks of the processor the tracker need to process one image in
-average. Then we dividided the number of ticks per second by this value. It
-means, faster trackers have higher value of FPS, able to process more images in
-second. In the table is the mean value of the ticks needed for each image.
-
-This value is only approximate and usually in the whole program with
-localization it will be lower, since some of the computation power has to be
-used for other parts of the program. We consider a tracker unusable, if it is
-not able to process at least 30 images per second, since it is usually the
-capturing speed of the cameras.
-
-Tracker speed higly influence the speed of the program itself. Spending all of
-the computation power to process an image by tracker results to lagging in the
-other parts.
-
-\emph{Accuracy} 
-This is more complicated one. To measure accuracy, the best
-option would be to tag an object on the each frame by the man. This approach is
-highly time consuming and performing experiment on another video would cost an
-hours tagging the video.
-
-Our approach is to choose the best performing tracker, which detect the object
-correct. In this situation, it does not matter, if it slow. Then for the each
-frame of the video we compute the distance between the estimated position of
-the representative tracker and the current one. The result is the mean of the
-distances between these results of the trackers expressed in pixels.
-
-More specificaly, in our case we choose Simple Background tracker, since it
-performed very well (with correct parameters) on the video.
-
-From the results, we can see that MIL, BOOSTING and TLD trackers are too slow
-for our application which runs live. HSV tracker was not able to perform at
-all, since it is multicolored object and it did not find the object at any
-image.
-
-We can also see that, even the MIL and BOOSTING trackers were slow, they
-performed quite well. The trackers which have mean value of accuracy more than
-100 lost the object at some point and were not aware of it.
-
-As a result from this experiment, we consider CORRELATION, SIMPLEBACKGROUND,
-MEDIANFLOW, PATTERMATCHING as usable for our purposes.
-
-To test HSV tracker, we modified the experiment by with placing orange
-paper to track on the top of the robot (see figure \ref{fig:hsv-bbox}). The obtained
-values for this tracker are listed in the table \ref{table:hsv}. For improving the
-performance of the HSV tracker, it is better to select smaller area with the
-same color. Therefore, the tracker will track only this are, not the whole
-object. The difference between the are of the SIMPLEBACKGROUND and the HSV
-tracker is displayed in the figure \ref{fig:hsv-diff}. The red line symbolises
-Simple Background tracker and the blue one the HSV tracker. The resulted
-accuracy is caused by tracking specific part of the object. The tracker
-performed very well.
-
-\begin{table}
-\centering
-\begin{tabular}{l|l|l}
-Tracker	& FPS & Accuracy \\
-\hline
-\input{experiments/hsv.txt}
-\end{tabular}
-\label{table:hsv}
 \end{table}
 
 \begin{figure}
@@ -478,15 +508,49 @@ Tracker	& FPS & Accuracy \\
 \caption{Testing HSV tracker}
 \end{figure}
 
-\todo[inline]{u fps by sa zislo napisat aky stroj}
+\begin{table}
+\centering
+\begin{tabular}{l|l|l}
+Tracker	& FPS & Inaccuracy (px) \\
+\hline
+\input{experiments/hsv.txt}
+\end{tabular}
+\caption{TODO caption}
+\label{table:hsv}
+\end{table}
+
+From the results, we can see that MIL, BOOSTING and TLD trackers are too slow
+for our application which runs live. HSV tracker is not able to perform at
+all, since the robot is multicolored object.
+
+We can also see that, even the MIL and BOOSTING trackers were slow, they
+performed quite well. The trackers which have mean value of accuracy more than
+100 lost the object at some point and were not aware of it.
+
+As a result from this experiment, we consider CORRELATION, SIMPLEBACKGROUND,
+MEDIANFLOW, PATTERMATCHING as usable for our purposes.
+
+To test HSV tracker, we modified the experiment by with placing orange paper to
+track on the top of the robot (see figure \ref{fig:hsv-bbox}). The obtained
+values for this tracker are listed in the table \ref{table:hsv}. For improving
+the performance of the HSV tracker, it is better to select smaller area with
+the same color. Therefore, the tracker will track only this are, not the whole
+object. The difference between the are of the SIMPLEBACKGROUND and the HSV
+tracker is displayed in the figure \ref{fig:hsv-diff}. The red line symbolises
+Simple Background tracker and the blue one the HSV tracker. The resulted
+accuracy is caused by tracking specific part of the object, since the tracker
+performed very well.
+
+\todo[inline]{Netusim, ci pisat nazvy trackerov velkym alebo malym, niektore su fakt srkatky, u inych to neviem...}
 
 \subsection{Object under occlusion}
 
 As we have mentioned earlier, it might come handy, to have a tracker which is
-able to recover from occlusion. We prepared an experiment, which lost the robot
-from the view. We were interested if the tracker is able to report lost object
-(or return wrong results) and if it was able to track the object again after
-coming back to camera view. The example of the successful recover from the occlusion is displayed in the figure \ref{fig:occlusion}.
+able to recover from occlusion. We prepared an experiment, which loose the
+robot from the view. We were interested if the tracker is able to report object
+lost (or returns wrong results) and if it was able to track the object again
+after coming back to camera view. The example of the successful recover from
+the occlusion is displayed in the figure \ref{fig:occlusion}.
 
 \begin{figure}
 \centering
@@ -496,27 +560,9 @@ coming back to camera view. The example of the successful recover from the occlu
 \begin{subfigure}{0.48\linewidth}
 \includegraphics[width=\linewidth]{img/experiments/occlusion2.png}
 \end{subfigure}
-\label{fig:occlusion}
 \caption{Example of successfully recovering from the full occlusion}
+\label{fig:occlusion}
 \end{figure}
-
-
-\begin{table}
-\centering
-\begin{tabular}{l|l|l}
-Tracker & Report of the object lost & Recovery from full occlusion \\
-\hline
-SIMPLEBACKGROUND & Yes & Yes \\
-MIL & No & No \\
-BOOSTING & No & No \\
-TLD & Sometimes & Yes \\
-MEDIANFLOW & Yes & No \\
-HSV & Yes & Yes \\
-PATTERNMATCHING & No & Yes \\
-CORRELATION & No & No \\
-MOSSE & Sometimes & No \\
-\end{tabular}
-\end{table}
 
 \subsection{Tracking multiple objects}
 
@@ -525,47 +571,29 @@ detection-based trackers usually choose the best position with highest area
 satisfing given condition, therefore tracking multiple object is not possible.
 
 In such situation when tracking multiple object is needed, sequence-based
-trackers may outperform detection-based trackers.. We decided to test their
+trackers may outperform detection-based trackers. We decided to test their
 ability to keep tracking the same object, the results are listed in the table
-\ref{table:multiple-objects}.
+\ref{table:occlusion-multiple} in the fourth and fifth columns.
 
 Most of the trackers are not able to recover from mutual occlusion. Denote as
 the first object the object behind and the second the one in front of the
 first. Then the second object approach first, the tracker of the first object
 learn fase of the changing shape of the object and therefore the tracker start
-to track the second object. This happened to most of the trackers.
-
-\begin{table}
-\centering
-\begin{tabular}{l|l|l}
-Tracker & Ability to track multiple objects & Survived they occlusion\\
-\hline
-SIMPLEBACKGROUND & No & No \\
-MIL & Yes & No \\
-BOOSTING & Yes &  No\\
-TLD & Yes* & Yes \\
-MEDIANFLOW & Yes & No \\
-HSV & Only different colors & Yes \\
-PATTERNMATCHING & Only different patterns* & Yes \\
-CORRELATION & Yes & No \\
-MOSSE & Yes & No \\
-\end{tabular}
-\label{table:multiple-objects}
-\end{table}
-* Trackers performed badly
+to track the second object. This situation could not resolve most of the
+trackers correctly.
 
 \begin{figure}
 \centering
 \begin{subfigure}{0.48\linewidth}
 \includegraphics[width=\linewidth]{img/experiments/color-occlusion.png}
-\caption{}
+\caption{Successful (HSV)}
 \end{subfigure}
 \begin{subfigure}{0.48\linewidth}
 \includegraphics[width=\linewidth]{img/experiments/occlusion.png}
-\caption{}
+\caption{Unsuccessful (MIL)}
 \end{subfigure}
+\caption{Example of recoverings from the full occlusion}
 \label{fig:occlusion}
-\caption{Example of successfully recovering from the full occlusion}
 \end{figure}
 
 \subsection{Conlusion}
@@ -603,3 +631,26 @@ Some tips at the end:
 \item if the mutual occlusion of the objects may appear -- try TLD
 \item otherwise, it is worth to try MEDIANFLOW, CORRELATION and sometimes also MOSSE, PATTERNMATCHING
 \end{itemize}
+
+\begin{landscape}
+\begin{table}
+\centering
+\begin{tabular}{p{5cm}|p{3cm}|p{4cm}|p{5cm}|p{5cm}}
+Tracker & Report object lost & Recovers from full occlusion & Ability to track multiple objects & Able to track correctly after mutual occlusion of tracked objects \\
+\hline
+SIMPLEBACKGROUND & Yes & Yes & No & No \\
+MIL & No & No  & Yes & No \\
+BOOSTING & No & No & Yes & No \\
+TLD & Sometimes & Yes & Yes* & No \\
+MEDIANFLOW & Yes & No & Yes & No \\
+HSV & Yes & Yes & Only different colors & Yes \\
+PATTERNMATCHING & No & Yes & Only different patterns* & Yes \\
+CORRELATION & No & No & Yes & No \\
+MOSSE & Sometimes & No & Yes & No
+\end{tabular}
+\vspace{1ex}
+\raggedright *Tracker performed badly
+\caption{Summary of the trackers abilities}
+\label{table:occlusion-multiple}
+\end{table}
+\end{landscape}

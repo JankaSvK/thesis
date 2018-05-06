@@ -5,11 +5,10 @@ an object in 2D images. In this chapter, we will take a closer look at
 obtaining a position of an object in the world coordinates by combining
 information from multiple cameras.
 
-At this point we have computed not only intristic matrices of the cameras but
-also the rotation matrix and the translation vector (from the mono camera
-calibration and stereo calibration). Our goal is to get a position of the
-object in world coordinates from a tuple of coordinates from the images taken by
-cameras.
+At this point we have computed not only camera parameters for each camera but
+also the rotation matrix and the translation vector describing their relative
+position. Our goal is to get a position of the object in world coordinates from
+a tuple of coordinates from the images taken by cameras.
 
 \section{Projection matrices}
 Projection matrices provide a way to transform world coordinates to image
@@ -37,7 +36,7 @@ displayed in the figure \ref{fig:coordinate-system}.
 
 \subsection{Computing projection matrices}
 After defining coordinate systems, we can compute the projection matrices for
-both cameras. We use projection matrix decomposition to get the projection matrix
+both cameras. We use projection matrix composition to get the projection matrix
 from the calibration results.
 
 We compose the projection matrix as $P = K(R|T)$, where $K$ is intristic
@@ -51,7 +50,7 @@ the camera has no rotation nor translation to the coordinate system. Therefore
 we compute the projection matrix as:
 
 \[
- P_1 = K_1 \cdot \begin{pmatrix}
+ P = K_1 \cdot \begin{pmatrix}
 	I_{3, 3} & | & 0_3  
 \end{pmatrix}
 \]
@@ -65,60 +64,92 @@ For the second camera's projection matrix, stereo calibration results will be
 used. We know the rotation matrix and the translation vector between the cameras,
 being able to get coordinates of the second camera relative to the first one.
 
-We now use this information in construction of the projection matrix, $P_2 = K_2
+We now use this information in construction of the projection matrix, $Q = K_2
 \dot (R | T)$, where $K_2$ is intristic parameters matrix of the second camera, $R$
 rotation matrix and $T$ translation vector.
 
 More about the decomposition itself can be found in an article by
 \citet{computervisionblog}.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \section{Triangulation}
+
 Now when we know the projection matrices we can formalize our problem as
 \begin{equation}
-\mathrm{x_1} = P_1X, \mathrm{x_2} = P_2X \label{projection-statements}
+x = PX, y = QX \label{projection-statements}
 \end{equation}
 with the goal to find $X$. However, errors may occure during
-measurement of $x_1$, $x_2$ and calibration. In further steps we consider that
+measurement of $x$, $y$ and calibration. In further steps we consider that
 calibration results are provided with high accurancy compared to measurement of
-$x_1$ and $x_2$ (that is the reason to have longer calibration time with more images
+$x$ and $y$ (that is the reason to have longer calibration time with more images
 at once).
 
+We describe simple linear triangulation, which rewrites the equations
+\ref{projection-statements} into format $AX = 0$. A solution for this equation
+for unknown $X$ will be the position of the object in world coodinates. This
+approach provides a way how to determine four unknowns -- coordinates
+of the point $X$ (homogenous).
+
+
 \subsection{Simple linear triangulation}
-\todo[inline]{Tu sa stratil a treba to teda prepisat}
 
 We will now shortly describe how the triangulation is working under the hood.
 
-The results of cross product of vector itself is zero vector. We can write
-equation \ref{projection-statements} as crossproduct $\mathrm{x} \times (PX) = 0$. We
-denote point $\mathrm{x} = (x, y, w)$, where $w = 1$ since these coordinates are
-homogenous -- in other words up to scale factor $w$.
+We start from the single equation $x = PX$, try to reformulate to obtain some
+equations. Since we do have two such equations (for each camera, see
+\ref{projection-statements}), we will create enogh equations for solving
+unknown -- the X -- position of our object in world coordinates.
 
-We can then rewrite $\mathrm{x} \times (PX) = 0$ in the following way:
+We denote a point $x=(a, b, c)$ where $x$ represents homogenous coordinates of
+the object in the image. We also choose $a, b, c$ in a way to be $c = 1$. We
+can do that, since the coordinates are only up to scale factor.
 
-$$ w(p^{3T}X) - x(p^{2T}X) = 0 $$
-$$ y(p^{3T}X) - w(p^{1T}X) = 0 $$
-$$ x(p^{2T}X) - y(p^{1T}X) = 0 $$
+Then we use the fact, that the cross product of the vector itself is equal to
+zero vector. Therefore $x \times PX = 0$ from the previous fact. We rewrite it
+to three equations using crossproduct rules:
 
-Where $p^{iT}$ denotes ith row of $P$. Since $w = 1$ we can equally write:
+$$ c(p^{3T}X) - a(p^{2T}X) = 0 $$
+$$ b(p^{3T}X) - c(p^{1T}X) = 0 $$
+$$ a(p^{2T}X) - b(p^{1T}X) = 0 $$
 
-$$ x(p^{3T}X) - (p^{1T}X) = 0 $$
-$$ y(p^{3T}X) - (p^{2T}X) = 0 $$
-$$ x(p^{2T}X) - y(p^{1T}X) = 0 $$
+Where $p^{iT}$ denotes ith row of $P$. Since $c = 1$ we can equally write:
 
-These equations are linear in the components of X. Only two equations are
-linearly independent since the third one could be obtained as the sum $y$
-times the first row and $-x$ times the second row.
+$$ a(p^{3T}X) - (p^{1T}X) = 0 $$
+$$ b(p^{3T}X) - (p^{2T}X) = 0 $$
+$$ a(p^{2T}X) - b(p^{1T}X) = 0 $$
 
-Therefore an equation of form $AX = 0$ can then be composed using two points $\mathrm{x_1} = (x, y, 1)$ and $\mathrm{x_2} = (m, n, 1)$:
+These equations are linear in the components of $X$. Only two equations are
+linearly independent since the third one could be obtained as the sum $b$
+times the first row and $-a$ times the second row. Therefore, we use only first
+two.
+
+In this way we obtained two equation from the $x = PX$. In our case, we have
+two such equations -- for each camera one (\ref{projection-statement}). We
+denote a point $x = (a, b, 1)$ and $y=(m, n, 1)$. Then using the steps described in previous paragraphs we obtain these equations:
+
+$$ a(p^{3T}X) - (p^{1T}X) = 0 $$
+$$ b(p^{3T}X) - (p^{2T}X) = 0 $$
+$$ m(q^{3T}X) - (q^{1T}X) = 0 $$
+$$ n(q^{3T}X) - (q^{2T}X) = 0 $$
+
+We know can obtain an equation in the form of $AX = 0$. The solution of this
+equation is our solution for the position of the object in the worlds
+coordinates.
+
+The matrix $A$ has following format:
 
 \[
 A = \begin{pmatrix}
-x(p_1^{3T}X) - (p_1^{1T}X) \\
-y(p_1^{3T}X) - (p_1^{2T}X) \\
-m(p_2^{3T}X) - (p_2^{1T}X) \\
-n(p_2^{3T}X) - (p_2^{2T}X) \\
+a(p^{3T}) - (p^{1T}) \\
+b(p^{3T}) - (p^{2T}) \\
+m(q^{3T}) - (q^{1T}) \\
+n(q^{3T}) - (q^{2T}) \\
 \end{pmatrix}
 \]
+
+We can easily check, that multipling the matrix $AX$ gives us the same equation
+desribed earlier. Now we analyze what we got.
 
 For each image two equations were included, giving a total of four equations in
 four homogeneous unknowns.
@@ -129,6 +160,6 @@ method (DLT) is used to find the solution. More about the method could be found
 in \citet*{multiple-view-geometry}.
 
 \section{Implementation note}
-For the triangulation we used OpenCV function triangulatePoints($P_1$, $P_2$,
-$\mathrm{x_1}$, $\mathrm{x_2}$), which is based on simple triangulation method with use of DLT
+For the triangulation we used OpenCV function triangulatePoints($P$, $Q$,
+$\mathrm{x}$, $\mathrm{y}$), which is based on simple triangulation method with use of DLT
 method for solving equations.
