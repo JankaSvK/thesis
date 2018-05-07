@@ -3,9 +3,9 @@
 ## Reading parameters
 import cv2
 import time
-import Config
-from OptionParser import parse_options
 import threading
+import program.Config
+from program.OptionParser import parse_options
 
 options = parse_options()
 
@@ -14,7 +14,8 @@ if options.objects_count is not None:
 
 ## Starting application
 stop_event = threading.Event()
-from ApplicationProcess import run_application
+
+from program.ApplicationProcess import run_application
 t = threading.Thread(target = run_application, name="Application", args=(stop_event, options))
 t.setDaemon(True)
 t.start()
