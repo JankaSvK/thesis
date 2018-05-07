@@ -9,10 +9,8 @@ import Config
 from GUI import GUI
 from TrackersProvider import TrackersProvider
 
-stop_event = threading.Event()
 
-
-def run_application(options):
+def run_application(stop_event, options):
     if options.camera1 is not None:
         Config.camera_initialize[0] = options.camera1
     if options.camera2 is not None:

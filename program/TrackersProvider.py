@@ -32,7 +32,8 @@ class TrackersProvider(object):
                             tracker_type = tracker_type,
                             image_stream=image_stream,
                             coordinates=self.coordinates[uid],
-                            initialization_event=self.initialization_events[uid]))
+                            initialization_event=self.initialization_events[uid],
+                            console_output=console_output))
 
     def track(self):
         while not self.stop_event.is_set():
@@ -54,7 +55,7 @@ class TrackersProvider(object):
             time.sleep(0)
 
 class Tracker(object):
-    def __init__(self, tracker_type, cam_ind, obj_ind, coordinates, image_stream, initialization_event):
+    def __init__(self, tracker_type, cam_ind, obj_ind, coordinates, image_stream, initialization_event, console_output):
         self.tracker = None
         self.coordinates = coordinates
         self.image_stream = image_stream
@@ -65,6 +66,8 @@ class Tracker(object):
         self.object_id = obj_ind
         self.camera_id = cam_ind
         self.uid = get_tracker_uid(cam_ind, obj_ind)
+        self.console_output = console_output
+
 
     def initialize_tracker(self, bbox, image = None):
         print("Initializing tracker on camera", self.camera_id, "at object", self.object_id)
@@ -77,7 +80,7 @@ class Tracker(object):
         try:
             ok = self.tracker.init(image, bbox)
         except (RuntimeError, SystemError):
-            print("Initialization failed. Try again.")
+            self.console_output.append("Initialization failed. Try again.")
 
     def track(self):
         time, position = self.get_object_position()

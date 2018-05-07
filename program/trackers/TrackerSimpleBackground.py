@@ -8,7 +8,7 @@ from TrackingHelper import get_largest_contour
 class TrackerSimpleBackground(object):
     name = 'SIMPLEBACKGROUND'
 
-    def __init__(self, blur_size = (10, 10), threshold = 100, ignored_size_of_contour = 1000):
+    def __init__(self, blur_size = (20, 20), threshold = 100, ignored_size_of_contour = 1000):
         self.blur_size = blur_size
         self.threshold = threshold
         self.ignored_size_of_contour = ignored_size_of_contour

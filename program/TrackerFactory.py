@@ -29,4 +29,6 @@ class TrackerFactory(object):
             from trackers.TrackerExperiments import TrackerExperiments
             return TrackerExperiments()
         else:
+            print("Default tracker will be used")
             return cv2.TrackerKCF_create()
+
