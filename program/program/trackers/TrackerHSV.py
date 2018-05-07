@@ -19,7 +19,7 @@ def get_average_angle(angles):
 class TrackerHSV(object):
     name = 'HSV'
 
-    def __init__(self, color_tolerancy = 10, ignored_countours = 1000):
+    def __init__(self, color_tolerancy = 10, ignored_countours = 10):
         self.ignored_countours = ignored_countours
         self.color_tolerancy = color_tolerancy
 
@@ -37,7 +37,6 @@ class TrackerHSV(object):
         hsv = cv2.cvtColor(pattern, cv2.COLOR_BGR2HSV)
         hues = hsv[:,:,0].flatten()
         self.most_common_color = get_average_angle(hues)
-
         self.lower_bound = numpy.array([self.most_common_color - self.color_tolerancy, self.bottom_saturation, self.bottom_value])
         self.upper_bound = numpy.array([self.most_common_color + self.color_tolerancy, self.upper_saturation, self.upper_value])
         return True

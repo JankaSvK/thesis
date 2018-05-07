@@ -38,7 +38,8 @@ class MonoCameraCalibrationResults(object):
             else:
                 result[key] = (self.__dict__[key]).tolist()
 
-        filename = "calib_results/" + str(camera_index + 1) + "/" + get_current_time() +".json"
+        curr_dir = os.path.dirname(os.path.abspath(__file__))
+        filename = os.path.join(curr_dir, "calib_results", str(camera_index + 1), get_current_time() + '.json')
         os.makedirs(os.path.dirname(filename), exist_ok=True)
 
         with open(filename, 'w') as output:
@@ -73,7 +74,8 @@ class StereoCameraCalibrationResults(object):
             else:
                 result[key] = self.__dict__[key]
 
-        filename = "calib_results/stereo_calib_results/" + get_current_time() +".json"
+        curr_dir = os.path.dirname(os.path.abspath(__file__))
+        filename = os.path.join(curr_dir, "calib_results", "stereo_calib_results", get_current_time() + '.json')
         os.makedirs(os.path.dirname(filename), exist_ok=True)
 
         with open(filename, 'w') as output:

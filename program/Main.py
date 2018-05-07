@@ -4,7 +4,7 @@
 import cv2
 import time
 import threading
-import program.Config
+from program import Config
 from program.OptionParser import parse_options
 
 options = parse_options()

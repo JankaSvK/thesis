@@ -65,7 +65,8 @@ class Localization(object):
             if len(QueuesProvider.LocalizatedPoints3D[i]) == 0:
                 return
 
-            filename = "localization_data/" + get_current_time() + "-" + str(i + 1) + ".txt"
+            curr_dir = os.path.dirname(os.path.abspath(__file__))
+            filename = os.path.join(curr_dir, "localization_data", get_current_time() + "-" + str(i + 1) + ".txt")
             os.makedirs(os.path.dirname(filename), exist_ok=True)
 
             with open(filename, 'w') as output:

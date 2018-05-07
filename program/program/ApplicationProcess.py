@@ -64,6 +64,10 @@ def run_application(stop_event, options):
     if stop_event.is_set():
         cameras_provider.capturing_thread.join(1)
         return
+
+    # Wait until gui fully initialized
+    gui.initialized.wait()
+
     # Tracking initialization
     trackers_provider = TrackersProvider(
         images1=QueuesProvider.Images[0], images2=QueuesProvider.Images[1],
@@ -96,8 +100,6 @@ def run_application(stop_event, options):
         calibration_provider.stereo_calibration_results
     )
 
-    # Wait until gui fully initialized
-    gui.initialized.wait()
     # Adding camera position to GUI
     stereo_results = calibration_provider.stereo_calibration_results
     camera1, camera2 = Localization.get_camera_positions(stereo_results.rotation_matrix,
