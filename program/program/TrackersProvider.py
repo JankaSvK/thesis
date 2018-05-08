@@ -76,9 +76,10 @@ class Tracker(object):
                 image = self.get_newest_image().image
 
             self.tracker = TrackerFactory.get_tracker(self.tracker_type)
-
+            bbox = tuple(bbox)
             ok = self.tracker.init(image, bbox)
-        except (RuntimeError, SystemError):
+        except (RuntimeError, SystemError) as e:
+            print(e)
             self.console_output.append("Initialization failed. Try again.")
 
     def track(self):

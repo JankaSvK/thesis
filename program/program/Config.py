@@ -3,9 +3,9 @@
 # If you want to change the port that camera initialize, provide video input instead of cameras, use saved calibration
 # data or change number of tracked object, please pass it as an option to the application. For more information use --help.
 
-# Number of chessboard inner corners. The order does not matter.
+# Number of chessboard inner corners. The order does not matter. May be changed by option provided to the script.
 chessboard_inner_corners = (7, 8)
-# Length of the square side in millimeters. It has to be square (not rectangle).
+# Length of the square side in millimeters. It has to be square (not rectangle). May be changed by option provided to the script.
 chessboard_square_size = 22
 
 # Camera indeces to ititialize cameras. May be changed by option provided to the script.
@@ -32,19 +32,19 @@ initial_bounding_boxes = [[[189, 228, 2, 2]], [[353, 367, 2, 2]]]
 
 # Minimum numbers of images for mono calibration.
 # Can not be less than 3
-minimum_images_for_monocalibration = 10
+minimum_images_for_monocalibration = 20
 
 # Maximum number of images for stereo calibration. If more has been found, a sample set of them is taken.
-maximum_images_for_monocalibration = 20
+maximum_images_for_monocalibration = 30
 
 # A size of sampling set. Bigger takes more time to find, but provides higher variation to the images.
 maximum_images_for_monocalibration_sampling = 2 * maximum_images_for_monocalibration
 
 # Minimum number of the images for stereo calibration
-minimum_images_for_stereocalibration = 10
+minimum_images_for_stereocalibration = 20
 
 # Maximum number of the images for stereo calibration. If more exists, a sample set of them is taken.
-maximum_images_for_stereocalibration = 20
+maximum_images_for_stereocalibration = 50
 
 # A size of the sampling set. Bigger takes more time to find, but provides higher variation to the images.
 maximum_images_for_stereocalibration_sampling = 3 * maximum_images_for_stereocalibration

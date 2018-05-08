@@ -67,6 +67,7 @@ def run_application(stop_event, options):
 
     # Wait until gui fully initialized
     gui.initialized.wait()
+    time.sleep(0.5) # We want to make sure, that first images of the video passed
 
     # Tracking initialization
     trackers_provider = TrackersProvider(
@@ -87,8 +88,12 @@ def run_application(stop_event, options):
 
     if Config.initial_bounding_boxes is not None:
         for i, tracker in enumerate(trackers_provider.trackers):
-            bbox = Config.initial_bounding_boxes[tracker.camera_id][tracker.object_id]
-            tracker.initialize_tracker(bbox)
+            try:
+                bbox = Config.initial_bounding_boxes[tracker.camera_id][tracker.object_id]
+                tracker.initialize_tracker(bbox)
+            except:
+                print("Initialization of the tracker failed (camera={}, object={}). Continuing without it.".format(
+                    tracker.camera_id + 1, tracker.object_id + 1))
 
     QueuesProvider.ConsoleMessages.append(
         "You can now select objects for tracking. Click on the button and click on top left corner and bottom right of the bounding box for the object.")

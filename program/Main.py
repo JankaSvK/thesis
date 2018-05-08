@@ -12,6 +12,21 @@ options = parse_options()
 if options.objects_count is not None:
     Config.objects_count = int(options.objects_count)
 
+if options.chessboard is not None:
+    try:
+        chessboard = [int(x) for x in options.chessboard.split(',')]
+        Config.chessboard_inner_corners = (chessboard[0], chessboard[1])
+        Config.chessboard_square_size = chessboard[2]
+    except Exception:
+        pass
+
+if options.bbox is not None:
+    try:
+        if options.bbox.startswith("[[[") and set(options.bbox) <= set("[],0123456789"):
+            Config.initial_bounding_boxes = eval(options.bbox)
+    except:
+        pass
+
 ## Starting application
 stop_event = threading.Event()
 

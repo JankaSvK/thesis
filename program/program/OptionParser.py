@@ -33,6 +33,12 @@ def parse_options():
     parser.add_option("-t", "--tracker", dest="tracker",
                       help="The algorithm used for tracking", metavar="TRACKER")
 
+    parser.add_option("--chessboard", dest="chessboard",
+                      help="Calibration chessboard parameters (inner_cornersX,inner_cornersY,size)", metavar="TRIPLE")
+
+    parser.add_option("--bbox", dest="bbox",
+                      help="Bounding boxes")
+
     (options, args) = parser.parse_args()
 
     return options
