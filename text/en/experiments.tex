@@ -1,47 +1,40 @@
 \chapter{Experiments} 
 
 For the designed system we considered multiple experiments to
-verify its accuracy.
+verify its accuracy. Experiments in this part focus on the localization process
+and overall experiments. The trackers experiments are located in the chapter
+Tracker.
 
-%In further text, we will mention an autonomous robot able to follow a black
-%line.  It was used for our experiments but could be replaced by any other
-%object. The advantage of an autonomous robot is repetitive of its movements and
-%also no other distractions in the scene except the moving object. The robot has
-%a cylindrical shape with 5~cm in diameter and height of 2~cm.
-%
-%%\section{Trackers comparison} 
-%%
-%%We tested all trackers in two situations. Since
-%%all used trackers were computability admissible, their complexity will not be
-%%examined. The project goal is to track a moving object. Therefore we consider
-%%these qualities: stability in a fast moving object, recovery from full
-%%...zmiznutia z obrazovky..., precision.
-%%
-%%Since some trackers use feature points, we provide two testing scenarios. First
-%%is a common object to track -- red circle. The second experiment consists of
-%%tracking robot - sample usage of the designed system. Both are evaluated on a white
-%%background and also on noisy background.
-%
 \section{Calibration and localization}
 
 We decided to exclude errors caused by trackers and firstly test the system
 without them. Therefore, we propose an experiment, which will set fixed points
 in camera views. Then we estimate position in 3D for these fixed points.
-However, it is complicated to measure distance from the origin of the
-coordinate system to the point (and also find the "real" coordinates with this
-origin). Therefore, we compute a distances between these points in the real
-world and between the estimated points. Then we compare the results.
+
+It is complicated to measure distance from the origin of the coordinate system
+to the point (and also find the "real" coordinates with this origin).
+Therefore, we compute a distances between these points in the real world and
+between the estimated points. Then we compare the results.
  
 To skip the tracking part, we created a new tracker. This new tracker always
-return the bouding box on which it was initialized. Doing this, we excluded
+return the coordinates on which it was initialized. Doing this, we excluded
 tracker from our process.
 
 We choosed a grid (view figure \ref{fig:grid}) as our pattern for experiments.
 The vertical lines are circa 400~mm long and the distance between them is circa
-200~mm. We measured distances between the crossings. 
+200~mm. We measured distances between the crossings. We numbered the crossing,
+the left column is from top to the bottom from 1 to 7 and the right column from
+8 to 14 (see the figure \ref{fig:ladder_numbered}).
 
 Selected points are displayed in the figure \ref{fig:ladder_ground}. The
 results from this experiment are listed in the table \ref{table:distamces}. 
+
+From the results we can see that results for horizontal lines (with the length
+400~mm, third part of the table) are very accurate. On the other hand, the
+results for the vertical lines were quite unstable. For the left column it
+seems, that results get worse when, the points are further away from the
+camera. But the results from the right column bring the hypothesis into
+question. 
 
 
 \begin{table}
@@ -62,15 +55,11 @@ From	& To	& Real length (mm) & Computed length(mm) & Error (\%) \\
 %From the previous experiment a question arrised. The crossing were all on the
 %ground. Therefore, all of them should lay on the one plane. 
 
-Previous experiment tested points on the ground. We were interested, if the results are accurate also in other planes. TTherefore, we choosed perpendicular one.
+%Previous experiment tested points on the ground. We were interested, if the results are accurate also in other planes. TTherefore, we choosed perpendicular one.
 
 \todo[inline]{Kolmy stol}
 \todo[inline]{Urobit rovnake pokusy na tom druhom rozostaveni}
-\todo[inline]{Asi by som tu tabulky rozdelila na tri mensie}
-\section{Tracker}
 
-%%\section{Localization precision}
-%
 %\section{Distances}
 %
 %The results of localization depends on two factors: calibration and tracking.
@@ -135,10 +124,91 @@ Previous experiment tested points on the ground. We were interested, if the resu
 	\node [right] at (10.1, -0.25) {200mm};
 	\node [right] at (12.1, 2) {400mm};
 \end{tikzpicture}
-\label{fig:grid}
 \caption{Pattern used for experiments}
+\label{fig:grid}
 \end{figure}
 
-\section{Full experiment}
-\todo[inline]{nejaky full experiment s hybajucim sa objektom}
+\begin{figure}
+\centering
+\includegraphics[width=0.8\linewidth]{img/experiments/right-ladder-numbered.png}
+\caption{Numbering the points}
+\label{fig:ladder_numbered}
+\end{figure}
 
+\section{Final experiments}
+
+As the last step, we decided to test whole system in real environment.
+
+\subsection{Experiment with the one small object}
+
+The most important experiment -- the experiment which decides if the system is
+usable -- is experiment under real conditions. We created for our autonomous
+robot a square to follow, with the lenfth of the side equal 14.5~cm (see figure
+\ref{fig:robot-square}). The robot did four laps around the square. The
+results are displayed in the figure \ref{fig:square-results}.
+
+We can see on the left picture, that the drawn line is similar to our shape.
+Not having sharp edges, since our robot make a small ars. On the other hand,
+the results from the another view are not so amazing. the coordinates have a
+lot of noise over Z-ax. The noise is only present, if the robot is following
+horizontal lines of the square. As the last step we computed maximum of the
+distances between any two points, which were located. In this case, the ideal
+value would be the length of the diagonal, which is equal to 20.5061~cm. Our
+results are between 18.54~cm to 19.38~cm, depending on the run. That means,
+that the error is only usually between 1-2~cm..
+
+\begin{figure}
+\includegraphics[width=\linewidth]{img/experiments/square-robot.png}
+\caption{Experiment with the robot}
+\label{fig:robot-square}
+\end{figure}
+
+\begin{figure}
+\centering
+\begin{subfigure}{0.48\linewidth}
+	\includegraphics[width=\linewidth]{img/experiments/square-nice.png}
+\end{subfigure}
+\begin{subfigure}{0.48\linewidth}
+	\includegraphics[width=\linewidth]{img/experiments/square-ugly.png}
+\end{subfigure}
+\caption{Results of the localization -- four laps by the robot}
+\label{fig:square-results}
+\end{figure}
+
+\subsection{Experiment with two objects}
+
+This experiment will test the ability of the system to track multiple objects.
+We decided to choose an environment where SIMPLEBACKGROUND nor HSV tracker can
+be used (since if they can be used they perform very well). The rest of the
+trackers are mostly slower, more problematic.
+
+We can see the setup for the experiment in the figure \ref{fig:two-init}. We
+can see two boxes, both in shades of blue. During testing many trackers failed
+to track and lost the object. We choosed a CORRELATION tracker. It is medium
+fast tracker, but when tracking two object -- means 4 CORRELATION trackers --
+it too slow. Therefore it sometimes miss the images, which passed while it was
+computing. Hence, sometimes an interaction of the user is needed, to
+reinitialize a tracker.
+
+Sample results of the trajectories for two objects is displayed in the figure
+\ref{fig:two-trajectories}. During the experiment, the boxes were moving
+between the yellow marks and swapped place. We can see these four marks also in
+both trajectories quite close to each other. 
+
+\begin{figure}
+\includegraphics[width=\linewidth]{img/experiments/two-objects.png}
+\caption{Initialization of the two objects}
+\label{fig:two-init}
+\end{figure}
+
+\begin{figure}
+\centering
+\begin{subfigure}{0.48\linewidth}
+	\includegraphics[width=\linewidth]{img/experiments/trajectories1.png}
+\end{subfigure}
+\begin{subfigure}{0.48\linewidth}
+	\includegraphics[width=\linewidth]{img/experiments/trajectories2.png}
+\end{subfigure}
+\caption{Sample trajectories from tracking two objects}
+\label{fig:two-trajectories}
+\end{figure}

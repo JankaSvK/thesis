@@ -6,12 +6,12 @@ Firstly, we provide a short description of a simple straightforward tracker and
 then we describe more complicated trackers.
 
 Tracker returns an object position in the image. We differentiate between two
-types of tracking algorithms: \emph{detection based algorithms} and
+types of tracking algorithms: \emph{detection-based algorithms} and
 \emph{sequence-based algorithms}. Detection based algorithms detect an object
 on each image separately. On the other hand, sequence-based algorithms obtain,
 store and process information from a sequence of the past images and use them
-for more accurate results, while requiring same or even less computation time
-compared to the detection based algorithms. For this task, we test few trackers
+for more accurate tracking, while requiring same or even less computation time
+compared to the detection-based algorithms. For this task, we test few trackers
 in both categories. Evaluation of the trackers is at the end of this chapter.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -19,7 +19,7 @@ in both categories. Evaluation of the trackers is at the end of this chapter.
 \section {Detection based algorithms}
 
 We denote all trackers, which detect an object on each image separately, as
-detection based algorithms. These algorithms use only information obtained from
+detection-based algorithms. These algorithms use only information obtained from
 the current image and the information from the image used while the tracker was
 initialized.
 
@@ -172,8 +172,8 @@ compares the template with the patch of the input image. By \emph{patch} we
 mean an image cropped to the size of the template (displayed in the figure
 \ref{fig:patternmatching-naming}).
 
-For a comparison between an image and the patch we look for a function, which
-tell us how different to each other they are. Such a function is usually called
+For a comparison between the template and the patch we look for a function, which
+tells us how different to each other they are. Such a function is usually called
 a loss fuction. We use a function $R$ based on square distance as our loss
 function. More precisely, we take the sum of square distances of all pairs of
 corresponding pixels in the template and the patch. Therefore, we compute $R$
@@ -198,6 +198,8 @@ denotes our pattern and $I$ denotes the image.
 	\label{fig:patternmatching-naming}
 \end{figure}
 
+The Pattern Matching tracker computes this loss function for the patch defined
+by its top left corner. Each possible position of the patch is computed..
 From the computed value for each pixel the one with the lowest value
 (i.e. shortest distance) is our estimation of the position of the object.
 
@@ -212,9 +214,10 @@ lost during conversion. This disadvantage summed up with no ability to
 recognize rotated or slightly changed objects results in unsatisfying tracking
 results. A process of correct match and also incorrect one is displayed in the
 figure \ref{fig:pattern-matching-tracker}. We can see the masks, which displays
-the value of the loss function. Lower values of the loss functions are
-displayed as darker points. Therefore, the black spots means patches which are
-similar to the pattern.
+the value of the loss function. The pixel color represent the value of the loss
+function for the template and the patch which has top left corner in it. Lower
+values of the loss functions are displayed as darker points. Therefore, the
+black spots means patches which are similar to the pattern.
 
 \begin{figure}
   \centering
@@ -283,7 +286,7 @@ location. The implementation in OpenCV is based on \citet*{boosting}.
 
 \subsection*{MIL tracker}
 The MIL is an abbreviation for Multiple Instance Learning. In comparison to the
-BOOSTING tracker, it does not keep only one image of the positive example, but the
+BOOSTING tracker, it does not keep only one image of the positive example, but a
 set of images. The tracker considers a small neighborhood of the
 current position as possible positive examples. It helps the tracker to cope with
 the occlusion. OpenCV implementation is based on \citet*{mil}.
@@ -294,7 +297,7 @@ it uses more positive samples and their large overlapping regions.
 Implementation provided by OpenCV is based on \citet*{kcf}.
 
 \subsection*{TLD tracker}
-Tracking, learning and detection, these are the three components of this
+Tracking, learning and detection, these are the three components of the TLD
 tracker. The tracker works frame to frame, and detection is run to correct the
 tracker if necessary. The learning estimates detector's errors and updates it
 to avoid these errors in the future. The implementation in OpenCV is based on
@@ -325,20 +328,22 @@ correlation tracker is based on the paper by \citet*{correlation}.
 \section{Trackers evaluation}
 
 In the previous section, we described many different trackers. Now we provide
-their evaluation of several experiments. Our goal is to find the
-best-performing ones. The trackers differ in the approach to obtain information
-from the video stream, so it is important to test them under real conditions.
+their evaluation. The goal is to find the best-performing trackers. The
+trackers differ in the approach to obtain information from the video stream, so
+it is important to test them under real conditions.
 
 Firstly, we define the key abilities which are essential for our project. Then
-we provide a description and the results from several experiments. At the end
-of this section, in conclusion, we provide few pieces of advice how to choose
-the best tracker for a specific environment.
+we provide a description and the results from several experiments. The
+experiments work with only one camera, since in this section we are not
+evaluating the localization, but only trackers. At the end of this section, we
+provide a few pieces of advice how to choose the best tracker for a specific
+environment.
 
 \subsection*{Key abilities of the tracker}
 
 The trackers differ, therefore they can outperform others in some specific
 situations. To be able to compare two trackers, we provide a list of the most
-important to us in our project.
+important properties in the project.
 
 \begin{itemize}
 	\item Accuracy
@@ -347,12 +352,12 @@ important to us in our project.
 	\item Ability to track multiple objects
 \end{itemize}
 
-Following paragraphs describe their importance and also the way we measure them
+The following paragraphs describe their importance and also the way we measure them
 in our experiments.
 
 \subsubsection*{Accuracy}
 
-The good tracker has to be accurate. Tracker which is not accurate does not
+A good tracker has to be accurate. The tracker, which is not accurate, does not
 satisfy its purpose. Furthermore, the accuracy is important to obtain good
 localization results, since the inaccuracy of the estimated position of the
 object in the image cause inaccuracy in the estimated position in the 3D space.
@@ -373,10 +378,13 @@ approach is very time consuming because only a one-minute long video contains
 approximately 1800 frames.
 
 Instead of this approach, we select the best tracker. We do it by looking at
-the tracking results on the video, and we choose the one which tracked the
-whole video correctly. This representative tracker has imprecision equal to 0.
-The inaccuracy of the other trackers is computed as a distance between the
-selected object by this tracker and the representative tracker. 
+the tracking performance on the video of all trackers. Then we choose a one
+tracker, which we think perfermed the best (most accurate). This representative
+tracker has imprecision equal to 0.  The inaccuracy of the other trackers is
+computed as a distance between the selected object by this tracker and the
+representative tracker. 
+
+\todo[inline]{Zistit rozptyl vysledkov u accuracy}
 
 \subsubsection*{Speed/Computational time}
 
@@ -393,30 +401,31 @@ For the number of images that could be processed in one second, we use a
 shortcut FPS, coming from Frames Per Second. A higher number means a higher
 speed of the tracker, therefore less time needed for each image.
 
-This value is highly dependable on the computer and the operating system.
+This value is highly dependent on the computer and the operating system.
 Therefore, we use the value of FPS as a rough guess.
 
-\todo[inline]{Mozno napisat na akom stroji bolo toto ratane}
+The results were computed on the a system with Intel(R) Core(TM) i5-7300HQ CPU
+(2.50GHz, 2496 Mhz, 4Core), 16GB RAM running Microsoft Windows 10 Enterprise.
 
 Choosing a tracker by its speed is important. We consider a tracker too slow if
-it is not able to track alive (>30~FPS). Even if the tracker has 30~FPS in the
-experiment, it might be too slow in the application, since it has to perform
-many other tasks. Slow tracker cause lag the whole application since much
-computational power is used for the tracking.
+it is not able to track live ($>$30~FPS). Even if the tracker has 30~FPS in the
+experiment, it might be too slow in the application, since the application has
+to perform many other tasks. Slow tracker may use too much computational power,
+therefore the application may not run smoothly.
 
 \subsubsection*{Recovering from the occlusion}
 
-We refer to occlusion as a partially or fully covering tracked object by
-another one, or leaving the view of the camera.
+We refer to occlusion as a partially or fully coverage of the tracked object by
+another object, or leaving the view of the camera.
 
 During the tracking, it might come handy to have a tracker, which can recover
 from the occlusion. It is not easy, to keep the object visible in both cameras.
 Therefore, we are interested also in the ability to recover from the occlusion.
 
 To test this ability, we watched the videos with tracking results and decided
-if it can recover or not.
+if the tracker can recover or not.
 
-As another useful ability is to detect if the object was lost. It is better to
+Another useful ability is to detect if the object is lost. It is better to
 report object loss than providing incorrect results. We tested it together with
 recovering.
 
@@ -426,10 +435,10 @@ As an addition to our project, our program can localize multiple objects. When
 working with multiple objects, it is important to remember that not all
 trackers may be able to track correctly multiple objects at the same time.
 
-More problem arises if the tracking objects occlude each other since not all
-trackers can handle it.
+Not many trackers can handle if the tracking objects occlude each other.
 
-We observed this ability by the human eye.
+To decide, if the tracker is able or not to track multiple objects, we watched
+tracker's performance and made a decision based on video..
 
 With tracking multiple objects, the speed of the program may decrease rapidly.
 It is important to remember, that each object in each camera view has own
@@ -442,13 +451,13 @@ tracker abilities.
 
 \subsection{Experiments and the results}
 
-We know describe the experiments use to measure tracker's statistics. Since the
-main use of our project can be to track a robots and record their trajectory,
+We know describe the experiments useid to measure tracker's statistics. Since the
+main use of our project can be to track robots and to record their trajectory,
 we decided to test the trackers under similar circumstances.
 
-In some experiments we use autonomous robot, which has the shape of oval, 3~cm
+In some experiments we use an autonomous robot, which has the shape of oval, 3~cm
 height and having 6~cm in diameter. This robot is able to follow a black line.
-We used a oval as the shape of the line (see the figure \ref{fig:robot-oval}).
+We used an oval as the shape of the line (see the figure \ref{fig:robot-oval}).
 
 In order to test the trackers under same conditions, we recorded a video of the
 robot. We then found the bounding box for the object at the start and
@@ -458,11 +467,11 @@ trackers, which are mentioned in the corresponding experiment.
 
 \subsubsection{Speed and accuracy}
 
-The first experiment is to estimate tracker's speed and accuracy. We used a
-video of the moving robot in shape of oval. For the accuracy measurement we
+The goal of the first experiment is to estimate tracker's speed and accuracy. We used a
+video of the robot moving along the oval. For the accuracy measurement we
 choosed a Simple Background tracker as our representative, since it provided an
 excellent example of the correct tracking on this video. The representative
-tracker is always displayed as a red bounding box and the blue is used for
+tracker is always displayed as a red bounding box and the blue is used for the
 tested tracker.
 
 Since the Simple Background trackers need an empty background, when
@@ -480,12 +489,15 @@ robot is not only moving, but also quite fast changing its appearance. In a
 second or two, its top platform is mirrored. On the other hand, the object does
 not change size and the background is very clear.
 
-The results of the experiment are available in the table \ref{table:experiment-robot}.
+The results of the experiment are available in the table
+\ref{table:experiment-robot}. We provide expected value and standard deviaton
+for the inaccuracy, computed for the sample. Both values are in the pixels. For
+the HSV tracker we choosed to track the blue battery, which have one-color area.
 
 \begin{table}
 \centering
-\begin{tabular}{l|l|l}
-Tracker	& FPS & Inaccuracy (px) \\
+\begin{tabular}{l|l|l|l}
+Tracker	& FPS & E(Inaccuracy) & std(Inaccuracy) \\
 \hline
 \input{experiments/trackers.txt}
 \end{tabular}
@@ -510,12 +522,12 @@ Tracker	& FPS & Inaccuracy (px) \\
 
 \begin{table}
 \centering
-\begin{tabular}{l|l|l}
-Tracker	& FPS & Inaccuracy (px) \\
+\begin{tabular}{l|l|l|l}
+Tracker	& FPS & E(Inaccuracy) & std(Inaccuracy) \\
 \hline
 \input{experiments/hsv.txt}
 \end{tabular}
-\caption{TODO caption}
+\caption{Estimation of the trackers spped and inaccuracy in the experiment with orange cap.}
 \label{table:hsv}
 \end{table}
 
@@ -532,14 +544,13 @@ MEDIANFLOW, PATTERMATCHING as usable for our purposes.
 
 To test HSV tracker, we modified the experiment by with placing orange paper to
 track on the top of the robot (see figure \ref{fig:hsv-bbox}). The obtained
-values for this tracker are listed in the table \ref{table:hsv}. For improving
-the performance of the HSV tracker, it is better to select smaller area with
-the same color. Therefore, the tracker will track only this are, not the whole
-object. The difference between the are of the SIMPLEBACKGROUND and the HSV
-tracker is displayed in the figure \ref{fig:hsv-diff}. The red line symbolises
-Simple Background tracker and the blue one the HSV tracker. The resulted
-accuracy is caused by tracking specific part of the object, since the tracker
-performed very well.
+values for this tracker and the others are listed in the table \ref{table:hsv}.
+For improving the performance of the HSV tracker, it is better to select
+smaller area with the same color. Therefore, the tracker will track only this
+are, not the whole object. The difference between tracked are by Simple
+Background tracker and the HSV tracker is displayed in the figure
+\ref{fig:hsv-diff}. The red line symbolises Simple Background tracker and the
+blue one the HSV tracker.
 
 \todo[inline]{Netusim, ci pisat nazvy trackerov velkym alebo malym, niektore su fakt srkatky, u inych to neviem...}
 
@@ -551,6 +562,8 @@ robot from the view. We were interested if the tracker is able to report object
 lost (or returns wrong results) and if it was able to track the object again
 after coming back to camera view. The example of the successful recover from
 the occlusion is displayed in the figure \ref{fig:occlusion}.
+
+\todo[inline]{meratelne vysledky?}
 
 \begin{figure}
 \centering
@@ -567,14 +580,16 @@ the occlusion is displayed in the figure \ref{fig:occlusion}.
 \subsection{Tracking multiple objects}
 
 The last test for the trackers is ability to track multiple objects. Simple
-detection-based trackers usually choose the best position with highest area
-satisfing given condition, therefore tracking multiple object is not possible.
+detection-based trackers usually choose the best position with biggest area
+satisfing given condition, therefore tracking multiple object may not be possible.
 
-In such situation when tracking multiple object is needed, sequence-based
+In a situation, when tracking multiple objects is needed, sequence-based
 trackers may outperform detection-based trackers. We decided to test their
 ability to keep tracking the same object, the results are listed in the table
 \ref{table:occlusion-multiple} in the fourth and fifth columns.
 
+
+\todo[inline]{Tu to chce prepisat}
 Most of the trackers are not able to recover from mutual occlusion. Denote as
 the first object the object behind and the second the one in front of the
 first. Then the second object approach first, the tracker of the first object
@@ -596,40 +611,37 @@ trackers correctly.
 \label{fig:occlusion}
 \end{figure}
 
-\subsection{Conlusion}
+\subsection{Summary}
 
-Previous subsection gave us comparison of the trackers. Still, there is not one
-best tracker, but it might be to consider using specific tracker in occasion.
+\todo[inline]{Prepisat}
 
-Considering the results, we can easily exclude the trackers MIL, BOOSTING, TLD
-because of their low speed. 
+In the previous section we provided a comparison of the trackers. The goal was
+to find the best performing trackers, but the results show, that it might be
+better to choose the tracker depending on the environment.
 
-If the object has some area one colored, the HSV tracker is a great choice. The
-position of the result is little bit shifted from the center of the object, but
-the tracker is stable, fast and even report object lost.
+In the speed results we saw, that the trackers MIL, Boosting, TLD were too slow
+(less than 30~FPS). Because of their speed, we prefer to not using them.
 
-Unfortunately, most of the objects share the color of the background, or do not
-have one colored are on themself. Then we have to choose from the other
-trackers.
+If the object has an area, which is one-colored, the HSV tracker is a great choice.
+The HSV tracker performed very well, it is a fast and stable tracker.
+Unfortunately, the disadvantage of this tracker is not only a requirement for
+object to have one-colored area, but also this color should not be present in
+the background.
 
-If the objects move autonomously, the light is stable and we track only one
-object, Simple Background tracker server it purposes well. Pattern Matching
-tracker works well with non-noisy background.
+If the objects is moving autonomously and the only moving object in the view of
+the cameras is the tracked object, then we can use SimpleBackground tracker.
 
-In conclusion, it is best to try several of them and find the best suiting one.
-Their different approaches makes them good in some situations but unusable in
-other. It also depends on the situation, it might be more important to have
-precise tracker, even at cost of loosing the object, if the operator of the
-program can correct it during the run. In other situation may many occlusion of
-the tracked objects occur, and TLD tracker even it is slow, might save the
-situation.
+Pattern Matching tracker works well with an objects which preserve the shape
+and the size during the tracking.
 
-Some tips at the end:
+In conclusion, it is best to try several trackers and find the one, which
+perform the best in given envinonmnet. We provide some tips how to find the
+best tracker:
 \begin{itemize}
-\item if the object is autonomous -- use Simple Background
+\item if the object the only moving object -- use Simple Background
 \item if the object has onecolor area -- use HSV
 \item if the mutual occlusion of the objects may appear -- try TLD
-\item otherwise, it is worth to try MEDIANFLOW, CORRELATION and sometimes also MOSSE, PATTERNMATCHING
+\item otherwise, it is worth to try MedianFlow, Correlation and sometimes also Mosse and Pattern Matching
 \end{itemize}
 
 \begin{landscape}
@@ -654,3 +666,7 @@ MOSSE & Sometimes & No & Yes & No
 \label{table:occlusion-multiple}
 \end{table}
 \end{landscape}
+
+\todo[inline]{Ako sa doslo k Yes/No, dat nejake "cetnosti"}
+\todo[inline]{Postavit tunel a urobit experiment s nim}
+\todo[inline]{Viacero sa pohybujucich sa objektov s jednym trackovanym}

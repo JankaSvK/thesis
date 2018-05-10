@@ -1,5 +1,5 @@
 \chapter*{Introduction}
-\addcontentsline{toc}{chapter}{Introduction}
+\addcontentsline{toc}{chapter}{Introductio}
 
 Living in the 21st century, we are witnessing a huge improvement of the
 computers and their abilities. Since the beginning of the era of computers,
@@ -22,15 +22,28 @@ tracking, and stereo vision by providing an image stream from two cameras. We
 focus on an overall process from the camera calibration, through object
 detection in both cameras to estimation of the object position in 3D space.
 
-This thesis will be divided by the three steps to achieve our goal. The first
-step is to obtain information about the cameras. The Calibration chapter covers the
-process of obtaining a parameters to describe camera model by viewing specific
-pattern. Enough images of specific pattern provide enough information to get
-the parameters describing a camera.  Furthermore, positions of the pattern
-where both cameras see the pattern can be used for a stereo calibration. The
-stereo calibration provide information about the relative position of the
-cameras to each other. This relative position and the camera parameters we will
-later use in the localization process.
+We set as our technical goals following requirements:
+\begin{itemize}
+\item automatic calibration
+\item choice of a tracker
+\item easy way to add and test a new tracker
+\item reproducible run - working with videos, instead of live
+\item saving results from calibration and localization for later use
+\item displaying results live
+\end{itemize}
+
+Thesis starts with an overview of the work done in the area of computer vision
+and object localization.
+
+As the next step, the thesis covers three steps of the object localization. The
+first step is to obtain information about the cameras. The Calibration chapter
+covers the process of obtaining a parameters to describe camera model by
+viewing specific pattern. Enough images of specific pattern provide enough
+information to get the parameters describing a camera.  Furthermore, positions
+of the pattern where both cameras see the pattern can be used for a stereo
+calibration. The stereo calibration provide information about the relative
+position of the cameras to each other. This relative position and the camera
+parameters we will later use in the localization process.
 
 The second step is to track an object. Firstly, user defines the object and
 then the object position estimation is provided by tracker algorithm. Many
@@ -56,12 +69,3 @@ tracking until localization.
 
 In the appendix we include user documentation for running the program and
 programmer documentation for better understanding of the code.
-
-\todo[inline]{Mozno by tu mohol zazniet aspon nastrel analyzy}
-\todo[inline]{Ako stepan by som vymenovala goals}
-
-\todo[inline]{Chyba ti cela kapitola analysis -- Problem analysis}
-
-\todo[inline]{pridat clanok a michala bartaka a obdrzalka do referencii}
-\todo[inline]{pridat opencv dokumentaciu do zdrojov}
-\todo[inline]{Zadanie}

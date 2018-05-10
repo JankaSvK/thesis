@@ -5,8 +5,6 @@ in many papers. Usage can be found in many different areas, for example in
 sports in unclear situation, in the robotics for better navigation and
 also in augumented reality for more impressive effect.
 
-\todo[inline]{Mozno este napises o tom, ako potom mozes postavit postavicku na spravne miesto}
-
 \section{Stereo vision systems}
 
 In the paper by \citet*{zheng2010study}, the authors research stereo vision. The
@@ -61,12 +59,33 @@ background changes with every movement of the robot. Nevertheless, usage of
 additional camera may significatly improve the precision. For more information
 about it, we refer to the paper \citet*{kappeler20103d}.
 
+
+\section{Dove-eye}
+
+The idea of this work is based on its predecestor, Dove-eye presented in the
+paper by \citet*{dove-eye}. This project use automatic calibration process, to
+get the infromation about the cameras and provide a several ways to track an
+object. Localization results are displayed live.
+
 \section{Our approach}
 
-After a review previously mentioned papers, we followed the idea of stereo
-vision provided by two cameras. We decided to propose a system which does not
-need any prior information about the object, but needs to be selected by the
-user. Also, we decided to test several cameras setups, not requiring specific
-one. Since, not many papers mention the tracking method which was used, we will
-try several to find the best available option. Due to great potential of the
-system in robotics, we will test our system also with a autonomous robot.
+Starting with the ideas used in Dove-eye, we developed a new implementation for
+this task. We improve the the tracking process by providing many different
+trackers, which give an opportunity to choose the one which is best suitable for
+given environment. We provide an easy way to correct the tracker by its
+reinitialization. Furthermore, no knowledge of the internals is needed to add a
+new tracker.  In difference to some previously mentioned papers, we do not
+require special alignemt of the cameras. 
+
+We also implement an similar algorithm to the one mentioned by
+\citet*{ibisch2015arbitrary} and others. As opposite to paper by
+\citet*{kappeler20103d} we do not use any previous information about the object
+tracked.
+
+This thesis also considers a case of tracking multiple objects. It provides a
+way, to initialize tracking objects. The comparison of the trackers is
+provided, including their speed, accuracy, but also ability to track
+multiple objects.
+
+We conclude the thesis with several experiments, including ones with autonomous
+robot, to test the system suitability for an use in the robotics.
