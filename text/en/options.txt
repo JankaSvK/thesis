@@ -18,3 +18,6 @@ Options:
   --video2=FILE         Video recording for the second camera
   -t TRACKER, --tracker=TRACKER
                         The algorithm used for tracking
+  --chessboard=TRIPLE   Calibration chessboard parameters
+                        (inner_cornersX,inner_cornersY,size)
+  --bbox=BBOX           Bounding boxes

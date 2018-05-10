@@ -26,7 +26,8 @@ The vertical lines are circa 400~mm long and the distance between them is circa
 the left column is from top to the bottom from 1 to 7 and the right column from
 8 to 14 (see the figure \ref{fig:ladder_numbered}).
 
-Selected points are displayed in the figure \ref{fig:ladder_ground}. The
+The setup of the cameras was nearly parralel and the distance between them was
+circa 16~cm. Selected points are displayed in the figure \ref{fig:ladder_ground}. The
 results from this experiment are listed in the table \ref{table:distamces}. 
 
 From the results we can see that results for horizontal lines (with the length
@@ -51,46 +52,23 @@ From	& To	& Real length (mm) & Computed length(mm) & Error (\%) \\
 \caption{Results of the experiment focused on the distances}
 \end{table}
 
-%\subsection{Planar}
-%From the previous experiment a question arrised. The crossing were all on the
-%ground. Therefore, all of them should lay on the one plane. 
+We were interested, if the results are good not only on the one plane -- in our
+case the ground -- but also in the others. Now we have tested the precision in
+two axis, which were perpendicular to each other (vertical and horizontal
+lines). We have noticed, that the results for the vertical lines are less
+precise. Therefore, we decided to test the last ax and its precision. We places
+a wall with the marks, which is perpendicular to the ground and measured the
+distance between the marks. The setup can be seen in the figure
+\ref{fig:table}. The marks are numbered as displayed in the image
+\ref{fig:tablenumbered}. The results are included in the table
+\ref{table:distances}. 
 
-%Previous experiment tested points on the ground. We were interested, if the results are accurate also in other planes. TTherefore, we choosed perpendicular one.
-
-\todo[inline]{Kolmy stol}
-\todo[inline]{Urobit rovnake pokusy na tom druhom rozostaveni}
-
-%\section{Distances}
-%
-%The results of localization depends on two factors: calibration and tracking.
-%We decided to firstly estimate errors caused by calibration process.
-%
-%
-%
-%\section{Distances on the square}
-%
-%Firstly, we were interested how accurate is localization. In order to ommit a
-%tracker errors, we prepared a static setup.  We placed four marks on the
-%ground. Both cameras had all four points in the view. The marks formed a
-%square, with a length of 30~cm per side.
-%
-%Then we runned our programme for each point to get an estimated position. We
-%computed a norm between each two points and we display results in the figure
-%\ref{fig:squre-distances}.
-%
-%\section{Distances on the cube}
-%As a next step, we were interested if the precision is the same also using
-%non-planar object. We choosed a cube as our object.
-%
-%\subsection{Hausdorff distance} To tell how close or far are two
-%curves apart we used Hausdorff distance.
-%
-%\subsection{Square experiment} We used the robot to follow a black line in the shape of
-%square.
-%
-%\todo[inline]{Graf zavislosti reprojection error a chyby merania}
-%\todo[inline]{Graf zavislosti zavislost normy translation vector a chyby
-%merania}
+We did same experiment with another setup, when the cameras were 63~cm away
+from each other. We were interested, if the results are better in parallel
+setup, or not. From the results the is no evidence of the different precision
+and the differences may be still cause by different precision of the
+calibration. The results for this second experiment are listed in the appendix
+in the table \ref{table:distances-second}. Same numbering of the marks was used.
 
 \begin{figure}
 \centering
@@ -102,6 +80,21 @@ From	& To	& Real length (mm) & Computed length(mm) & Error (\%) \\
 \end{subfigure}
 \caption{Selecting the points from the videos}
 \label{fig:ladder_ground}
+\end{figure}
+
+\begin{figure}
+\centering
+\begin{subfigure}{0.48\linewidth}
+	\includegraphics[width=\linewidth]{img/experiments/table-left.jpg}
+	\caption{Left view of the camera with marks}
+	\label{fig:tablenumbered}
+\end{subfigure}
+\begin{subfigure}{0.48\linewidth}
+	\includegraphics[width=\linewidth]{img/experiments/table-right.jpg}
+	\caption{Right view of the camera}
+\end{subfigure}
+\caption{The vies of the camera on the penpedicular plane to the ground}
+\label{fig:table}
 \end{figure}
 
 \begin{figure}
