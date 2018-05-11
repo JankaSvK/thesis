@@ -12,24 +12,37 @@ from .GUI import GUI
 from .TrackersProvider import TrackersProvider
 
 
-def run_application(stop_event, options):
-    if options.camera1 is not None:
-        Config.camera_initialize[0] = options.camera1
-    if options.camera2 is not None:
-        Config.camera_initialize[1] = options.camera2
+def process_options(options):
+    Config.objects_count = options.objects_count
+    Config.camera_initialize = [options.camera1, options.camera2]
 
-    trackers_initialization_events = [threading.Event() for _ in range(Config.objects_count * 2)]
+    if options.chessboard is not None:
+        try:
+            chessboard = [int(x) for x in options.chessboard.split(',')]
+            Config.chessboard_inner_corners = (chessboard[0], chessboard[1])
+            Config.chessboard_square_size = chessboard[2]
+        except Exception:
+            pass
+
+    if options.bbox is not None and options.bbox.startswith("[[[") and set(options.bbox) <= set(" [],0123456789"):
+        try:
+            Config.initial_bounding_boxes = eval(options.bbox)
+        except:
+            pass
+
+
+def run_application(stop_event, options):
+    process_options(options)
+    trackers_initialization_events = [threading.Event() for _ in range(Config.objects_count * Config.camera_count)]
+    QueuesProvider.initialize()
 
     # Starting the cameras
-    QueuesProvider.Images = [deque([], maxlen=500) for _ in range(Config.camera_count())]
-
     if options.video1 is None or options.video2 is None:
         videos = None
     else:
         videos = [options.video1, options.video2]
-
-    cameras_provider = CamerasProvider(QueuesProvider.Images, stop_event, QueuesProvider.ConsoleMessages, Config.camera_initialize,
-                                       videos)
+    cameras_provider = CamerasProvider(QueuesProvider.Images, stop_event, QueuesProvider.ConsoleMessages,
+                                       Config.camera_initialize, videos)
     cameras_provider.initialize_capturing()
     cameras_provider.start_capturing()
 
@@ -53,12 +66,13 @@ def run_application(stop_event, options):
     # Mono camera calibration
     saved_calibration_data = [options.calibration_results1, options.calibration_results2]
     while not stop_event.is_set() and not calibration_provider.mono_calibrate(saved_calibration_data):
-        pass
+        time.sleep(0)
 
     # Stereo camera calibration
-    QueuesProvider.ConsoleMessages.append("Starting stereo calibration. Please move wtih a chessboard, but keep it visicble in both cameras.")
+    QueuesProvider.ConsoleMessages.append(
+        "Starting stereo calibration. Please move wtih a chessboard, but keep it visicble in both cameras.")
     while not stop_event.is_set() and not calibration_provider.stereo_calibrate(options.stereo_calibration_results):
-        pass
+        time.sleep(0)
 
     # Checking if it should be exited
     if stop_event.is_set():
@@ -67,7 +81,7 @@ def run_application(stop_event, options):
 
     # Wait until gui fully initialized
     gui.initialized.wait()
-    time.sleep(0.5) # We want to make sure, that first images of the video passed
+    time.sleep(0.5)  # We want to make sure, that first images of the video passed
 
     # Tracking initialization
     trackers_provider = TrackersProvider(
@@ -104,12 +118,6 @@ def run_application(stop_event, options):
         calibration_provider.mono_calibration_results[1],
         calibration_provider.stereo_calibration_results
     )
-
-    # Adding camera position to GUI
-    stereo_results = calibration_provider.stereo_calibration_results
-    camera1, camera2 = Localization.get_camera_positions(stereo_results.rotation_matrix,
-                                                         stereo_results.translation_vector)
-    #gui.draw_cameras([camera1, camera2])
 
 
     # Endless localization

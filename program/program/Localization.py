@@ -7,6 +7,7 @@ from .CalibrationResults import get_current_time
 from .QueuesEntries import Point
 from .QueuesProvider import QueuesProvider
 
+
 class Localization(object):
     objects_count = Config.objects_count
     rotation_matrix1 = None
@@ -14,20 +15,18 @@ class Localization(object):
     projection_matrix1 = None
     projection_matrix2 = None
     mono_calibration_results = None
-    fundamental_matrix = None
 
-    localization_precision = 5 # in millimeters
+    localization_precision = 5  # in millimeters
     last_located_point = None
     last_located_point_time = [-1 for i in range(objects_count)]
-    time_threshold_skip = 1/20
-    time_threshold_correspondence = 1/10
+    time_threshold_skip = 1 / 20
+    time_threshold_correspondence = 1 / 10
 
     @classmethod
     def compute_projection_matrices(cls, calibration_results1, calibration_results2, stereo_calibration_results):
         cls.mono_calibration_results = [calibration_results1, calibration_results2]
-        cls.fundamental_matrix = stereo_calibration_results.fundamental_matrix
-
-        rt = np.append(stereo_calibration_results.rotation_matrix, stereo_calibration_results.translation_vector, axis = 1)
+        rt = np.append(stereo_calibration_results.rotation_matrix, stereo_calibration_results.translation_vector,
+                       axis=1)
         cls.projection_matrix2 = calibration_results2.camera_matrix.dot(rt)
         cls.projection_matrix1 = calibration_results1.camera_matrix.dot(np.eye(3, 4))
 
@@ -50,40 +49,39 @@ class Localization(object):
     def get_undistorted_point(cls, point, cam_ind):
         calib_results = cls.mono_calibration_results[cam_ind]
         undistorted = cv2.undistortPoints(point, calib_results.camera_matrix, calib_results.distortion_coeffs,
-                                          P=calib_results.camera_matrix) # without setting P normalized points would be returned
+                                          P=calib_results.camera_matrix)  # without setting P normalized points would be returned
         return undistorted
 
     @classmethod
     def save_localization_data(cls):
         times = [x[0].timestamp for x in QueuesProvider.LocalizatedPoints3D if x]
-        if times:
-            first_point_time = min(times)
-        else:
+        if not times:
             return
 
-        for i in range(cls.objects_count):
-            if len(QueuesProvider.LocalizatedPoints3D[i]) == 0:
+        first_point_time = min(times)
+        for i, localizated in enumerate(QueuesProvider.LocalizatedPoints3D):
+            if not localizated:
                 return
 
             curr_dir = os.path.dirname(os.path.abspath(__file__))
-            filename = os.path.join(curr_dir, "localization_data", get_current_time() + "-" + str(i + 1) + ".txt")
+            filename = os.path.join(curr_dir, "localization_data", "{}-{}.txt".format(get_current_time(), i+1))
             os.makedirs(os.path.dirname(filename), exist_ok=True)
 
             with open(filename, 'w') as output:
-               for point in QueuesProvider.LocalizatedPoints3D[i]:
-                   point.timestamp -= first_point_time
-                   output.write(str(point) + '\n')
+                for point in localizated:
+                    point.timestamp -= first_point_time
+                    output.write('{}\n'.format(point))
 
     @classmethod
     def localize_point(cls, object_id):
-        points0 = QueuesProvider.TrackedPoints2D[(TrackersProvider.get_tracker_uid(0, object_id))]
-        points1 = QueuesProvider.TrackedPoints2D[(TrackersProvider.get_tracker_uid(1, object_id))]
+        points1 = QueuesProvider.TrackedPoints2D[(TrackersProvider.get_tracker_uid(0, object_id))]
+        points2 = QueuesProvider.TrackedPoints2D[(TrackersProvider.get_tracker_uid(1, object_id))]
 
-        if len(points0) == 0 or len(points1) == 0:
+        if len(points1) == 0 or len(points2) == 0:
             return
 
-        point1 = points0[-1]
-        point2 = points1[-1]
+        point1 = points1[-1]
+        point2 = points2[-1]
 
         if abs(point1.timestamp - point2.timestamp) > cls.time_threshold_correspondence:
             return
@@ -110,12 +108,3 @@ class Localization(object):
     @classmethod
     def convert_from_homogenous(cls, coords):
         return (coords[:-1] / coords[-1])[:, 0]
-
-    @classmethod
-    def get_camera_positions(cls, rotation_matrix, translation_vector):
-        vector_length = 500
-        camera1 = [[0, 0, 0], [0, 0, vector_length]]
-
-        rotated_vector = rotation_matrix.dot(np.array([[0, 0, vector_length]]).T) + translation_vector
-        camera2 = [translation_vector.T.tolist()[0], rotated_vector.T.tolist()[0]]
-        return camera1, camera2

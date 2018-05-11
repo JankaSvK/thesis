@@ -3,15 +3,19 @@ import json
 import numpy
 from datetime import datetime
 
+
 def get_current_time():
     return datetime.now().strftime("%Y-%m-%d-at-%H-%M")
+
 
 def import_json(object, jsonFile):
     with open(jsonFile, 'r') as input:
         object.__dict__ = json.load(input)
 
+
 class MonoCameraCalibrationResults(object):
-    def __init__(self, camera_matrix = None, distortion_coeffs = None, rotation_vecs = None, translation_vecs = None, jsonFile = None):
+    def __init__(self, camera_matrix=None, distortion_coeffs=None, rotation_vecs=None, translation_vecs=None,
+                 jsonFile=None):
         if jsonFile is not None:
             import_json(self, jsonFile)
             self.camera_matrix = numpy.array(self.camera_matrix)
@@ -39,14 +43,16 @@ class MonoCameraCalibrationResults(object):
                 result[key] = (self.__dict__[key]).tolist()
 
         curr_dir = os.path.dirname(os.path.abspath(__file__))
-        filename = os.path.join(curr_dir, "calib_results", str(camera_index + 1), get_current_time() + '.json')
+        filename = os.path.join(curr_dir, "calib_results", str(camera_index + 1), '{}.json'.format(get_current_time()))
         os.makedirs(os.path.dirname(filename), exist_ok=True)
 
         with open(filename, 'w') as output:
             json.dump(result, output)
 
+
 class StereoCameraCalibrationResults(object):
-    def __init__(self, rotation_matrix = None, translation_vector = None, essential_matrix = None, fundamental_matrix = None, reprojection_error = None, jsonFile = None):
+    def __init__(self, rotation_matrix=None, translation_vector=None, essential_matrix=None, fundamental_matrix=None,
+                 reprojection_error=None, jsonFile=None):
         if jsonFile is not None:
             import_json(self, jsonFile)
 
@@ -75,12 +81,12 @@ class StereoCameraCalibrationResults(object):
                 result[key] = self.__dict__[key]
 
         curr_dir = os.path.dirname(os.path.abspath(__file__))
-        filename = os.path.join(curr_dir, "calib_results", "stereo_calib_results", get_current_time() + '.json')
+        filename = os.path.join(curr_dir, "calib_results", "stereo_calib_results", '{}.json'.format(get_current_time()))
+
         os.makedirs(os.path.dirname(filename), exist_ok=True)
 
         with open(filename, 'w') as output:
             json.dump(result, output)
-
 
     def __str__(self):
         output = "Rotation matrix\n" + str(self.rotation_matrix)
@@ -89,4 +95,3 @@ class StereoCameraCalibrationResults(object):
         output += "\nFundamental matrix\n" + str(self.fundamental_matrix)
         output += "\nReprojection error\n" + str(self.reprojection_error)
         return output
-

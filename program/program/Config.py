@@ -10,9 +10,10 @@ chessboard_square_size = 22
 
 # Camera indeces to ititialize cameras. May be changed by option provided to the script.
 camera_initialize = [0, 1]
+camera_count = len(camera_initialize)
 
-def camera_count():
-    return len(camera_initialize)
+#def camera_count():
+#    return len(camera_initialize)
 
 # Count of the objects to be tracked. May be changed by option provided to the script.
 objects_count = 1

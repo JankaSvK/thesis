@@ -1,24 +1,22 @@
 import time
+from collections import deque
+
 from . import Config
 
 class QueuesProvider(object):
-    Images = []
-    LocalizatedPoints3D = [[] for _ in range(Config.objects_count)]
-    TrackedPoints2D = [[] for _ in range(Config.camera_count() * Config.objects_count)]
-    MouseClicks = [[] for _ in range(Config.camera_count() * Config.objects_count + 1)]
-    ConsoleMessages = []
+    Images = None
+    LocalizatedPoints3D = None
+    TrackedPoints2D = None
+    MouseClicks = None
+    ConsoleMessages = None
 
     @classmethod
-    def get_image_with_timestamp(cls, camera_index, image_index=-1):
-        return cls.Images[camera_index][image_index]
-
-    @classmethod
-    def get_tracked_point_with_timestamp(cls, camera_index, point_index=-1):
-        return cls.TrackedPoints2D[camera_index][point_index]
-
-    @classmethod
-    def get_located_point(cls, point_index=-1):
-        return cls.LocalizatedPoints3D[point_index]
+    def initialize(cls):
+        cls.Images = [deque([], maxlen=500) for _ in range(Config.camera_count)]
+        cls.LocalizatedPoints3D = [[] for _ in range(Config.objects_count)]
+        cls.TrackedPoints2D = [[] for _ in range(Config.camera_count * Config.objects_count)]
+        cls.MouseClicks = [[] for _ in range(Config.camera_count + 1)]
+        cls.ConsoleMessages = []
 
     @classmethod
     def add_mouse_click(cls, window_index, x, y):

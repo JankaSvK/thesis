@@ -10,7 +10,8 @@ class Point(object):
             self.timestamp = time.time()
 
     def __str__(self):
-        return '{}  {}  {}  {}'.format(self.timestamp, *self.coordinates)
+        return '{} {}'.format(self.timestamp, " ".join(map(str, self.coordinates)))
+
 
 class ImageEntry(object):
     def __init__(self, image, timestamp=None):

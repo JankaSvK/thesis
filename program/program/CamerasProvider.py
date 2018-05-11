@@ -6,58 +6,57 @@ from .QueuesEntries import ImageEntry
 from . import Config
 
 
+class MissingVideoSources(RuntimeError):
+    pass
+
+
 class CamerasProvider(object):
-    def __init__(self, images_queues, stop_event, console_output, camera_indexes = None, video_recordings = None):
-        self.camera_indexes = camera_indexes
-        self.images = images_queues
-        self.captures = []
-        self.width = None
-        self.height = None
-        self.fps = [None, None]
+    def __init__(self, images_queues, stop_event, console_output, camera_indices=None, video_recordings=None):
+        self.camera_indices = camera_indices
+        self.video_recordings = video_recordings
+        self.image_entries = images_queues
+        self.console_output = console_output
         self.stop_event = stop_event
+
+        self.captures = []
+        self.fps = [None, None]
         self.capturing_thread = None
         self.width = Config.image_width
         self.height = Config.image_height
-        self.start_of_the_thread = None
-        self.console_output = console_output
+        self.thread_start = None
 
-        if video_recordings is None and camera_indexes is None:
-            raise RuntimeError("Camera source has to be specified")
-
-        self.video_recordings = video_recordings
-        self.camera_indexes = camera_indexes
+        if video_recordings is None and camera_indices is None:
+            raise MissingVideoSources
 
     def initialize_capturing(self):
-        if self.video_recordings is None:
-            if len(self.camera_indexes) != Config.camera_count():
-                raise RuntimeError("Two camera indexes has to be specified.")
-
-            for i in self.camera_indexes:
-                self.captures.append(cv2.VideoCapture(self.camera_indexes[i]))
-        else:
-            if len(self.video_recordings) != Config.camera_count():
-                raise RuntimeError("Two video files has to be specified.")
-
-            for video in self.video_recordings:
-                self.captures.append(cv2.VideoCapture(video))
-
+        sources = self.video_recordings or self.camera_indices
+        if len(sources) != Config.camera_count:
+            raise MissingVideoSources
+        self.captures = [cv2.VideoCapture(s) for s in sources]
         self.setup_cameras()
 
+    def setup_cameras(self):
+        for cam_ind, capture in enumerate(self.captures):
+            capture.set(cv2.CAP_PROP_FRAME_WIDTH, self.width)
+            capture.set(cv2.CAP_PROP_FRAME_HEIGHT, self.height)
+            capture.set(cv2.CAP_PROP_AUTOFOCUS, 0)
+            self.fps[cam_ind] = capture.get(cv2.CAP_PROP_FPS)
+
+            # capture.set(cv2.CAP_PROP_SETTINGS, 1) # open properties window for camera configuration
 
     def start_capturing(self):
-        if self.video_recordings is None:
-            self.capturing_thread = t.Thread(target=self.capture_live, args=(), name="VideoCapture")
-        else:
-            self.capturing_thread = t.Thread(target=self.capture_from_videos, args=(), name="VideoCapture")
+        target = self.capture_live if self.video_recordings is None else self.capture_from_videos
 
+        self.capturing_thread = t.Thread(target=target, args=(), name="VideoCapture")
         self.capturing_thread.setDaemon(True)
-        self.start_of_the_thread = time.time()
+        self.thread_start = time.time()
+
         self.capturing_thread.start()
 
     def stop_capturing(self):
         for i, capture in enumerate(self.captures):
             capture.release()
-            print("Camera", i, "released.")
+            print("Camera {} released.".format(i))
 
     def capture_live(self):
         while not self.stop_event.is_set():
@@ -66,45 +65,31 @@ class CamerasProvider(object):
         self.stop_capturing()
 
     def capture_from_videos(self):
-        self.number_of_read = [0, 0]
+        self.processed_images = [0, 0]
         while not self.stop_event.is_set():
-            times = [self.number_of_read[i] / self.check_fps(self.fps[i]) for i in range(2)]
-            shorter = int(times[0] > times[1]) # get index of minimum
+            times = [self.processed_images[i] / (self.fps[i] or 30) for i in range(Config.camera_count)]
+            shorter = times[0] > times[1]  # get index of minimum
 
-            time_to_sleep = times[shorter] - (time.time() - self.start_of_the_thread)
+            time_to_sleep = times[shorter] - (time.time() - self.thread_start)
             if time_to_sleep > 0.01:
-                time.sleep(time_to_sleep) # to not have faster videos than reality
+                time.sleep(time_to_sleep)  # to not have faster videos than reality
 
-            self.number_of_read[shorter] += 1
+            self.processed_images[shorter] += 1
             ok = self.capture_and_save_image(shorter)
             if not ok:
                 self.console_output.append("Video ended. The views will not be updated.")
                 break
         self.stop_capturing()
 
-    def check_fps(self, fps):
-        if fps is None or fps == 0:
-            fps = 30
-        return fps
-
     def capture_and_save_image(self, cam_index):
         ok, frame = self.captures[cam_index].read()
-        if ok:
-            frame = cv2.resize(frame, (self.width, self.height))
-            image_entry = ImageEntry(frame)
-
-            if self.stop_event.is_set():
-                return False
-            self.images[cam_index].append(image_entry)
-            return True
-        else:
+        if not ok:
             return False
 
-    def setup_cameras(self):
-        for cam_ind, capture in enumerate(self.captures):
-            capture.set(cv2.CAP_PROP_FRAME_WIDTH, self.width)
-            capture.set(cv2.CAP_PROP_FRAME_HEIGHT, self.height)
-            capture.set(cv2.CAP_PROP_AUTOFOCUS, 0)  # turn the autofocus off
-            #capture.set(cv2.CAP_PROP_SETTINGS, 1) # open properties window
+        frame = cv2.resize(frame, (self.width, self.height))
+        image_entry = ImageEntry(frame)
 
-            self.fps[cam_ind] = capture.get(cv2.CAP_PROP_FPS)
+        if self.stop_event.is_set():
+            return False
+        self.image_entries[cam_index].append(image_entry)
+        return True

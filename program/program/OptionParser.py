@@ -5,13 +5,16 @@ def parse_options():
 
     # Setting cameras
     parser.add_option("--camera_input1", dest="camera1",
-                      help="Index of camera to be run as left camera", metavar="NUMBER")
+                      help="Index of camera to be run as left camera", metavar="NUMBER",
+                      type="int", default=0)
     parser.add_option("--camera_input2", dest="camera2",
-                      help="Index of camera to be run as left camera", metavar="NUMBER")
+                      help="Index of camera to be run as left camera", metavar="NUMBER",
+                      type="int", default=1)
 
     # Defining how many objects will be tracked
-    parser.add_option("-o", "--number_of_objects", dest="objects_count", type="int",
-                      help="Number of objects to be tracked.", metavar="NUMBER")
+    parser.add_option("-o", "--number_of_objects", dest="objects_count",
+                      help="Number of objects to be tracked.", metavar="NUMBER",
+                      type="int", default=1)
 
     # Mono calibration results as an input
     parser.add_option("--calibration_results1", dest="calibration_results1",
@@ -34,7 +37,7 @@ def parse_options():
                       help="The algorithm used for tracking", metavar="TRACKER")
 
     parser.add_option("--chessboard", dest="chessboard",
-                      help="Calibration chessboard parameters (inner_cornersX,inner_cornersY,size)", metavar="TRIPLE")
+                      help="Calibration chessboard parameters inner_cornersX,inner_cornersY,size", metavar="TRIPLE")
 
     parser.add_option("--bbox", dest="bbox",
                       help="Bounding boxes")
