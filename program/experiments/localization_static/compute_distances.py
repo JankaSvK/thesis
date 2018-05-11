@@ -3,15 +3,27 @@
 # For given localization data - ladder, it computes how good they were. The true and estimated distance.
 
 import os
+from sys import argv
 
-prefix = "localization_data/2018-05-07-at-18-10-"
+scenario = int(argv[1])
 
 # We are interested in these tuples
-points_in_column = 7
-pairs = [([i, i+1], 200) for i in range(1, 7)]
-pairs += [([i, i+1], 200) for i in range(8, 14)]
-
-pairs += [([i, i+7], 400) for i in range(1, 8)]
+if scenario == 1:
+	prefix = "localization_data/2018-05-07-at-18-10-"
+	pairs = [([i, i+1], 200) for i in range(1, 7)]
+	pairs += [([i, i+1], 200) for i in range(8, 14)]
+	pairs += [([i, i+7], 400) for i in range(1, 8)]
+elif scenario == 2:
+	prefix = "localization_data/2018-05-10-at-22-04-"
+	pairs = [([1, 2], 200), ([2, 3], 400), ([3, 4], 200), ([4, 1], 400)]
+elif scenario == 3:
+	prefix = "localization_data/2018-05-10-at-20-47-"
+	pairs = [([i, i+1], 200) for i in range(1, 7)]
+	pairs += [([i, i+1], 200) for i in range(8, 14)]
+	pairs += [([i, i+7], 400) for i in range(1, 8)]
+else:
+	prefix = "localization_data/2018-05-10-at-20-50-"
+	pairs = [([1, 2], 200), ([2, 3], 400), ([3, 4], 200), ([4, 1], 400)]
 
 os.system("rm .results.txt")
 for pair, dist in pairs:

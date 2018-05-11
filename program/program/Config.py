@@ -26,13 +26,13 @@ image_height = 480
 # Therefore it should contains 2 * objects_count entries
 # Bouding box is a [x, y, width, height]
 # Sample value for two objects: [[[0, 0, 1, 1], [150, 100, 100, 100]], [[100, 100, 50, 50], [200, 200, 20, 20]]]
-initial_bounding_boxes = [[[189, 228, 2, 2]], [[353, 367, 2, 2]]]
+initial_bounding_boxes = [[[132, 56], [130, 157], [331, 103], [315, 207]], [[133, 53], [135, 194], [426, 64], [404, 196]]]
 
 ### Calibration settings
 
 # Minimum numbers of images for mono calibration.
 # Can not be less than 3
-minimum_images_for_monocalibration = 20
+minimum_images_for_monocalibration = 15
 
 # Maximum number of images for stereo calibration. If more has been found, a sample set of them is taken.
 maximum_images_for_monocalibration = 30
@@ -41,7 +41,7 @@ maximum_images_for_monocalibration = 30
 maximum_images_for_monocalibration_sampling = 2 * maximum_images_for_monocalibration
 
 # Minimum number of the images for stereo calibration
-minimum_images_for_stereocalibration = 20
+minimum_images_for_stereocalibration = 10
 
 # Maximum number of the images for stereo calibration. If more exists, a sample set of them is taken.
 maximum_images_for_stereocalibration = 50

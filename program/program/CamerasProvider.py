@@ -90,6 +90,7 @@ class CamerasProvider(object):
     def capture_and_save_image(self, cam_index):
         ok, frame = self.captures[cam_index].read()
         if ok:
+            frame = cv2.resize(frame, (self.width, self.height))
             image_entry = ImageEntry(frame)
 
             if self.stop_event.is_set():

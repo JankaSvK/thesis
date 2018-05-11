@@ -82,6 +82,9 @@ class GUI(object):
 
         self.subplot = self.graph_figure.add_subplot(111, projection='3d')
         self.subplot.mouse_init()
+        self.subplot.set_xlabel("X")
+        self.subplot.set_ylabel("Y")
+        self.subplot.set_zlabel("Z")
 
         # Create logging windows
         self.console = tkst.ScrolledText(self.root, height = 10)
@@ -148,8 +151,10 @@ class GUI(object):
 
             # Add messages to output
             if self.console_output and len(self.console_output) > self.outputted_messages:
+                self.console.config(state='normal')
                 self.console.insert(tk.END, self.console_output[self.outputted_messages] + '\n')
                 self.console.see(tk.END)
+                self.console.config(state='disabled')
                 self.outputted_messages += 1
 
             self.root.update_idletasks()

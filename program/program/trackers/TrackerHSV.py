@@ -37,6 +37,8 @@ class TrackerHSV(object):
         hsv = cv2.cvtColor(pattern, cv2.COLOR_BGR2HSV)
         hues = hsv[:,:,0].flatten()
         self.most_common_color = get_average_angle(hues)
+        #print(hues)
+        #print("color=", self.most_common_color)
         self.lower_bound = numpy.array([self.most_common_color - self.color_tolerancy, self.bottom_saturation, self.bottom_value])
         self.upper_bound = numpy.array([self.most_common_color + self.color_tolerancy, self.upper_saturation, self.upper_value])
         return True

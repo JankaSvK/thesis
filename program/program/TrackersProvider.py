@@ -51,7 +51,10 @@ class TrackersProvider(object):
                 else:
                     if tracker.tracker is None:
                         continue
-                    tracker.track()
+                    try:
+                        tracker.track()
+                    except Exception:
+                        print("Tracker failed on the image. Skipping it.")
             time.sleep(0)
 
 class Tracker(object):
@@ -79,8 +82,8 @@ class Tracker(object):
             bbox = tuple(bbox)
             ok = self.tracker.init(image, bbox)
         except (RuntimeError, SystemError) as e:
-            print(e)
             self.console_output.append("Initialization failed. Try again.")
+            self.tracker = None
 
     def track(self):
         time, position = self.get_object_position()

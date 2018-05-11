@@ -91,13 +91,12 @@ class CalibrationsProvider(object):
         if self.stereo_calibration_results is not None:
             return True
 
-        self.console_output.append("Looking for images for stereo calibration.")
+        #self.console_output.append("Looking for images for stereo calibration.")
         import itertools
         images = list(
             itertools.islice(self.find_images_for_stereo_calibration(), self.maximum_images_for_stereocalibration))
-        print(len(images))
         if len(images) < self.minimum_images_for_stereo_calibration:
-            self.console_output.append("Not enough images for stereo calibration.")
+            #self.console_output.append("Not enough images for stereo calibration.")
             return False
 
         if len(images) > self.maximum_images_for_stereocalibration:
@@ -109,7 +108,7 @@ class CalibrationsProvider(object):
         imgpoints2 = [i[1].get_chessboard() for i in images]
         objpoints = [self.object_points_for_chessboard() for _ in range(len(imgpoints1))]
 
-        print(len(imgpoints1), "images used for stereo calibration")
+        #print(len(imgpoints1), "images used for stereo calibration")
         print("Starting to compute stereo calibration")
         rerror, _, _, _, _, r, t, e, f = \
             cv2.stereoCalibrate(objectPoints=objpoints,

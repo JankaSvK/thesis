@@ -62,8 +62,7 @@ elif experiment_id == 43:
         video1 = obj_videos + "43/milk_popcorn/1.avi"
         video2 = obj_videos + "43/milk_popcorn/2.avi"
         objects = 2
-
-    tracker = "MEDIANFLOW"
+    tracker = "CORRELATION"
 else:
     print("Not recognized set of videos")
     exit(0)

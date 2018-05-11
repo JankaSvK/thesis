@@ -109,7 +109,7 @@ def run_application(stop_event, options):
     stereo_results = calibration_provider.stereo_calibration_results
     camera1, camera2 = Localization.get_camera_positions(stereo_results.rotation_matrix,
                                                          stereo_results.translation_vector)
-    gui.draw_cameras([camera1, camera2])
+    #gui.draw_cameras([camera1, camera2])
 
 
     # Endless localization
