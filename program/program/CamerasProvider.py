@@ -17,6 +17,7 @@ class CamerasProvider(object):
         self.image_entries = images_queues
         self.console_output = console_output
         self.stop_event = stop_event
+        self.input_end = t.Event()
 
         self.captures = []
         self.fps = [None, None]
@@ -78,6 +79,7 @@ class CamerasProvider(object):
             ok = self.capture_and_save_image(shorter)
             if not ok:
                 self.console_output.append("Video ended. The views will not be updated.")
+                self.input_end.set()
                 break
         self.stop_capturing()
 

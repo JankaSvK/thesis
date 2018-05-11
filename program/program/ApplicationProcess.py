@@ -2,7 +2,7 @@ import time
 import threading
 from collections import deque
 
-from .CalibrationsProvider import CalibrationsProvider
+from .CalibrationsProvider import CalibrationsProvider, UnsuccessfulCalibration
 from .CalibrationsProvider import CalibrationsProvider
 from .CamerasProvider import CamerasProvider
 from .Localization import Localization
@@ -60,19 +60,21 @@ def run_application(stop_event, options):
     QueuesProvider.Threads.append(guiThread)
     QueuesProvider.Threads.append(cameras_provider.capturing_thread)
 
-    # Calibration
-    QueuesProvider.ConsoleMessages.append("Starting calibration process. Move with the chessboard in camera view.")
-    calibration_provider = CalibrationsProvider(cameras_provider, stop_event, QueuesProvider.ConsoleMessages)
-    # Mono camera calibration
-    saved_calibration_data = [options.calibration_results1, options.calibration_results2]
-    while not stop_event.is_set() and not calibration_provider.mono_calibrate(saved_calibration_data):
-        time.sleep(0)
+    ### Calibration
 
-    # Stereo camera calibration
-    QueuesProvider.ConsoleMessages.append(
-        "Starting stereo calibration. Please move wtih a chessboard, but keep it visicble in both cameras.")
-    while not stop_event.is_set() and not calibration_provider.stereo_calibrate(options.stereo_calibration_results):
-        time.sleep(0)
+    calibration_provider = CalibrationsProvider(cameras_provider, stop_event, QueuesProvider.ConsoleMessages, cameras_provider.input_end)
+
+    try:
+        # Mono camera calibration
+        saved_calibration_data = [options.calibration_results1, options.calibration_results2]
+        calibration_provider.mono_calibrate(saved_calibration_data)
+
+        # Stereo camera calibration
+        calibration_provider.stereo_calibrate(options.stereo_calibration_results)
+    except UnsuccessfulCalibration:
+        QueuesProvider.ConsoleMessages.append("Calibration did not succeeded. Please, check the videos and chessboard configuration.")
+        cameras_provider.capturing_thread.join(1)
+        return
 
     # Checking if it should be exited
     if stop_event.is_set():

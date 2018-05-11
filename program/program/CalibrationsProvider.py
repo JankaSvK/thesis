@@ -2,17 +2,24 @@ import random
 import itertools
 import cv2
 import numpy as np
+
+from program.QueueIterator import QueueIteratorManager, QueueIterator
 from . import Config
 from .CalibrationResults import MonoCameraCalibrationResults, StereoCameraCalibrationResults
 
 
+class UnsuccessfulCalibration(Exception):
+    pass
+
+
 class CalibrationsProvider(object):
-    def __init__(self, cameras_provider, stop_event, console_output):
+    def __init__(self, cameras_provider, stop_event, console_output, input_end):
         self.cameras_provider = cameras_provider
         self.image_size = (Config.image_width, Config.image_height)
         self.image_entries = self.cameras_provider.image_entries
         self.stop_event = stop_event
         self.console_output = console_output
+        self.input_ended = input_end
 
         self.chessboard_inner_corners = Config.chessboard_inner_corners
         self.chessboard_square_size = Config.chessboard_square_size
@@ -22,12 +29,8 @@ class CalibrationsProvider(object):
         self.object_points = None
 
         # Calibration parameters setting
-        self.minimum_images_for_monocalibration = Config.minimum_images_for_monocalibration
-        self.maximum_images_for_monocalibration = Config.maximum_images_for_monocalibration
-        self.minimum_images_for_stereo_calibration = Config.minimum_images_for_stereocalibration
-        self.maximum_images_for_stereocalibration = Config.maximum_images_for_stereocalibration
-        self.monocalibration_sample_size = Config.maximum_images_for_monocalibration_sampling
-        self.stereocalibration_sample_size = Config.maximum_images_for_stereocalibration_sampling
+        self.monocalibration_sample_size = Config.images_for_monocalibration_sampling
+        self.stereocalibration_sample_size = Config.images_for_stereocalibration_sampling
         self.time_threshold = Config.time_threshold_for_correspondence
         self.skipping_time = Config.skipping_time
 
@@ -35,28 +38,28 @@ class CalibrationsProvider(object):
         if saved_results is None:
             saved_results = [None for _ in Config.camera_count]
 
-        for cam_ind in range(Config.camera_count):
-            if saved_results[cam_ind] is not None:
-                self.mono_calibration_results[cam_ind] = MonoCameraCalibrationResults(jsonFile=saved_results[cam_ind])
-                continue
+        to_calibrate = {i for i in range(Config.camera_count)}
 
+        for cam_ind, result in enumerate(saved_results):
+            if result is not None:
+                self.mono_calibration_results[cam_ind] = MonoCameraCalibrationResults(jsonFile=result)
             if self.mono_calibration_results[cam_ind] is not None:
-                continue
+                to_calibrate.discard(cam_ind)
 
-            images = self.image_entries[cam_ind]
-            images_with_chessboard = self.sample_calibration_images(self.get_images_with_chessboard(images),
-                                                                    self.minimum_images_for_monocalibration,
-                                                                    self.maximum_images_for_monocalibration,
-                                                                    self.monocalibration_sample_size)
-            if images_with_chessboard is None:
-                continue
-
+        if to_calibrate:
+            self.console_output.append("Starting calibration process. Move with the chessboard in camera view...")
+        queues = {i: QueueIterator(queue, self.input_ended) for i, queue in enumerate(self.image_entries) if i in to_calibrate}
+        images_with_chessboard_per_camera = self.get_images_with_chessboard(queues, self.monocalibration_sample_size)
+        for cam_ind in to_calibrate:
+            images_with_chessboard = images_with_chessboard_per_camera[cam_ind]
             chessboards = [i.get_chessboard() for i in images_with_chessboard]
             object_points_for_chessboards = [self.object_points_for_chessboard() for _ in
                                              range(len(images_with_chessboard))]
-
             self.console_output.append(
                 "Starting a calibration of camera {} on {} images.".format(cam_ind + 1, len(images_with_chessboard)))
+
+            if self.stop_event.is_set():
+                return
             ok, mtx, dist, _, _ = cv2.calibrateCamera(
                 objectPoints=object_points_for_chessboards,
                 imagePoints=chessboards,
@@ -88,14 +91,8 @@ class CalibrationsProvider(object):
 
         if self.stereo_calibration_results is not None:
             return True
-
-        images = self.sample_calibration_images(self.find_images_for_stereo_calibration(),
-                                                self.minimum_images_for_stereo_calibration,
-                                                self.maximum_images_for_stereocalibration,
-                                                self.stereocalibration_sample_size)
-        if images is None:
-            return False
-
+        self.console_output.append("Starting stereo calibration. Please move wtih a chessboard, but keep it visicble in both cameras...")
+        images = self.find_images_for_stereo_calibration(self.stereocalibration_sample_size)
         self.console_output.append("Computing the stereo calibration from a sample of {} images.".format(len(images)))
 
         imgpoints1 = [i[0].get_chessboard() for i in images]
@@ -122,27 +119,28 @@ class CalibrationsProvider(object):
 
         return True
 
-    def sample_calibration_images(self, image_iterator, minimum, maximum, sample_size):
-        images = list(itertools.islice(image_iterator, sample_size))
-        if len(images) < minimum:
-            return None
-        if len(images) > maximum:
-            return random.sample(images, maximum)
-        return images
+    def get_images_with_chessboard(self, images_queues, sample_size):
+        last_times = {k: -1 for k in images_queues.keys()}
+        samples = {k: [] for k in images_queues.keys()}
 
-    def get_images_with_chessboard(self, images_queue):
-        images = iter(self.threadsafe_list_copy(images_queue))
-        time_of_last_image = 0
-        while not self.stop_event.is_set():
-            image_entry = next(images)
-            if image_entry.timestamp - time_of_last_image < self.skipping_time:
-                continue
-            if not image_entry.chessboard_checked():
-                image_entry.add_chessboard(self.find_chessboard(image_entry.image))
-            if image_entry.contains_chessboard():
-                yield image_entry
-                time_of_last_image = image_entry.timestamp
-        raise StopIteration
+        while not self.stop_event.is_set() and images_queues:
+            try:
+                image_entries = {k: next(im) for k, im in images_queues.items()}
+            except StopIteration:
+                raise UnsuccessfulCalibration
+            for i, entry in image_entries.items():
+                if entry.timestamp - last_times[i] < self.skipping_time:
+                    continue
+                if not entry.chessboard_checked():
+                    entry.add_chessboard(self.find_chessboard(entry.image))
+                if entry.contains_chessboard():
+                    samples[i].append(entry)
+                    last_times[i] = entry.timestamp
+                    if len(samples[i]) == sample_size:
+                        del images_queues[i]
+                    self.console_output.append(
+                        "  {} / {} Images gathered for monocalibration #{}".format(len(samples[i]), sample_size, i + 1))
+        return samples
 
     def find_chessboard(self, image):
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -167,26 +165,38 @@ class CalibrationsProvider(object):
             else:
                 return res
 
-    def find_images_for_stereo_calibration(self):
+    def find_images_for_stereo_calibration(self, sample_size):
         def may_contain_chessboard(image):
             return not image.chessboard_checked() or image.contains_chessboard()
 
-        images_iter = [filter(may_contain_chessboard, self.threadsafe_list_copy(image_entries)) for image_entries in self.image_entries]
-        images = [next(x) for x in images_iter]
-        earlier = images[0].timestamp > images[1].timestamp
-        last_time = 0
+        def iter_over_images():
+            manager = QueueIteratorManager(self.image_entries, self.input_ended)
+            images_iter = manager.queue_iters
+            images = [next(x) for x in images_iter]
+            earlier = images[0].timestamp > images[1].timestamp
+            last_time = 0
 
-        while not self.stop_event.is_set():
-            while images[earlier].timestamp <= last_time + self.skipping_time:
+            while not self.stop_event.is_set():
+                while images[earlier].timestamp <= last_time + self.skipping_time:
+                    images[earlier] = next(images_iter[earlier])
+                    earlier = images[0].timestamp > images[1].timestamp
+                if images[not earlier].timestamp - images[earlier].timestamp < self.time_threshold:
+                    for image in images:
+                        if not image.chessboard_checked():
+                            image.add_chessboard(self.find_chessboard(image.image))
+                    if all(x.contains_chessboard() for x in images):
+                        yield images[0], images[1]
+                    last_time = images[not earlier].timestamp
                 images[earlier] = next(images_iter[earlier])
                 earlier = images[0].timestamp > images[1].timestamp
-            if images[not earlier].timestamp - images[earlier].timestamp < self.time_threshold:
-                for image in images:
-                    if not image.chessboard_checked():
-                        image.add_chessboard(self.find_chessboard(image.image))
-                if all(x.contains_chessboard() for x in images):
-                    yield images[0], images[1]
-                last_time = images[not earlier].timestamp
-            images[earlier] = next(images_iter[earlier])
-            earlier = images[0].timestamp > images[1].timestamp
-        raise StopIteration
+            raise StopIteration
+
+        result = []
+        iterator = iter_over_images()
+        for i in range(sample_size):
+            try:
+                result.append(next(iterator))
+            except StopIteration:
+                raise UnsuccessfulCalibration
+            self.console_output.append("  {} / {} Images gathered for stereocalibration".format(i + 1, sample_size))
+        return result

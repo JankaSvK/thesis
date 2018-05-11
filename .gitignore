@@ -11,6 +11,7 @@ text/tex/pdfx
 *.fot
 *.cb
 *.cb2
+.*
 
 ## Intermediate documents:
 *.dvi

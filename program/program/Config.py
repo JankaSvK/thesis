@@ -31,24 +31,9 @@ initial_bounding_boxes = [[[132, 56], [130, 157], [331, 103], [315, 207]], [[133
 
 ### Calibration settings
 
-# Minimum numbers of images for mono calibration.
-# Can not be less than 3
-minimum_images_for_monocalibration = 15
+images_for_monocalibration_sampling = 15
 
-# Maximum number of images for stereo calibration. If more has been found, a sample set of them is taken.
-maximum_images_for_monocalibration = 30
-
-# A size of sampling set. Bigger takes more time to find, but provides higher variation to the images.
-maximum_images_for_monocalibration_sampling = 2 * maximum_images_for_monocalibration
-
-# Minimum number of the images for stereo calibration
-minimum_images_for_stereocalibration = 10
-
-# Maximum number of the images for stereo calibration. If more exists, a sample set of them is taken.
-maximum_images_for_stereocalibration = 50
-
-# A size of the sampling set. Bigger takes more time to find, but provides higher variation to the images.
-maximum_images_for_stereocalibration_sampling = 3 * maximum_images_for_stereocalibration
+images_for_stereocalibration_sampling = 100
 
 # Stereo calibration considers images as corresponding if their time do not differ more than this threshold.
 time_threshold_for_correspondence = 1/20
