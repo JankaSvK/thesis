@@ -1,138 +1,165 @@
 \chapter{Developer documentation}
 
-% Asi to nechcem dlhsie nez stranu a pol az dve
-% mal by si z toho odniest ten pocit, ze ked hladam toto, tak to najdem tu 
-% mal by vediet ze su nejake queue na ktore reaguje viac veci
-% adding new tracker
-
 In this chapter we provide an overview of the whole application code base. The
 motivation is to give you an idea how the program is working and help you to
 get oriented in the code.
 
 \section{Application parts}
 
-The program consists of several components, they are ApplicationProcess, Graphical
-User Interface, Cameras Provider, Calibration Provider, Trackers Provider,
-Localization and the Application In the following list, we explain the purpose
-in each of them.
+The program consists of several components, they are ApplicationProcess,
+Graphical User Interface, Cameras Provider, Calibration Provider, Trackers
+Provider, Localization and the Application. Each of this component has own
+file. In the following list, we explain the purpose in each of them.
 
 \subsubsection*{ApplicationProcess.py}
 
 This part of the program is responsible for the running all of the other parts.
 It runs them step by step, starting with the initialization of the cameras and
-ending with the localization process. 
+ending with the localization process. For some of these tasks it create a new
+separate thread to run.
 
 Running other parts is provided in this order:
 \begin{itemize}
-\item initialization of the cameras -- Cameras Provider
-\item initilaization of the GUI -- GUI
-\item performing mono calibration and stereocalibration -- Calibrations Provider
-\item initilization trackers -- Trackers Provider
-\item computing projection matrices and localization  - Localization
+\item initialization of the cameras -- CamerasProvider.py,
+\item initilaization of the GUI -- GUI.py,
+\item performing mono calibration and stereocalibration -- CalibrationsProvider.py,
+\item initilization trackers -- TrackersProvider.py,
+\item computing projection matrices and localization -- Localization.py.
 \end{itemize}
 
-\subsubsection*{Cameras provider}
+\subsubsection*{CamerasProvider.py}
 
 Cameras provider runs in a separate thread. Based on the options it will
 capture the images from the cameras or from the video files. Capturing is
-stopped, when the stop event is set, as a final step it releases the cameras or
+stopped, when the application closes, as a final step it releases the cameras or
 the video files.
 
-In case that the input is provided by video files, waiting points are added, to
-not to run ahead the videos. In case that computation of the other parts slow
+In case that the input is provided by video files, waiting loops are added, to
+not to play video accelerated. In case that computation of the other parts slow
 down the application, the provider will capture an image from the video, which
 is behind (that means, videos with different FPS may be used).
 
-\todo[inline]{Je capture blocking?}
-
-\subsubsection*{Graphical user interface}
+\subsubsection*{GUI.py}
 
 GUI is responsible for everything, that user can see. GUI takes care of
 printing messages to console, updating images in the camera view, displaying
 results of tracking and also localization.
 
-If the window is closed, the GUI set the stop event to exit the application.
+If the window is closed, the GUI set an event, for all other threads to
+signalize to end their work. Then the application exits.
 
-\subsubsection*{Calibrations provider}
+\subsubsection*{CalibrationsProvider.py}
 
 We devide calibration process into two separate parts. Mono calibration of the
-each camera and stereo calibration. Calibrations provider do both, separately.
+each camera and stereo calibration. Both calibration are mostly based just on
+finding pictures with the chessboard and then running OpenCV functions to
+calibrate. To set a number of images to calibrate on, change the value in the
+Config.py
 
-\subsubsection*{Trackers provider}
+\subsubsection*{TrackersProvider.py}
 
+Trackers provider takes care of all trackers -- their initialization and also
+tracking. If the initialization of the tracker is asked, then it initialize the
+tracker with specified bounding box (provided by mouseclicks) on the most
+recent image.
 
+If the tracker was already initialized, the trackers provider ask the tracker
+to return the position of the object on given image.
 
+Since the trackers are usually not able to reinitialize, we encapsulate
+tracking algorithm into Tracker class. On this encapsulated class and init may
+be called multiple times. It that case, it created a new tracker in the
+background and replace the current one by the new.
 
-\subsubsection*{Localization}
+Since we call trackers by name, the class TrackersFactory provide mapping
+between the names and the classes to create the trackers. Each tracker has to
+be added to this class.
 
+\subsubsection*{Localization.py}
 
+Localization class is a static class. It can on given calibration results
+ocmpute projection matrices, which the Localization class use later when
+computing the object position in the 3D space.
 
+Then for receivig a position of the object in 3D point we need to provide a
+coordinates from both images. Firstly it corrects the distortion from the
+cameras and then use triangulation method to compute the position.
 
+\section{Threads}
 
+The application runs in several threads. The \emph{Main} thread is responsible
+for exiting the whole application. It creates a thread for the
+\emph{Application}. Also the \emph{GUI} and the \emph{TrackersProvider}
+runs in own thread. All other tasks do \emph{Application} thread.
 
+In the Main.py the stop\_event is created. This event is passed to every thread.
+After setting a stop event, every thread should finish its work. The stop event
+is set by closing application windows -- so it is setted inside the GUI thread.
 
+\section{Queues}
 
-This application has few different parts. All of them have own file and
-sometimes even own thread for processing. 
+To share information between different parts and threads we provide several
+queues for the data. In this section we provide a short description to each
+queue, what information it contains and which components of the program use it.
+All queues are created in \verb+QueuesProvider.py+. 
 
-\todo[inline]{Nejak uved}
-GUI, Calib, App, Tracker, Localization
+\subsubsection{Image entries Queue}
 
-\subsection{Queues and lists}
-
-We use queues and lists as a way to communicate between the threads. Usually
-one thread only write to the queue and another only read.
-
-\subsubsection{Images Queue}
-
-Images queue is the containing captured images with some additional
+Images entries queue is the containing captured images with some additional
 information. We store only the last 500 pictures for each camera, the oldest
 pictures are automatically thrown away by using \verb+dequeue+. Using common
-webcamera with 30 FPS it store the last 16 seconds per camera.
+webcamera with 30 FPS it store the last 16 seconds per camera. The image
+entries are then used by calibration process, trackers and finally displayed by
+GUI.
 
 \subsubsection*{Image entry}
 
 Each image entry in Images queue contains these information:
 \begin{itemize}
-\item timestamp -- the time when the image was captured. The time is seconds since the epoch.
-\item image -- contains 3 channel two dimensional array containing captured image
+\item timestamp -- the time when the image was captured. The time is seconds since the epoch,
+\item image -- contains 3 channel two dimensional array containing captured image,
 \item chessboard -- information about the chessboard in the image. Access to
 chessboard information is provided by functions.
 \end{itemize}
 
-\subsubsection{Point}
+\subsection*{Tracked points}
+
+TrackedPoints2D is a queue for the results of the trackers. It is a list of the
+queues, separate one for each trackers results. These results are then used by GUI to
+display tracker infromation.
+
+\subsection*{Localized points}
+
+Localized points contains a list for estimated coordinates for the each object.
+The lists are together stored in the list LocalizedPoints3D.  At the end of the
+program, all data are automatically saved.
+
+The Localization class adds data to this queue and GUI is adding the estimated
+positions to the 3D live view.
+
+\subsubsection*{Point}
 
 The class Point is used to store tracking results and also localization
 results.  Point consists of the timestamp (similar to the Image entry) and
 coordinates.
 
-\subsubsection{Console output}
+\subsection*{Console output}
 
 To provide a console with the information in the application window we use a
 list for logging an information. Everything appended to this queue will be
 displayed in the text box. Only strings can be appended.
 
-\subsubsection{Mouse clicks}
+To the console output can add messagaes any part of the program. The GUI will
+then display them.
+
+\subsection*{Mouse clicks}
 
 Each mouse click with the left mouse button in the camera view is recorded and
 saved to this queue. For each camera view we create a separate list, into which
 we append coordinates of the mouse click.
 
-\subsubsection*{Main.py}
-
-This file is an entry point for our application. It sets the count of the
-objects. Important is \verb+stop_event+. We assume that, all threads will stop
-when \verb+stop_event+ is set. We set it any time, when the application should
-be closed (unhandled exception, closing the application window, etc.).
-
-This entry point is the only one non-daemon thread. It creates a new thread for
-the application to run and waits until the end of the program. To all other
-threads, the stop event will be passed as an argument. We use only one stop
-event to stop the whole application.
-
-\section{Queues}
-
-stop event
+Mouse clicks are used only for trackers initialization. The GUI records them by
+calling a callback.
 
 \section{Adding a new tracker}
 In this application you can test different trackers and their ability to track
@@ -145,8 +172,23 @@ the tracker with a prefix "Tracker".
 It is important to remember, that for each object in each camera view a new
 instance of the tracker will be initialized.
 
-Tracker is expected to be a class which implements two methods:
-\verb+init(image, bounding_box)+ and \verb+update(image)+.
+Tracker is expected to be a class which implements two methods. The skelet for
+the new tracker is displayed in the figure \ref{fig:new-tracker}.
+
+\begin{figure}
+\begin{verbatim}
+class TrackerSample(object):
+    def init(self, image, bbox):
+    	# Should return True or False
+    	pass
+
+    def update(self, image):
+    	# Should return a tuple (True/False, bbox)
+	pass
+\end{verbatim}
+\caption{Skelet of the new tracker class}
+\label{fig:new-tracker}
+\end{figure}
 
 Image will be provided as a three channel two dimensional NumPy array. Bounding
 box is represented by four numbers, in the following order:
@@ -159,7 +201,8 @@ if the initialization was finished successfuly.
 The function \verb+update+ should return tuple \verb+(state, bouding{\_}box)+.
 If the tracker is able to locate the object, it should return state equal to
 \verb+True+ and corresponding bounding box in the same format as used during
-initialization. However, if the object was not found, a tuple \verb+(False, None)+ should be returned.
+initialization. However, if the object was not found, a tuple \verb+(False,
+None)+ should be returned.
 
 As the last step, we add a new tracker to \verb+program/TrackersFactory.py+. We
 associate its name as a string to the tracker's class.

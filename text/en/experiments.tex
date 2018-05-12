@@ -37,7 +37,6 @@ seems, that results get worse when, the points are further away from the
 camera. But the results from the right column bring the hypothesis into
 question. 
 
-
 \begin{table}
 \centering
 \begin{tabular}{|r|r|r|r|r|}
@@ -72,6 +71,13 @@ in the table \ref{table:distances-second}. Same numbering of the marks was used.
 
 \begin{figure}
 \centering
+\includegraphics[width=0.8\linewidth]{img/experiments/right-ladder-numbered.png}
+\caption{Numbering the points}
+\label{fig:ladder_numbered}
+\end{figure}
+
+\begin{figure}
+\centering
 \begin{subfigure}{0.48\linewidth}
 	\includegraphics[width=\linewidth]{img/experiments/left-ladder.png}
 \end{subfigure}
@@ -81,6 +87,8 @@ in the table \ref{table:distances-second}. Same numbering of the marks was used.
 \caption{Selecting the points from the videos}
 \label{fig:ladder_ground}
 \end{figure}
+
+
 
 \begin{figure}
 \centering
@@ -121,16 +129,13 @@ in the table \ref{table:distances-second}. Same numbering of the marks was used.
 \label{fig:grid}
 \end{figure}
 
-\begin{figure}
-\centering
-\includegraphics[width=0.8\linewidth]{img/experiments/right-ladder-numbered.png}
-\caption{Numbering the points}
-\label{fig:ladder_numbered}
-\end{figure}
+\section{Overall experiments}
 
-\section{Final experiments}
-
-As the last step, we decided to test whole system in real environment.
+As the last step, we decided to test whole system in real environment. This
+time we included all parts of the application -- calibration, tracking and also
+localization. In the previous experiments, we tested the liability of the
+trackers and the precision of the results. Now we test the usability of the
+whole system as the whole.
 
 \subsection{Experiment with the one small object}
 
@@ -171,7 +176,7 @@ that the error is only usually between 1-2~cm..
 \subsection{Experiment with two objects}
 
 This experiment will test the ability of the system to track multiple objects.
-We decided to choose an environment where SIMPLEBACKGROUND nor HSV tracker can
+We decided to choose an environment where Simple background nor HSV tracker can
 be used (since if they can be used they perform very well). The rest of the
 trackers are mostly slower, more problematic.
 
@@ -188,7 +193,7 @@ Sample results of the trajectories for two objects is displayed in the figure
 between the yellow marks and swapped place. We can see these four marks also in
 both trajectories quite close to each other. 
 
-\begin{figure}
+\begin{figure}[p]
 \includegraphics[width=\linewidth]{img/experiments/two-objects.png}
 \caption{Initialization of the two objects}
 \label{fig:two-init}
