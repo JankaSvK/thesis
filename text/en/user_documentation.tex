@@ -60,17 +60,18 @@ run on the first two cameras available.
 	\label{fig:application}
 \end{figure}
 
-\todo[inline]{treba popisat ako maju vyzerat ta dvojica inner corners a co je vlastne inner corners}
 \subsection{Calibration}
 As a first step, calibration is expected. We need a calibration pattern --
 chessboard (example in the figure \ref{fig:chessboard}), which could be
 printed. For given chessboard, edit values in \verb+program/Config.py+. Change
 the value of \verb+chessboard_inner_corners+ to a number of \emph{inner}
-corners of your chessboard. Also change \verb+chessboard_square_size+ to the
+corners of your chessboard. For example, classic chessboard 8 $\times$ 8
+squares has only 7 $\times$ 7 inner corners, so we enter a tuple \verb+(7, 7)+
+as a number of inner corners. Also change \verb+chessboard_square_size+ to the
 size of your square in millimiters. It is important to check, if printed
 chessboard has squares, not rectangles, since the printer can slightly scale
-the image while preprocessing for printing. Moreover, calibration assumes it is
-a plannar object, so glue it to the box or another solid object.
+the image while preprocessing for printing.  Moreover, calibration assumes it
+is a plannar object, so glue it to the box or another solid object.
 
 For calibration we provide a rich set of views of the chessboard. It is important
 to move with it, capture it from various angles, distances and in different

@@ -112,8 +112,9 @@ to one value.
 
 \begin{figure}[h!]\centering
 \includegraphics[width=0.65\textwidth]{img/hsv-cylinder.png}
-\caption{"HSV cylinder" by SharkD is licensed under CC BY 3.0}
+\caption[Blah]{"HSV cylinder" by SharkD is licensed under CC BY 3.0 \footnotemark}
 \end{figure}
+\footnotetext{source: \url{https://commons.wikimedia.org/wiki/File:HSV\_color\_solid\_cylinder.png}}
 
 We describe the algorithm in a few steps. Firstly, we convert the template
 image (bounding box) from the RGB color space to HSV. Then we choose an average
@@ -256,10 +257,10 @@ black spots means patches which are similar to the pattern.
 We denote as sequence-based algorithms a class of tracking algorithms, which
 are using information from a sequence of images.
 
-Using the advantage of information from previous frames one could create not only
-more stable but also faster trackers. Furthermore, trackers of this class usually preserve identity, which means
-that also in the case of multiple moving objects in a frame it remains tracking the original
-one.
+Using the advantage of information from previous frames one could create not
+only more stable but also faster trackers. Furthermore, trackers of this class
+usually preserve identity, which means that also in the case of multiple moving
+objects in a frame it remains tracking the original one.
 
 Examples of the information we can obtain from sequence of the images are:
 \begin{itemize}
@@ -276,7 +277,7 @@ another) -- what detection algorithms are usually not able to do.
 In the next sections, we will present a few trackers implemented in the OpenCV. We
 provide a short overview of the trackers available.
 
-\subsection*{BOOSTING tracker}
+\subsection*{Boosting tracker}
 \todo[inline]{Citace?}
 Boosting tracker is based on online AdaBoost. It considers a bounding box as
 a positive sample and patches of background as negative ones. For a new image, the
@@ -286,7 +287,7 @@ location. The implementation in OpenCV is based on \citet*{boosting}.
 
 \subsection*{MIL tracker}
 The MIL is an abbreviation for Multiple Instance Learning. In comparison to the
-BOOSTING tracker, it does not keep only one image of the positive example, but a
+Boosting tracker, it does not keep only one image of the positive example, but a
 set of images. The tracker considers a small neighborhood of the
 current position as possible positive examples. It helps the tracker to cope with
 the occlusion. OpenCV implementation is based on \citet*{mil}.
@@ -383,8 +384,6 @@ tracker, which we think perfermed the best (most accurate). This representative
 tracker has imprecision equal to 0.  The inaccuracy of the other trackers is
 computed as a distance between the selected object by this tracker and the
 representative tracker. 
-
-\todo[inline]{Zistit rozptyl vysledkov u accuracy}
 
 \subsubsection*{Speed/Computational time}
 
@@ -531,16 +530,16 @@ Tracker	& FPS & E(Inaccuracy) & std(Inaccuracy) \\
 \label{table:hsv}
 \end{table}
 
-From the results, we can see that MIL, BOOSTING and TLD trackers are too slow
+From the results, we can see that MIL, Boosting and TLD trackers are too slow
 for our application which runs live. HSV tracker is not able to perform at
 all, since the robot is multicolored object.
 
-We can also see that, even the MIL and BOOSTING trackers were slow, they
+We can also see that, even the MIL and Boosting trackers were slow, they
 performed quite well. The trackers which have mean value of accuracy more than
 100 lost the object at some point and were not aware of it.
 
-As a result from this experiment, we consider CORRELATION, SIMPLEBACKGROUND,
-MEDIANFLOW, PATTERMATCHING as usable for our purposes.
+As a result from this experiment, we consider Correlation, Simple background,
+Medianflow, Pattern matching as usable for our purposes.
 
 To test HSV tracker, we modified the experiment by with placing orange paper to
 track on the top of the robot (see figure \ref{fig:hsv-bbox}). The obtained
@@ -551,8 +550,6 @@ are, not the whole object. The difference between tracked are by Simple
 Background tracker and the HSV tracker is displayed in the figure
 \ref{fig:hsv-diff}. The red line symbolises Simple Background tracker and the
 blue one the HSV tracker.
-
-\todo[inline]{Netusim, ci pisat nazvy trackerov velkym alebo malym, niektore su fakt srkatky, u inych to neviem...}
 
 \subsection{Object under occlusion}
 
@@ -581,7 +578,8 @@ the occlusion is displayed in the figure \ref{fig:occlusion}.
 
 The last test for the trackers is ability to track multiple objects. Simple
 detection-based trackers usually choose the best position with biggest area
-satisfing given condition, therefore tracking multiple object may not be possible.
+satisfing given condition, therefore tracking multiple object may not be
+possible.
 
 In a situation, when tracking multiple objects is needed, sequence-based
 trackers may outperform detection-based trackers. We decided to test their
@@ -613,8 +611,6 @@ trackers correctly.
 
 \subsection{Summary}
 
-\todo[inline]{Prepisat}
-
 In the previous section we provided a comparison of the trackers. The goal was
 to find the best performing trackers, but the results show, that it might be
 better to choose the tracker depending on the environment.
@@ -629,19 +625,19 @@ object to have one-colored area, but also this color should not be present in
 the background.
 
 If the objects is moving autonomously and the only moving object in the view of
-the cameras is the tracked object, then we can use SimpleBackground tracker.
+the cameras is the tracked object, then we can use Simple background tracker.
 
 Pattern Matching tracker works well with an objects which preserve the shape
 and the size during the tracking.
 
 In conclusion, it is best to try several trackers and find the one, which
-perform the best in given envinonmnet. We provide some tips how to find the
+perform the best in given environment. We provide some tips how to find the
 best tracker:
 \begin{itemize}
-\item if the object the only moving object -- use Simple Background
+\item if the object the only moving object -- use Simple background
 \item if the object has onecolor area -- use HSV
 \item if the mutual occlusion of the objects may appear -- try TLD
-\item otherwise, it is worth to try MedianFlow, Correlation and sometimes also Mosse and Pattern Matching
+\item otherwise, it is worth to try Medianflow, Correlation and sometimes also Mosse and Pattern matching
 \end{itemize}
 
 \begin{landscape}
@@ -650,15 +646,15 @@ best tracker:
 \begin{tabular}{p{5cm}|p{3cm}|p{4cm}|p{5cm}|p{5cm}}
 Tracker & Report object lost & Recovers from full occlusion & Ability to track multiple objects & Able to track correctly after mutual occlusion of tracked objects \\
 \hline
-SIMPLEBACKGROUND & Yes & Yes & No & No \\
-MIL & No & No  & Yes & No \\
 BOOSTING & No & No & Yes & No \\
-TLD & Sometimes & Yes & Yes* & No \\
-MEDIANFLOW & Yes & No & Yes & No \\
-HSV & Yes & Yes & Only different colors & Yes \\
-PATTERNMATCHING & No & Yes & Only different patterns* & Yes \\
 CORRELATION & No & No & Yes & No \\
-MOSSE & Sometimes & No & Yes & No
+HSV & Yes & Yes & Only different colors & Yes \\
+MEDIANFLOW & Yes & No & Yes & No \\
+MIL & No & No  & Yes & No \\
+MOSSE & Sometimes & No & Yes & No \\
+PATTERNMATCHING & No & Yes & Only different patterns* & Yes \\
+SIMPLEBACKGROUND & Yes & Yes & No & No \\
+TLD & Sometimes & Yes & Yes* & No \\
 \end{tabular}
 \vspace{1ex}
 \raggedright *Tracker performed badly
