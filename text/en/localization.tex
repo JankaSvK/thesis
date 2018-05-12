@@ -96,13 +96,13 @@ of the point $X$ (homogenous).
 
 We will now shortly describe how the triangulation is working under the hood.
 
-We start from the single equation $x = PX$, try to reformulate to obtain some
-equations. Since we do have two such equations (for each camera, see
-\ref{projection-statements}), we will create enogh equations for solving
-unknown -- the X -- position of our object in world coordinates.
+We start from the single equation $x = PX$ and try to rearrange it. Since we do
+have two such equations (for each camera, see \ref{projection-statements}), we
+will create enough equations for finding the unknown position ($X$) of our
+object in world coordinates.
 
 We denote a point $x=(a, b, c)$ where $x$ represents homogenous coordinates of
-the object in the image. We also choose $a, b, c$ in a way to be $c = 1$. We
+the object in the image. We also choose $a, b, c$ in a way to have $c = 1$. We
 can do that, since the coordinates are only up to scale factor.
 
 Then we use the fact, that the cross product of the vector itself is equal to
@@ -120,12 +120,12 @@ $$ b(p^{3T}X) - (p^{2T}X) = 0 $$
 $$ a(p^{2T}X) - b(p^{1T}X) = 0 $$
 
 These equations are linear in the components of $X$. Only two equations are
-linearly independent since the third one could be obtained as the sum $b$
-times the first row and $-a$ times the second row. Therefore, we use only first
-two.
+linearly independent since the third one could be obtained as the sum $b$ times
+the first row and $-a$ times the second row. Therefore, we use only the first
+two equations
 
-In this way we obtained two equation from the $x = PX$. In our case, we have
-two such equations -- for each camera one (\ref{projection-statement}). We
+In this way we obtained two equations from $x = PX$. In our case, we have
+two such equations -- one for each camera (\ref{projection-statements}). We
 denote a point $x = (a, b, 1)$ and $y=(m, n, 1)$. Then using the steps described in previous paragraphs we obtain these equations:
 
 $$ a(p^{3T}X) - (p^{1T}X) = 0 $$
@@ -133,11 +133,11 @@ $$ b(p^{3T}X) - (p^{2T}X) = 0 $$
 $$ m(q^{3T}X) - (q^{1T}X) = 0 $$
 $$ n(q^{3T}X) - (q^{2T}X) = 0 $$
 
-We know can obtain an equation in the form of $AX = 0$. The solution of this
+We now can obtain an equation in the form of $AX = 0$. The solution of this
 equation is our solution for the position of the object in the worlds
 coordinates.
 
-The matrix $A$ has following format:
+The matrix $A$ has the following format:
 
 \[
 A = \begin{pmatrix}
@@ -155,9 +155,13 @@ For each image two equations were included, giving a total of four equations in
 four homogeneous unknowns.
 
 Without an error during measurements a point $X$ satisfying $AX = 0$ would
-exist. However, due to the errors it might not exists. As the next step, Homogenous
-method (DLT) is used to find the solution. More about the method could be found
-in \citet*{multiple-view-geometry}.
+exist. However, due to the errors it might not exists. Therefore, a solution to
+this equation cannot be find easily. It can be solved by direct linear
+transformation algorithm (DLT). More about the method could be found in
+\citet*{multiple-view-geometry}.
+
+\todo[inline]{Pridat poznamku akoze co minimalizuje ten algoritmus}
+
 
 \section{Implementation note}
 For the triangulation we used OpenCV function triangulatePoints($P$, $Q$,

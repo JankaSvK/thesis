@@ -1,6 +1,6 @@
 \chapter{Proposed system}
 
-To be able to locate an object with no previous knowledge of the object (such
+To be able to locate an object in 3D with no previous knowledge of the object (such
 as its size, color and so on), two views of the same object are needed. The
 views can be obtained by one moving camera or by multiple cameras. In this
 thesis, we take a closer look at the second approach.
@@ -20,7 +20,7 @@ of the view (see an example of the setup in the figure \ref{fig:camera-setup}).
 Our solution is able to estimate the positions of the cameras (relatively to
 each other) using an automated calibration process. After calibration, the user
 marks an object to be tracked in the view of each camera. The estimated
-position of the cameras and the object is then displayed. We describe each step
+position of the object is then displayed. We describe each step
 of the process in the following chapters.
 
 \section{Tools}
@@ -47,8 +47,8 @@ A word \emph{vector} denotes a column vector in a shape of $n\times1$.
 
 \subsubsection*{Block matrix}
 A matrix operation $W = (A|B)$, where $A$ is a matrix $m \times n$ and B is a
-matrix $m \times p$, creates matrix $W$, where first $n$ columns are the entries from
-matrix $A$ and last columns consist of the columns of the matrix $B$.
+matrix $m \times p$, creates matrix $W$, where the first $n$ columns are the entries from
+matrix $A$ and the last $p$ columns consist of the columns of matrix $B$.
 Example:
 
 \[
@@ -68,23 +68,27 @@ B = \begin{pmatrix}
 
 \subsubsection*{Homogenous coordinates}
 
-In computer vision homogenous coordinates are used frequently instead of
-Cartesian coordinates.  These coordinates have one element added. This elemnt
-is scaling factor. As an example, vector $(2x, 2y, 2z, 2)^T$ represents same
+\todo[inline]{Spomenut ako vyzeraju cartesian}
+
+In computer vision, homogenous coordinates are used frequently instead of
+Cartesian coordinates. Homogenous coordinates have one element added. This element
+is a scaling factor. As an example, vector $(2x, 2y, 2z, 2)^T$ represents same
 point as $(x, y, z, 1)^T$ in homogenous coordinates. The same point is equal to
 $(x, y, z)^T$ in Cartesian coordinates. Unlike the Cartesian coordinates, a
 single point can be represented by infinitely many homogenous coordinates.
 
 Similarly it works for coordinates in any n-dimensional space. In conversion
-from Cartesian to homogenous coordinates we simply add new elemnt at the end
+from Cartesian to homogenous coordinates we simply add a new element at the end
 equal to one. In the opposite direction, we divide first $n-1$ values by the
 $n$th.
 
 In homogenous coordinates the origin is ommited. Homogenous coordinates provide
-us also a way how to represent point in the infinity by finite coordinates.
+us also a way how to represent a point in the infinity by finite coordinates.
 These points in the infinity are represented with the scale factor equal to 0.
 
 This coordinates representation is tightly bounded to a projective plane, on
-which the mathematical theory behind is based. For us is just important to know
-how to convert them to Cartesian coodinates and that algorithms for computer
-vision often use them.
+which the mathematical theory behind is based. For us, it is just important to
+know how to convert them to Cartesian coodinates and that algorithms for
+computer vision often use them.
+
+\todo[inline]{Podle nazvu bych tady cekal prehled celeho systemu ale o nem se nemluvi. Je tu spomenue umistneni kamer a zminka o knihovnach a pozuita notaze}

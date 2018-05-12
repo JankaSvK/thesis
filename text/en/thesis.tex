@@ -62,6 +62,7 @@
 \usepackage{tikz}
 \usepackage{enumitem}
 \usepackage{lscape}
+\usepackage{fancyvrb}
 \setlist[1]{itemsep=-2pt,topsep=3pt,parsep=3pt}
 %%% Basic information on the thesis
 
@@ -101,12 +102,12 @@ not to give up and continue.
 
 I want to acknowledge and thank my supervisor for the topic and the patience
 during last two years. A great appreciation belongs to Michal Koutný as my
-consultant, since he was the one who helped me with the toughest beginning. A
-great appreciation belongs to my dearest Dominik Smrž since he was with me
-during the dark and bright days of writing this thesis. I thank my parents, for
-never-ending support. They gave me the opportunity to study. To all my friends
-thank you for your understanding and encouragement in many, many moments of
-crisis. Also, thank Martin Faltus for lending me a robot for the experiments.
+consultant, since he helped me during last year a lot. A great appreciation
+belongs to my dearest Dominik Smrž since he was with me during the dark and
+bright days of writing this thesis. I thank my parents, for never-ending
+support. They gave me the opportunity to study. To all my friends thank you for
+your understanding and encouragement in many, many moments of crisis. Also,
+thank Martin Faltus for lending me a robot for the experiments.
 }
 
 % Abstract (recommended length around 80-200 words; this is not a copy of your thesis assignment!)
@@ -115,15 +116,14 @@ The purpose of this project is to propose and implement a system for object
 localization using a stereo vision -- two cameras. The system computes the
 position of the cameras relatively to each other using a calibration pattern.
 Then a user selects an object to track. Different algorithms can be used for
-the tracking.  The available tracking algorithms are detection-based and also
-sequence-based.  When is the object found in the view of both cameras, it
-estimates a position in three-dimensional space of the object using
-triangulation.
+tracking.  Both detection-based and sequence-based approaches can be used.
+When the object is found in the view of both cameras, the system estimates a
+position of the object in three-dimensional space using triangulation.
 }
 
 % 3 to 5 keywords (recommended), each enclosed in curly braces
 \def\Keywords{%
-{3D} {localization} {tracking} {opencv}
+{3D}, {localization}, {tracking}, {stereovision}, {opencv}
 }
 
 %% The hyperref package for clickable links in PDF and also for storing
@@ -145,6 +145,7 @@ triangulation.
 
 %%% Each chapter is kept in a separate file
 \includepdf[pages=-]{zadanie-bp}
+\VerbatimFootnotes
 \include{preface}
 \include{related-works}
 \include{proposed_system}

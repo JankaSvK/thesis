@@ -37,13 +37,13 @@ is caused by an object in front of the camera.
 One may expect to get the mask by \emph{thresholding} (see the results in
 \ref{fig:simple-background-first-threshold}). There is still a lot of noise.
 The noise is in the form of small dots and lines. Therefore we use
-\emph{blurring} to remove the noise. We \emph{threshold} it again to get
-the binary mask (see the results in \ref{fig:simple-background-second-threshold}).
+\emph{blurring} to remove the noise. We \emph{threshold} it again to get the
+binary mask (see the results in \ref{fig:simple-background-second-threshold}).
 At this point, we will find a contour with the biggest area using OpenCV
-\todo[inline]{M: footnote se jmény funkcí? }
-library. The center point of the bounding box of this contour will be our
-estimation of the position of our object in the image. The whole process is illustrated in
-the figure \ref{fig:simple-background-tracker}.
+library\footnote{used OpenCV functions: \verb+cv2.findCountours+ and
+\verb+cv2.countourArea+}. The center point of the bounding box of this contour
+will be our estimation of the position of our object in the image. The whole
+process is illustrated in the figure \ref{fig:simple-background-tracker}.
 
 It is shown in the image that lighting slightly changed between the background
 photography and the object photography (at the edge of the puzzle pieces). It
@@ -116,20 +116,25 @@ to a single value (hue).
 \end{figure}
 \footnotetext{source: \url{https://commons.wikimedia.org/wiki/File:HSV\_color\_solid\_cylinder.png}}
 
-We describe the algorithm in a few steps. First, we convert the template
-image (bounding box) from the RGB color space to HSV. Then we calculate the average
-color in the template. Since the coding of hue part is placed in the circle, it
-is not enough to take a commonly used average. It would cause that image full
-of warm red (the hue value of this color is circa equal to 15) and cool red
-(the hue is circa 345) would average to mid cyan (hue 180), instead of red
-(hue 0).
+We describe the algorithm in a few steps. First, we convert the template image
+(bounding box) from the RGB color space to HSV. Then we calculate the average
+color in the template. When we look for the object in a image, we create a
+binary mask by the hue value of the each pixel. The pixel value in the mask is
+equal to one, if its color is in allowed range from the color detected for
+original object, otherwise it is equal to zero. Now, the tracker similarly as
+in the Simple background, finds the biggest are in the mask, which is equal to
+one. The tracker estimates the center of this area as a position of the object.
 
-To get a more reasonable average, we take the hue value of each pixel as a
-unit vector (the hue value is encoded as the angle between given vector
-and vector $(1, 0)$). We sum these vectors and get a vector $(x, y)$. We find the
-corresponding angle for this vector using $arctang2$ function. The following
-\todo[inline]{M: nejmenuje se to atan2?}
-formulas describe the process of getting the average angle.
+We take a closer look on finding an average color (i.e hue value) in the
+template.  Since the coding of hue part is placed in the circle, it is not
+enough to take a commonly used average. It would cause that image full of warm
+red (the hue value of this color is circa equal to 15) and cool red (the hue is
+circa 345) would average to mid cyan (hue 180), instead of red (hue 0). To get
+a more reasonable average, we take the hue value of each pixel as a unit vector
+(the hue value is encoded as the angle between given vector and vector $(1,
+0)$). We sum these vectors and get a vector $(x, y)$. We find the corresponding
+angle for this vector using $atan2$ function. The following formulas describe
+the process of getting the average angle.
 
 \todo[inline]{Obrazok na ten vzorceky a tak}
 
@@ -144,9 +149,6 @@ $$
 The use of this algorithm for one-colored object is displayed in the figure
 \ref{fig:hsv-tracker}. We consider as a disadvantage that no other object of
 the same color can be placed in the view of the camera.
-
-\todo[inline]{M: chybí tady popis, jak se pak s tou průměrnou hodnotou hledá ten
-objekt (přesná shoda hue, nějaká tolerance?}
 
 \begin{figure}
   \centering
@@ -186,15 +188,10 @@ as
 
 $$
 R(x, y) =
-%\frac{
 \sum_{x', y'} ||T(x', y') - I(x + x', y + y')||^2
-%}{
-%\sqrt{\sum_{x', y'} T(x', y')^2 \cdot \sum_{x', y'} I(x+x', y+y')^2}
-%}
 $$
 where $x'$ and $y'$ denote points from the neighbourhood of the $x, y$ (bounded by template size).
 $T$ denotes our pattern and $I$ denotes the image.
-\todo[inline]{M: jak je definovaná vzdálenost pixelů?}
 
 \begin{figure}[h]
 	\centering
@@ -211,11 +208,13 @@ From the computed value for each pixel the pixel with the lowest value
 
 Finally, we choose an appropriate representation for the pixels (i.e. what
 precisely $T(x, y)$ and $I(x, y)$ stand for). In general, we can choose any
-reasonable vector (such as a tuple of RGB channels). We choose to use a standard
-conversion to grayscale ($T(x, y)$ and $I(x, y)$ thus give an intensity after
-such conversion).
-\todo[inline]{M: tenhle odstavec bych dal před ten vzorec, viz má předchozí poznímka}
-\todo[inline]{M: co je "standard conversion to grayscale"?}
+reasonable vector (such as a tuple of RGB channels). We choose to use a
+standard OpenCV conversion to grayscale\footnote{More information about the
+conversion:
+\url{https://docs.opencv.org/3.4/de/d25/imgproc\_color\_conversions.html}}
+($T(x, y)$ and $I(x, y)$ thus give an intensity after such conversion).
+%\todo[inline]{M: tenhle odstavec bych dal před ten vzorec, viz má předchozí
+%poznímka}
 
 Because this algorithm works with grayscale images, much information is
 lost during conversion. This disadvantage summed up with no ability to
@@ -333,9 +332,10 @@ OpenCV-contribute implements all above-described sequence-based trackers. An
 overview of OpenCV trackers is provided by \citet*{opencv-trackers}.
 
 \subsection*{Correlation tracker}
-We decided to include a tracker implemented in Dlib. This
-correlation tracker is based on the paper by \citet*{correlation}.
-\todo[inline]{M: "we decided" -- proč? zdůvodnění}
+We decided to include a tracker implemented in Dlib. The OpenCV trackers did
+not performed as we expected, so we looked for available alternative and
+decided to test Dlib tracker. This correlation tracker is based on the paper by
+\citet*{correlation}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -395,9 +395,8 @@ Instead of this approach, we select the best tracker. We do it by looking at
 the tracking performance on the video of all trackers. Then we choose a one
 tracker, which we think performed the best (most accurate). This representative
 tracker has inaccuracy equal to 0.  The inaccuracy of the other trackers is
-% pozor na precision vs accuracy, je to rozdíl
 computed as a distance between the selected object by this tracker and the
-representative tracker.
+representative tracker. 
 \todo[inline]{M: jednotky u inaccuracy}
 \todo[inline]{M: je to pro každý snímek?}
 \todo[inline]{M: uff, tohle je trochu kruhové; možná vysvětlit na základě čeho "we think performed the best"}
@@ -417,15 +416,15 @@ For the number of images that could be processed in one second, we use a
 traditional shortcut FPS (frames per second). A higher number means a quicker
 tracker, therefore less time needed for each image.
 
-This value is highly dependent on the hardware and the operating system.
-Therefore, we use the value of FPS as a rough guess.
-\todo[inline]{M: místo operating system bych dal overall load of the system}
+This value is highly dependent on the hardware and the overall load of the
+system.  Therefore, we use the value of FPS as a rough guess.
 
 The results were computed on a system with Intel(R) Core(TM) i5-7300HQ CPU
 (2.50GHz, 2496 Mhz, 4Core), 16GB RAM running Microsoft Windows 10 Enterprise.
-\todo[inline]{M: k tomu měření bych možná napsal i verzi OpenCV (pokud není jinde)
-a nějaký přesnější release/build těch windowsů, vzhledem k Spectre/Meltdown
-fixům z ledna}
+
+%\todo[inline]{M: k tomu měření bych možná napsal i verzi OpenCV (pokud není jinde)
+%a nějaký přesnější release/build těch windowsů, vzhledem k Spectre/Meltdown
+%fixům z ledna}
 
 Assessing the tracker speed is important. We consider a tracker too slow if
 it is not able to track live ($>$30~FPS). Even if the tracker has 30~FPS in the
@@ -489,12 +488,13 @@ trackers which are mentioned in the corresponding experiments.
 
 \subsubsection{Speed and accuracy}
 
-The goal of the first experiment is to estimate tracker speed and accuracy. We used a
-video of the robot moving along the oval. For the accuracy measurement we
-choosed a Simple Background tracker as our representative, since it provided an
-excellent example of the correct tracking on this video. The representative
-tracker is always displayed as a red bounding box and the blue is used for the
-tested tracker.
+The goal of the first experiment is to estimate tracker speed and accuracy. We
+used a video of the robot moving along the oval (see the figure
+\ref{fig:robot-oval}). For the accuracy measurement we choosed a Simple
+Background tracker as our representative, since it provided an excellent
+example of the correct tracking on this video. The representative tracker is
+always displayed as a red bounding box and the blue is used for the tested
+tracker.
 
 Since the Simple Background trackers need empty background when
 initializing, we passed an image without a robot to it.
@@ -512,27 +512,21 @@ second or two, its top platform is mirrored. On the other hand, the object does
 not change size and the background is very clear.
 
 The results of the experiment are available in the table
-\ref{table:experiment-robot}. We provide expected value and standard deviaton
-for the inaccuracy computed for the sample. Both values are in the pixels. For
-the HSV tracker we choosed to track the blue battery which has one-color area.
-\todo[inline]{M: na obrázku je oranžový vršek a ne modrá baterka}
+\ref{table:experiment-robot}. We provide sample expected value (denoted
+$\bar{X}$) and sample standard deviaton (denoted $\sigma_X$) of the
+inaccuracy. Both values are in the pixels. For the HSV tracker we choosed to
+track the blue battery which has one-color area.
 
 \begin{table}
 \centering
-\begin{tabular}{l|l|l|l}
-Tracker	& FPS & E(Inaccuracy) & std(Inaccuracy) \\
+\begin{tabular}{l|r|r|r}
+Tracker	& Speed [FPS] & $\bar{X}$ [px] & $\sigma_X$ [px] \\
 \hline
 \input{experiments/trackers.txt}
 \end{tabular}
 \caption{Estimation of the trackers speed and inaccuracy.}
 \label{table:experiment-robot}
 \end{table}
-\todo[inline]{M: možná bych tu inaccurracy oznařil písmenkem a pak dal $\bar{X}, \sigma_X$ do tabulky}
-\todo[inline]{M: uvést v tabulce ty jednotky (v textu jsou příliš bokem)}
-\todo[inline]{M: sloupce FPS na Speed (FPS)}
-\todo[inline]{M: čísla zarovnat vpravo (nebo lépe na desetinnou tečku)}
-\todo[inline]{M: možná seřadit tabulku podle zvoleného sloupce}
-\todo[inline]{M: vytučnit v každém sloupci nejlepší hodnotu (mimo representative trackeru)}
 
 \begin{figure}
 \centering
@@ -551,8 +545,8 @@ Tracker	& FPS & E(Inaccuracy) & std(Inaccuracy) \\
 
 \begin{table}
 \centering
-\begin{tabular}{l|l|l|l}
-Tracker	& FPS & E(Inaccuracy) & std(Inaccuracy) \\
+\begin{tabular}{l|r|r|r}
+Tracker	& Speed [FPS] & $\bar{X}$ [px] & $\sigma_X$ [px] \\
 \hline
 \input{experiments/hsv.txt}
 \end{tabular}
@@ -562,13 +556,12 @@ Tracker	& FPS & E(Inaccuracy) & std(Inaccuracy) \\
 \todo[inline]{M: detto co předchozí tabulka}
 
 From the results, we can see that MIL, Boosting and TLD trackers are too slow
-for our application which runs live. HSV tracker is not able to perform at
-all since the robot is multicolored object.
-\todo[inline]{M: HSV má 38.5, v tabulce jsou i horší, proč je to "not perform at all"?}
+for our application which runs live.
 
 We can also see that, althouth the MIL and BOOSTING trackers were slow, they
-performed quite well regarding accuracy. The trackers which have mean value of inaccuracy more than
-100 px lost the object at some point and were not aware of it.
+performed quite well regarding accuracy. The trackers which have mean value of
+inaccuracy more than 100 px lost the object at some point and were not aware of
+it.
 
 As a result from this experiment, we consider Correlation, Simple background,
 Medianflow, Pattern matching as usable for our purposes.

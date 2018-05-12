@@ -1,9 +1,9 @@
 \chapter{User documentation}
 The purpose of this project is to propose and implement a system for object
 localization using a stereo vision -- two cameras. The system computes relative
-position of the cameras to each other using calibration pattern.  Then user
-selects the object to track. Different algorithms can be used for the tracking.
-The tracking algortihms available are detection-based and also sequence-based.
+position of the cameras to each other using a calibration pattern. Then the user
+selects the object to track. Different algorithms can be used for tracking.
+The tracking algorithms available are detection-based and also sequence-based.
 When the object is found in the view of the both cameras, a position in three
 dimensional space is estimated. 
 This part of the documentation is focused on the end user. We introduce
@@ -18,7 +18,7 @@ The code is available at \url{https://github.com/JankaSvK/thesis}.
 \subsection{Hardware requirements}
 The software was tested on a system with Intel(R) Core(TM) i5-7300HQ CPU
 (2.50GHz, 2496 Mhz, 4Core), 16GB RAM running Microsoft Windows 10 Enterprise.
-Minimal requirements are lower, but the copmutation power reflects on frequency
+Minimal requirements are lower, but the computation power reflects on frequency
 of getting localization results. Also, we tested the program on the Ubuntu
 16.04.
 
@@ -44,8 +44,8 @@ versions of packages used to create and test our implementation.
 \end{tabular}
 \end{center}
 
-You can easily check installed versions by running \verb+checkVersions.py+ in
-the directory \verb+program/helpers/+.
+You can easily check the installed versions by running \verb+checkVersions.py+ in
+the directory \verb+helpers/+.
 
 \section{First run}
 
@@ -74,35 +74,36 @@ the image while preprocessing for printing.  Moreover, calibration assumes it
 is a plannar object, so glue it to the box or another solid object.
 
 For calibration we provide a rich set of views of the chessboard. It is important
-to move with it, capture it from various angles, distances and in different
-parts of the image. Richer set of views increase robustness of the calibration.
+to move with it and to capture it from various angles, distances and in different
+parts of the image. A richer set of views increases robustness of the calibration.
 
 After each successful calibration step you will be notified in the console.
 After successful stereo calibration, estimated distance between the cameras
 will be outputted. If it does not correspond to the reality, consider
-recalibration. If it still did not helped, you can increase the number of
+recalibration. If it still did not helped, the user can increase the number of
 images needed for calibration in the config file (be careful, the computation
 time may increase).
 
 \subsection{Selecting the objects}
 After successful calibration (calibrated with chessboard, or loaded from a
-file), we can initialize the trackers. Under each view of the camera, a button
+file), the user can initialize the trackers. Under each view of the camera, a button
 for each object is located.
 
-For a tracker initialization, click on the button. The next two clicks in the
+For tracker initialization, click on the button. The next two clicks in the
 view of the camera, will specify the bounding box for the object. After
 initializing trackers in both cameras, localization will automatically start.
 
-If the tracker lost the object, the message will be displayed in the camera
+If the tracker losts the object, the message is displayed in the camera
 view. Note that, not all trackers are able to recognise losing the object.
 
 \subsection{Localization}
 After initialization of the trackers, localization will start automatically.
 The results are displayed in the graph on the right. We can rotate the graph by
-grabbing it by mouse in its window. The dot represents current position and the
-line represent the trajectory.
+grabbing it by mouse in its window. The dot represents the current position and
+the line represent the trajectory.
 
-Results from localization are automatically saved.
+Results from localization are automatically saved into
+\verb+program/program/localization_data/+.
 
 \section{Additionals}
 
@@ -161,3 +162,5 @@ Capturing and saving videos provide additional program located in
 \verb+program/helpers/video_capture.py+. It will automatically capture video
 from all available cameras and save it into \verb+captured_videos+. The
 capturing can be exited by pressing the key "q".
+
+\todo[inline]{Dodat typicke scenare}

@@ -1,7 +1,7 @@
 \chapter{Related works} 
 
 The subject of retrieving an object position in 3D is well known and discussed
-in many papers. Usage can be found in many different areas, for example in
+in many papers. Applications can be found in many different areas, for example in
 sports in unclear situation, in the robotics for better navigation and
 also in augumented reality for more impressive effect.
 
@@ -45,7 +45,7 @@ high price.
 
 \section{Use of the systems in robotics}
 
-The principles described in previous sections have a extensive usage in
+The principles described in previous sections have an extensive usage in
 robotics, for better navigation, object manipulating and so on. For example,
 for the robotic competition
 RoboCup, the category Soccer many systems for ball tracking were developed. Robots
@@ -63,21 +63,21 @@ about it, we refer to the paper \citet*{kappeler20103d}.
 \section{Dove-eye}
 
 The idea of this work is based on its predecestor, Dove-eye presented in the
-paper by \citet*{dove-eye}. This project use automatic calibration process, to
-get the infromation about the cameras and provide a several ways to track an
+paper by \citet*{dove-eye}. This project uses automatic calibration process to
+get the information about cameras and provides several ways to track an
 object. Localization results are displayed live.
 
 \section{Our approach}
 
 Starting with the ideas used in Dove-eye, we developed a new implementation for
-this task. We improve the the tracking process by providing many different
-trackers, which give an opportunity to choose the one which is best suitable for
+this task. We improve the tracking process by providing many different
+trackers, which gives an opportunity to choose the one which is best suitable for
 given environment. We provide an easy way to correct the tracker by its
 reinitialization. Furthermore, no knowledge of the internals is needed to add a
 new tracker.  In difference to some previously mentioned papers, we do not
-require special alignemt of the cameras. 
+require special alignment of the cameras. 
 
-We also implement an similar algorithm to the one mentioned by
+We also implement an algorithm similar to the one mentioned by
 \citet*{ibisch2015arbitrary} and others. As opposite to paper by
 \citet*{kappeler20103d} we do not use any previous information about the object
 tracked.
@@ -88,4 +88,6 @@ provided, including their speed, accuracy, but also ability to track
 multiple objects.
 
 We conclude the thesis with several experiments, including ones with autonomous
-robot, to test the system suitability for an use in the robotics.
+robot, to test the system suitability for applications in robotics.
+
+\todo[inline]{Chyba analyza z pohladu toho, co budete delat, co jste si z tech systemu vzala jako motivaci, v cem se hodi, ci nehodi pro vase zadani}
