@@ -17,11 +17,26 @@ of the view (see an example of the setup in the figure \ref{fig:camera-setup}).
 	\label{fig:camera-setup}
 \end{figure}
 
-Our solution is able to estimate the positions of the cameras (relatively to
-each other) using an automated calibration process. After calibration, the user
-marks an object to be tracked in the view of each camera. The estimated
-position of the object is then displayed. We describe each step
-of the process in the following chapters.
+The program will be able to calibrate cameras to get their parameters. This
+calibration will be based on showing a specific pattern to both cameras. From
+this calibration, we obtain information for both cameras, but also their
+distance to each other and the rotation between them.
+
+After this calibration, the user marks the objects in both views of the
+cameras. At this point, the tracker will start to estimate an object position
+in camera view based on the images. We provide different tracker, so the user
+can choose one to work with.
+
+When we obtain information from calibration and the object position from both
+images, we will estimate the object position in 3D space by simple linear
+triangulation.
+
+The each described step is crucial to get a system, which will be able to
+localize point in 3D space. Each step is discussed separately in the following
+chapter.
+
+Now we provide a short insight into used tools and the notations, which are
+used to describe our solution to the problem.
 
 \section{Tools}
 
@@ -68,14 +83,13 @@ B = \begin{pmatrix}
 
 \subsubsection*{Homogenous coordinates}
 
-\todo[inline]{Spomenut ako vyzeraju cartesian}
-
 In computer vision, homogenous coordinates are used frequently instead of
-Cartesian coordinates. Homogenous coordinates have one element added. This element
-is a scaling factor. As an example, vector $(2x, 2y, 2z, 2)^T$ represents same
-point as $(x, y, z, 1)^T$ in homogenous coordinates. The same point is equal to
-$(x, y, z)^T$ in Cartesian coordinates. Unlike the Cartesian coordinates, a
-single point can be represented by infinitely many homogenous coordinates.
+Cartesian coordinates. Cartesian coordinates are the most common coordinate
+system.  Homogenous coordinates have one element added. This element is a
+scaling factor. As an example, vector $(2x, 2y, 2z, 2)^T$ represents same point
+as $(x, y, z, 1)^T$ in homogenous coordinates. The same point is equal to $(x,
+y, z)^T$ in Cartesian coordinates. Unlike the Cartesian coordinates, a single
+point can be represented by infinitely many homogenous coordinates.
 
 Similarly it works for coordinates in any n-dimensional space. In conversion
 from Cartesian to homogenous coordinates we simply add a new element at the end
@@ -90,5 +104,3 @@ This coordinates representation is tightly bounded to a projective plane, on
 which the mathematical theory behind is based. For us, it is just important to
 know how to convert them to Cartesian coodinates and that algorithms for
 computer vision often use them.
-
-\todo[inline]{Podle nazvu bych tady cekal prehled celeho systemu ale o nem se nemluvi. Je tu spomenue umistneni kamer a zminka o knihovnach a pozuita notaze}

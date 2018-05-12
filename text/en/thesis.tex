@@ -64,6 +64,18 @@
 \usepackage{lscape}
 \usepackage{fancyvrb}
 \setlist[1]{itemsep=-2pt,topsep=3pt,parsep=3pt}
+
+% Trackers
+\newcommand{\simback}{Simple background}
+\newcommand{\hsv}{HSV}
+\newcommand{\boost}{Boosting}
+\newcommand{\medflow}{Medianflow}
+\newcommand{\kcf}{KCF}
+\newcommand{\tld}{TLD}
+\newcommand{\corr}{Correlation}
+\newcommand{\patt}{Pattern matching}
+\newcommand{\mosse}{Mosse}
+
 %%% Basic information on the thesis
 
 % Thesis title in English (exactly as in the formal assignment)
@@ -92,6 +104,7 @@
 % Study programme and specialization
 \def\StudyProgramme{Computer Science}
 \def\StudyBranch{General Computer Science}
+
 
 % An optional dedication: you can thank whomever you wish (your supervisor,
 % consultant, a person who lent the software, etc.)
@@ -138,13 +151,13 @@ position of the object in three-dimensional space using triangulation.
 % Title page and various mandatory informational pages
 \begin{document}
 \include{title}
+\includepdf[pages=-]{zadanie-bp}
 
 %%% A page with automatically generated table of contents of the bachelor thesis
 
 \tableofcontents
 
 %%% Each chapter is kept in a separate file
-\includepdf[pages=-]{zadanie-bp}
 \VerbatimFootnotes
 \include{preface}
 \include{related-works}

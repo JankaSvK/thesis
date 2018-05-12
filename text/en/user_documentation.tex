@@ -50,9 +50,11 @@ the directory \verb+helpers/+.
 \section{First run}
 
 In the folder \verb+program/+ we find an entry point for our application
-\verb+Main.py+. After starting the application a window will show up (displayed
-in figure \ref{fig:application}). With no options provided, the program will
-run on the first two cameras available.
+\verb+Main.py+. The text in this chapter is written with assumption that
+currecnt directory is the directory \verb+program/+. After starting the
+application a window will show up (displayed in figure \ref{fig:application}).
+With no options provided, the program will run on the first two cameras
+available.
 
 \begin{figure}
 	\frame{\includegraphics[width=\linewidth]{img/application.png}}
@@ -84,6 +86,25 @@ recalibration. If it still did not helped, the user can increase the number of
 images needed for calibration in the config file (be careful, the computation
 time may increase).
 
+If the calibration finished successfully, the calibration results will be
+automatically saved in \verb+program/calib_results/+. The files will be saved
+into three directories, regarding if it is stereo calibration or mono - in that
+case in the folder of corresponding camera. The hierarchy is displayed in the
+figure \ref{fig:hierarchy-calib}. The naming convention for these files is
+\verb+{year}-{month}-{day}-at-{hour}-{minute}.json+, where the date and time
+specify the moment when the calibration finished.
+
+\begin{figure}
+\dirtree{%
+.1 calib{\_}results/.
+.2 stereo{\_}calib{\_}results/.
+.2 1/.
+.2 2/.
+ }
+ \caption{Hierachy of the directory with saved calibration results}
+ \label{fig:hierarchy-calib}
+\end{figure}
+
 \subsection{Selecting the objects}
 After successful calibration (calibrated with chessboard, or loaded from a
 file), the user can initialize the trackers. Under each view of the camera, a button
@@ -97,13 +118,20 @@ If the tracker losts the object, the message is displayed in the camera
 view. Note that, not all trackers are able to recognise losing the object.
 
 \subsection{Localization}
+
 After initialization of the trackers, localization will start automatically.
 The results are displayed in the graph on the right. We can rotate the graph by
 grabbing it by mouse in its window. The dot represents the current position and
 the line represent the trajectory.
 
-Results from localization are automatically saved into
-\verb+program/program/localization_data/+.
+Results from localization are automatically at the end of the program saved in
+\verb+program/localization_data/+. The naming convention for the files includes
+the date and time, when was the program closed, i.e it has following form:
+\verb+{year}-{month}-{day}-at-{hour}-{minute}-{object_id}.json+.
+
+Saved localization data consists of the four columns separated by tabs. Each
+line represents succesful localization. In the first column is the time. In the
+rest three columns coordinates are stored (x, y, z).
 
 \section{Additionals}
 
@@ -117,50 +145,44 @@ each camera is done and then stereo calibration. As a tracker \verb+KCF+ is used
 \end{figure}
 
 \subsection{Notes for options}
-\emph{Videos} -- Only AVI formats are accepted.
-
-\emph{Trackers} -- As\verb+TRACKER+ may be used a name of implemented tracker. Available trackers
-are KCF, MEDIANFLOW, TLD, BOOSTING, MIL, SIMPLEBACKGROUND, HSV,
-PATTERNMATCHING, CORRELATION, MOSSE.
-\emph{Calibration results} -- Calibration results from previous runs may be
+\begin{itemize}
+\item\emph{Videos} -- only AVI formats are accepted.
+\item\emph{Trackers} -- as \verb+TRACKER+ may be used a name of implemented tracker.
+Allowed tracker names are: 
+\verb+BOOSTING+,
+\verb+CORRELATION+,
+\verb+HSV+,
+\verb+KCF+,
+\verb+MEDIANFLOW+,
+\verb+MIL+,
+\verb+MOSSE+
+\verb+PATTERNMATCHING+,
+\verb+SIMPLEBACKGROUND+,
+\verb+TLD+.
+\item\emph{Calibration results} -- calibration results from previous runs may be
 used by specifying path to the file. Take a look on directory hierarchy to know
 more.
-
-\subsection{Directory hierarchy}
-Results of each calibration and localization are saved.
-
-\subsubsection{Calibration results}
-All calibration results are in the directory \verb+program/calib_results+. The
-directory has the following structure:
-
-\begin{figure}
-\dirtree{%
-.1 calib{\_}results/.
-.2 stereo{\_}calib{\_}results/.
-.2 1/.
-.2 2/.
- }
- \end{figure}
-
-The results will be automatically saved into corresponding directory. The
-naming convention is: \verb+{year}-{month}-{day}-at-{hour}-{minute}.json+,
-where the date and time specify the moment when the calibration finished.
-
-\subsection{Localization data}
-After closing the program correctly, the data from the object localization will
-be saved into \verb+program/localization_data/+. The naming convention for the
-file is the same as for the calibration results. However, a suffix is added --
-the index of the object.
-
-Saved localization data consists of the four columns separated by tabs. Each
-line represents succesful localization. In the first column is the time. In the
-rest three columns coordinates are stored (x, y, z).
+\item\emph{Chessboard} -- the expected format is for example
+\verb+--chesboard=7,8,22+, where the first two number specify number of inner
+corners and third is the length of the square side in millimeters.
+\end{itemize}
 
 \subsection{Capturing the videos} 
 
-Capturing and saving videos provide additional program located in
-\verb+program/helpers/video_capture.py+. It will automatically capture video
-from all available cameras and save it into \verb+captured_videos+. The
-capturing can be exited by pressing the key "q".
+We provide additional script to capture and save videos. The script will
+automatically capture video from all available cameras and save it into
+\verb+captured_videos+. The capturing can be exited by pressing the key "q".
+The script is available in \texttt{helpers/video\_capture.py} from the root
+directory of the repository.  
 
-\todo[inline]{Dodat typicke scenare}
+\subsection{Sample scenarios}
+
+\texttt{python3 Main.py} -- runs the application on first two available cameras
+\newline
+\texttt{python3 Main.py --video1=path/file.avi --video2=path/file.avi} -- runs the application on the videos instead of the cameras
+\newline
+\texttt{python3 Main.py --tracker=CORRELATION} -- use a correlation tracker
+\newline
+\texttt{python3 Main.py --chessboard=7,8,22} -- using a chessboard pattern with $7\times8$ inner corners, each has 22 millimiters long side
+\newline
+\texttt{python3 Main.py -o2} -- setting to track two objects

@@ -22,7 +22,7 @@ Running other parts is provided in this order:
 \begin{itemize}
 \item initialization of the cameras -- CamerasProvider.py,
 \item initilaization of the GUI -- GUI.py,
-\item performing mono calibration and stereocalibration -- CalibrationsProvider.py,
+\item performing mono and stereocalibration -- CalibrationsProvider.py,
 \item initilization trackers -- TrackersProvider.py,
 \item computing projection matrices and localization -- Localization.py.
 \end{itemize}
@@ -179,12 +179,12 @@ the new tracker is displayed in the figure \ref{fig:new-tracker}.
 \begin{verbatim}
 class TrackerSample(object):
     def init(self, image, bbox):
-    	# Should return True or False
-    	pass
+        # Should return True or False
+        pass
 
     def update(self, image):
-    	# Should return a tuple (True/False, bbox)
-	pass
+        # Should return a tuple (True/False, bbox)
+        pass
 \end{verbatim}
 \caption{Skelet of the new tracker class}
 \label{fig:new-tracker}
@@ -201,8 +201,8 @@ if the initialization was finished successfuly.
 The function \verb+update+ should return tuple \verb+(state, bouding{\_}box)+.
 If the tracker is able to locate the object, it should return state equal to
 \verb+True+ and corresponding bounding box in the same format as used during
-initialization. However, if the object was not found, a tuple \verb+(False,
-None)+ should be returned.
+initialization. However, if the object was not found, a tuple \verb+(False,None)+
+should be returned.
 
 As the last step, we add a new tracker to \verb+program/TrackersFactory.py+. We
 associate its name as a string to the tracker's class.

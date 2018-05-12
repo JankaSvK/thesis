@@ -32,19 +32,17 @@ transformation between the point in the space and the point at the image plane.
 Sometimes even more parameters are used for a better description of the model
 of the camera.
 
-\subsection{Camera matrix} Camera matrix will provide us a transformation from
+\subsection{Camera matrix} 
+
+Camera matrix will provide us a transformation from
 world coordinates (with the origin in the camera) to image plane coordinates
 (seen in the image taken from the camera). If the coordinates in 3D are
 available, we can obtain 2D coordinates by simple multiplication by camera
 matrix. After multiplicatoin we obtain 2D homogenous coordinates.
 
 As the next step, we describe the camera matrix obtained by OpenCV calibration
-procedure.
-
-\todo[inline]{R: Tento odstavec nedava moc smysl}
-
-The approach of the camera matrix, which OpenCV uses, is to represent it as a
-matrix $3\times3$ in the following format: 
+procedure. In the OpenCV implementation the camera matrix is $3\times3$ matrix of the
+following format:
 
 \[
 \begin{pmatrix}
@@ -121,11 +119,13 @@ model of the camera.
 \section{Stereo calibration}
 
 After performing a calibration of both cameras separately, we also need
-information about their relative position to each other. 
-\todo[inline]{co je relative position}
-This position can be
+information about their relative position to each other. By the relative
+position, we understand translation from the first camera to the second and the
+rotation of the camera (among three axes). Using this information, we can
+transform a view of the one camera, by moving it by translation vector and
+rotating accordingly. Therefore, the position of the second camera can be
 described by six parameters, three as an angle around each ax to rotate and
-three for translation vector.
+three for translation vector in respect to the first camera.
 
 Stereo calibration routine in OpenCV can also perform monocalibration for both
 cameras, but we pre-calibrate cameras on itself for better precision and better
