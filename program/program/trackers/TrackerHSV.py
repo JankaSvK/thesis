@@ -36,9 +36,7 @@ class TrackerHSV(object):
         pattern = image[bbox[1]:bbox[3] + bbox[1], bbox[0]:bbox[2] + bbox[0]] # swapping x and y, since matrix representation have columns first
         hsv = cv2.cvtColor(pattern, cv2.COLOR_BGR2HSV)
         hues = hsv[:,:,0].flatten()
-        self.most_common_color = get_average_angle(hues)
-        #print(hues)
-        #print("color=", self.most_common_color)
+        self.most_common_color = get_average_angle(2*hues) / 2  # because OpenCV is coding HSV in [0, 180)
         self.lower_bound = numpy.array([self.most_common_color - self.color_tolerancy, self.bottom_saturation, self.bottom_value])
         self.upper_bound = numpy.array([self.most_common_color + self.color_tolerancy, self.upper_saturation, self.upper_value])
         return True

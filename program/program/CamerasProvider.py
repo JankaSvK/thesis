@@ -33,7 +33,10 @@ class CamerasProvider(object):
         sources = self.video_recordings or self.camera_indices
         if len(sources) != Config.camera_count:
             raise MissingVideoSources
-        self.captures = [cv2.VideoCapture(s) for s in sources]
+        try:
+            self.captures = [cv2.VideoCapture(s) for s in sources]
+        except:
+            raise MissingVideoSources
         self.setup_cameras()
 
     def setup_cameras(self):

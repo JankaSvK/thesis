@@ -4,9 +4,11 @@
 # The points of the ladder has to be included
 # It runs the Main.py
 
+# Only runnable on Linux based system, with `python3`
 import os
+from sys import argv
 
-scenario = 4
+scenario = int(argv[1])
 
 if scenario == 1:
 	# left column

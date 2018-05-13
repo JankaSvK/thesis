@@ -7,11 +7,15 @@ from datetime import datetime
 def get_current_time():
     return datetime.now().strftime("%Y-%m-%d-at-%H-%M")
 
+class CalibrationImportError(RuntimeError):
+    pass
 
 def import_json(object, jsonFile):
-    with open(jsonFile, 'r') as input:
-        object.__dict__ = json.load(input)
-
+    try:
+        with open(jsonFile, 'r') as input:
+            object.__dict__ = json.load(input)
+    except:
+        raise CalibrationImportError
 
 class MonoCameraCalibrationResults(object):
     def __init__(self, camera_matrix=None, distortion_coeffs=None, rotation_vecs=None, translation_vecs=None,

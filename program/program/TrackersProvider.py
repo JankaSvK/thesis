@@ -1,5 +1,4 @@
 import time
-from threading import Thread
 
 from . import Config
 from .QueuesEntries import Point

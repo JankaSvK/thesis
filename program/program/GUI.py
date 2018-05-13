@@ -47,7 +47,7 @@ class GUI(object):
         self.rgb_colors_for_objects = [(1, 0, 0), (0, 0, 1), (0, 1, 0), (0.5, 0.5, 0.5), (0.1, 0.2, 0.5)]
         if len(self.rgb_colors_for_objects) < self.objects_count:
             for _ in range(self.objects_count - len(self.rgb_colors_for_objects)):
-                self.rgb_colors_for_objects.append([random.random() for _ in range(3)])
+                self.rgb_colors_for_objects.append(tuple(random.random() for _ in range(3)))
 
     def create_gui_objects(self):
         self.root = tk.Tk()
@@ -200,6 +200,7 @@ class GUI(object):
                             (10, (obj_id + 1) * 30), cv2.FONT_HERSHEY_COMPLEX, 1, color)
             else:
                 cv2.circle(image, coords, 5, color, -1)
+
 
     def bgr_to_rgb_color_and_scale(self, color):
         return [c * 255 for c in reversed(color)]

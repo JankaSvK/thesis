@@ -2,13 +2,18 @@
 import os
 from sys import argv
 
+if os.name == 'nt':
+	python = "python"
+else:
+	python = "python3"
+
 try:
     experiment_id = int(argv[1])
 except Exception:
     experiment_id = 63
 
 def command(video1, video2, chessboard):
-    return "python ../../Main.py --video1={} --video2={} --chessboard={}".format(video1, video2, chessboard)
+    return "{} ../../Main.py --video1={} --video2={} --chessboard={}".format(python, video1, video2, chessboard)
 
 calib_videos = "../videos/calibration/"
 if experiment_id == 38:

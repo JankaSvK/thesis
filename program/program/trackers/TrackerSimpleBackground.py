@@ -12,6 +12,7 @@ class TrackerSimpleBackground(object):
         self.blur_size = blur_size
         self.threshold = threshold
         self.ignored_size_of_contour = ignored_size_of_contour
+        self.original = None
 
     def init(self, image, bbox):
         self.original = image

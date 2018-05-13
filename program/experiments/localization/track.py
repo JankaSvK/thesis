@@ -2,6 +2,11 @@
 import os
 from sys import argv
 
+if os.name == 'nt':
+	python = "python"
+else:
+	python = "python3"
+
 try:
     experiment_id = int(argv[1])
 except:
@@ -14,8 +19,8 @@ except:
 
 
 def command(video1, video2, calib1, calib2, stereo, bbox = None, tracker = None, objects = 1):
-    return 'python ../../Main.py --video1={} --video2={} --calibration_results1={} --calibration_results2={} ' \
-           '--stereo_calibration_results={} --bbox={} -t{} -o{}'.format(video1, video2, calib1, calib2,
+    return '{} ../../Main.py --video1={} --video2={} --calibration_results1={} --calibration_results2={} ' \
+           '--stereo_calibration_results={} --bbox={} -t{} -o{}'.format(python, video1, video2, calib1, calib2,
                                                                               stereo, bbox, tracker, objects)
 
 bbox = None
@@ -73,6 +78,7 @@ calib2 = "calib_results/2/" + data
 stereo = "calib_results/stereo_calib_results/" + data
 
 cmd = command(video1, video2, calib1, calib2, stereo, bbox, tracker, objects)
-print("Calling application with following parameters")
+print("Calling application with following parameters...")
 print(cmd)
+print()
 os.system(cmd)

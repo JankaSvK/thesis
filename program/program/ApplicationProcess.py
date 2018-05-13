@@ -1,11 +1,9 @@
 import time
 import threading
-from collections import deque
 
+from program.CalibrationResults import CalibrationImportError
 from .CalibrationsProvider import CalibrationsProvider, UnsuccessfulCalibration
-from .CalibrationsProvider import CalibrationsProvider
-from .CamerasProvider import CamerasProvider
-from .Localization import Localization
+from .CamerasProvider import CamerasProvider, MissingVideoSources
 from .QueuesProvider import *
 from . import Config
 from .GUI import GUI
@@ -32,6 +30,8 @@ def process_options(options):
 
 
 def run_application(stop_event, options):
+    # TODO vynimky na subory, ktore nacitavam
+
     process_options(options)
     trackers_initialization_events = [threading.Event() for _ in range(Config.objects_count * Config.camera_count)]
     QueuesProvider.initialize()
@@ -41,10 +41,18 @@ def run_application(stop_event, options):
         videos = None
     else:
         videos = [options.video1, options.video2]
-    cameras_provider = CamerasProvider(QueuesProvider.Images, stop_event, QueuesProvider.ConsoleMessages,
-                                       Config.camera_initialize, videos)
-    cameras_provider.initialize_capturing()
-    cameras_provider.start_capturing()
+
+    try:
+        cameras_provider = CamerasProvider(QueuesProvider.Images, stop_event, QueuesProvider.ConsoleMessages,
+                                           Config.camera_initialize, videos)
+        cameras_provider.initialize_capturing()
+        cameras_provider.start_capturing()
+    except MissingVideoSources:
+        print("Video sources could not be opened. Exiting")
+        stop_event.set()
+        return
+
+
 
     # Starting GUI
     gui = GUI(stop_event=stop_event,
@@ -62,7 +70,8 @@ def run_application(stop_event, options):
 
     ### Calibration
 
-    calibration_provider = CalibrationsProvider(cameras_provider, stop_event, QueuesProvider.ConsoleMessages, cameras_provider.input_end)
+    calibration_provider = CalibrationsProvider(cameras_provider, stop_event, QueuesProvider.ConsoleMessages,
+                                                cameras_provider.input_end)
 
     try:
         # Mono camera calibration
@@ -72,7 +81,8 @@ def run_application(stop_event, options):
         # Stereo camera calibration
         calibration_provider.stereo_calibrate(options.stereo_calibration_results)
     except UnsuccessfulCalibration:
-        QueuesProvider.ConsoleMessages.append("Calibration did not succeeded. Please, check the videos and chessboard configuration.")
+        QueuesProvider.ConsoleMessages.append(
+            "ERR: Calibration did not succeeded. Please, check the videos and chessboard configuration.")
         cameras_provider.capturing_thread.join(1)
         return
 
@@ -115,12 +125,13 @@ def run_application(stop_event, options):
         "You can now select objects for tracking. Click on the button and click on top left corner and bottom right of the bounding box for the object.")
 
     # Computing matrices for localization
+    from .Localization import Localization
+
     Localization.compute_projection_matrices(
         calibration_provider.mono_calibration_results[0],
         calibration_provider.mono_calibration_results[1],
         calibration_provider.stereo_calibration_results
     )
-
 
     # Endless localization
     while not stop_event.is_set():

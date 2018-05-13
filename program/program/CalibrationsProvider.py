@@ -1,11 +1,9 @@
-import random
-import itertools
 import cv2
 import numpy as np
 
 from program.QueueIterator import QueueIteratorManager, QueueIterator
 from . import Config
-from .CalibrationResults import MonoCameraCalibrationResults, StereoCameraCalibrationResults
+from .CalibrationResults import MonoCameraCalibrationResults, StereoCameraCalibrationResults, CalibrationImportError
 
 
 class UnsuccessfulCalibration(Exception):
@@ -42,7 +40,11 @@ class CalibrationsProvider(object):
 
         for cam_ind, result in enumerate(saved_results):
             if result is not None:
-                self.mono_calibration_results[cam_ind] = MonoCameraCalibrationResults(jsonFile=result)
+                try:
+                    self.mono_calibration_results[cam_ind] = MonoCameraCalibrationResults(jsonFile=result)
+                except CalibrationImportError:
+                    self.console_output.append("ERR: Importing saved calibration data for camera {} failed.".format(cam_ind))
+
             if self.mono_calibration_results[cam_ind] is not None:
                 to_calibrate.discard(cam_ind)
 
@@ -86,7 +88,10 @@ class CalibrationsProvider(object):
 
     def stereo_calibrate(self, saved_results=None):
         if saved_results is not None:
-            self.stereo_calibration_results = StereoCameraCalibrationResults(jsonFile=saved_results)
+            try:
+                self.stereo_calibration_results = StereoCameraCalibrationResults(jsonFile=saved_results)
+            except CalibrationImportError:
+                self.console_output.append("ERR: Importing saved calibration data for stereo calibration failed.")
             return True
 
         if self.stereo_calibration_results is not None:

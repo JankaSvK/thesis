@@ -7,7 +7,6 @@ from .CalibrationResults import get_current_time
 from .QueuesEntries import Point
 from .QueuesProvider import QueuesProvider
 
-
 class Localization(object):
     objects_count = Config.objects_count
     rotation_matrix1 = None
@@ -17,8 +16,8 @@ class Localization(object):
     mono_calibration_results = None
 
     localization_precision = 5  # in millimeters
-    last_located_point = None
-    last_located_point_time = [-1 for i in range(objects_count)]
+    last_located_point = [None for _ in range(objects_count)]
+    last_located_point_time = [-1 for _ in range(objects_count)]
     time_threshold_skip = 1 / 20
     time_threshold_correspondence = 1 / 10
 
@@ -96,10 +95,10 @@ class Localization(object):
         if located_point is None:
             return
 
-        if cls.moved_more_than(cls.last_located_point, located_point, cls.localization_precision):
+        if cls.moved_more_than(cls.last_located_point[object_id], located_point, cls.localization_precision):
             point = Point(located_point, time)
             QueuesProvider.LocalizatedPoints3D[object_id].append(point)
-            cls.last_located_point = located_point
+            cls.last_located_point[object_id] = located_point
 
     @classmethod
     def moved_more_than(cls, old, new, distance):
