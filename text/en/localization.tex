@@ -156,12 +156,9 @@ four homogeneous unknowns.
 
 Without an error during measurements a point $X$ satisfying $AX = 0$ would
 exist. However, due to the errors it might not exists. Therefore, a solution to
-this equation cannot be find easily. It can be solved by direct linear
-transformation algorithm (DLT). More about the method could be found in
-\citet*{multiple-view-geometry}.
-
-\todo[inline]{Pridat poznamku akoze co minimalizuje ten algoritmus}
-
+this equation cannot be find easily. This problem can be solved by direct
+linear transformation algorithm (DLT), which will estimate $X$. More about the
+method could be found in \citet*{multiple-view-geometry}.
 
 \section{Implementation note}
 For the triangulation we used OpenCV function triangulatePoints($P$, $Q$,
