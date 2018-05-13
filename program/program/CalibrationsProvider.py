@@ -41,7 +41,7 @@ class CalibrationsProvider(object):
         for cam_ind, result in enumerate(saved_results):
             if result is not None:
                 try:
-                    self.mono_calibration_results[cam_ind] = MonoCameraCalibrationResults(jsonFile=result)
+                    self.mono_calibration_results[cam_ind] = MonoCameraCalibrationResults(json_file=result)
                 except CalibrationImportError:
                     self.console_output.append("ERR: Importing saved calibration data for camera {} failed.".format(cam_ind))
 
@@ -89,7 +89,7 @@ class CalibrationsProvider(object):
     def stereo_calibrate(self, saved_results=None):
         if saved_results is not None:
             try:
-                self.stereo_calibration_results = StereoCameraCalibrationResults(jsonFile=saved_results)
+                self.stereo_calibration_results = StereoCameraCalibrationResults(json_file=saved_results)
             except CalibrationImportError:
                 self.console_output.append("ERR: Importing saved calibration data for stereo calibration failed.")
             return True

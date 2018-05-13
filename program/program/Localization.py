@@ -39,10 +39,10 @@ class Localization(object):
         points = [np.array(point).reshape(1, 1, 2).astype(float) for point in points]
         points = [cls.get_undistorted_point(point, i) for i, point in enumerate(points)]
 
-        locatedPointsHom = cv2.triangulatePoints(projMatr1=cls.projection_matrix1, projMatr2=cls.projection_matrix2,
+        located_points_hom = cv2.triangulatePoints(projMatr1=cls.projection_matrix1, projMatr2=cls.projection_matrix2,
                                                  projPoints1=points[0],
                                                  projPoints2=points[1])
-        return cls.convert_from_homogenous(locatedPointsHom)
+        return cls.convert_from_homogenous(located_points_hom)
 
     @classmethod
     def get_undistorted_point(cls, point, cam_ind):

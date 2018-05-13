@@ -62,10 +62,10 @@ def run_application(stop_event, options):
               image_streams=QueuesProvider.Images,
               localization_data=QueuesProvider.LocalizatedPoints3D,
               console_output=QueuesProvider.ConsoleMessages)
-    guiThread = threading.Thread(target=gui.start, args=(), name="GUI")
-    guiThread.start()
+    gui_thread = threading.Thread(target=gui.start, args=(), name="GUI")
+    gui_thread.start()
 
-    QueuesProvider.Threads.append(guiThread)
+    QueuesProvider.Threads.append(gui_thread)
     QueuesProvider.Threads.append(cameras_provider.capturing_thread)
 
     ### Calibration

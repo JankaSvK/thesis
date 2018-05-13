@@ -12,4 +12,4 @@ class CorrelationTracker(object):
 	def update(self, image):
 		self.tracker.update(image)
 		out = self.tracker.get_position()
-		return (True, (out.left(), out.top(), out.right() - out.left(), out.bottom() - out.top()))
+		return True, (out.left(), out.top(), out.right() - out.left(), out.bottom() - out.top())

@@ -10,18 +10,18 @@ def get_current_time():
 class CalibrationImportError(RuntimeError):
     pass
 
-def import_json(object, jsonFile):
+def import_json(target, json_file):
     try:
-        with open(jsonFile, 'r') as input:
-            object.__dict__ = json.load(input)
+        with open(json_file, 'r') as i:
+            target.__dict__ = json.load(i)
     except:
         raise CalibrationImportError
 
 class MonoCameraCalibrationResults(object):
     def __init__(self, camera_matrix=None, distortion_coeffs=None, rotation_vecs=None, translation_vecs=None,
-                 jsonFile=None):
-        if jsonFile is not None:
-            import_json(self, jsonFile)
+                 json_file=None):
+        if json_file is not None:
+            import_json(self, json_file)
             self.camera_matrix = numpy.array(self.camera_matrix)
             self.distortion_coeffs = numpy.array(self.distortion_coeffs)
         else:
@@ -56,9 +56,9 @@ class MonoCameraCalibrationResults(object):
 
 class StereoCameraCalibrationResults(object):
     def __init__(self, rotation_matrix=None, translation_vector=None, essential_matrix=None, fundamental_matrix=None,
-                 reprojection_error=None, jsonFile=None):
-        if jsonFile is not None:
-            import_json(self, jsonFile)
+                 reprojection_error=None, json_file=None):
+        if json_file is not None:
+            import_json(self, json_file)
 
             self.rotation_matrix = numpy.array(self.rotation_matrix)
             self.translation_vector = numpy.array(self.translation_vector)

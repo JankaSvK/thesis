@@ -42,8 +42,6 @@ elif scenario == 4:
 	points = [table_left, table_right]
 	video1 = "../videos/objects/63/table/1.avi"
 	video2 = "../videos/objects/63/table/2.avi"
-else:
-	psas
 
 # Calibration results
 if scenario == 1 or scenario == 2:

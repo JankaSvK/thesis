@@ -54,5 +54,5 @@ class TrackerHSV(object):
 
         largest_cnt = get_largest_contour(mask, self.ignored_countours)
         if largest_cnt is not None:
-            return (True, cv2.boundingRect(largest_cnt))
-        return (False, None)
+            return True, cv2.boundingRect(largest_cnt)
+        return False, None

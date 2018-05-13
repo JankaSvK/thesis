@@ -1,9 +1,10 @@
 #!/usr/bin/python3
 
-import time
 import threading
-from program.OptionParser import parse_options
+import time
+
 from program.ApplicationProcess import run_application
+from program.OptionParser import parse_options
 
 options = parse_options()
 

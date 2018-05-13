@@ -104,8 +104,8 @@ class GUI(object):
         # Place Console output
         self.console.grid(column=0, row=2, columnspan=3, sticky="nsew")
 
-    def click_callback(self, event, id):
-        QueuesProvider.add_mouse_click(window_index=id, x=event.x, y=event.y)
+    def click_callback(self, event, view_id):
+        QueuesProvider.add_mouse_click(window_index=view_id, x=event.x, y=event.y)
 
     def tracker_callback(self, cam_ind, obj_ind):
         uid = get_tracker_uid(cam_ind, obj_ind)

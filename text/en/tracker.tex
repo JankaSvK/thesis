@@ -207,9 +207,7 @@ From the computed value for each pixel the pixel with the lowest value
 Finally, we choose an appropriate representation for the pixels (i.e. what
 precisely $T(x, y)$ and $I(x, y)$ stand for). In general, we can choose any
 reasonable vector (such as a tuple of RGB channels). We choose to use a
-standard OpenCV conversion to grayscale\footnote{More information about the
-conversion:
-\url{https://docs.opencv.org/3.4/de/d25/imgproc\_color\_conversions.html}}
+standard OpenCV conversion to grayscale\footnote{see \url{https://docs.opencv.org/3.4/de/d25/imgproc\_color\_conversions.html}}
 ($T(x, y)$ and $I(x, y)$ thus give an intensity after such conversion).
 %\todo[inline]{M: tenhle odstavec bych dal před ten vzorec, viz má předchozí
 %poznímka}
@@ -390,13 +388,13 @@ approximately 1800 frames.
 
 Instead of this approach, we select the best tracker. We do it by looking at
 the tracking performance on the video of all trackers. Then we choose a one
-tracker, which we think performed the best (most accurate). This representative
-tracker has inaccuracy equal to 0.  The inaccuracy of the other trackers is
-computed as a distance between the selected object by this tracker and the
-representative tracker. 
-\todo[inline]{M: jednotky u inaccuracy}
-\todo[inline]{M: je to pro každý snímek?}
-\todo[inline]{M: uff, tohle je trochu kruhové; možná vysvětlit na základě čeho "we think performed the best"}
+tracker, which we think performed the best (most accurate) on the whole
+recording. This representative tracker has inaccuracy equal to 0, since it is
+compared to itself.  The inaccuracy of the other trackers is computed as a
+distance between the selected object by this tracker and the representative
+tracker. This inaccuracy is then computed for each frame of the video and we
+compute sample mean and sample standard deviation to compare results of
+different trackers.
 
 \subsubsection*{Speed/Computational time}
 
@@ -434,16 +432,37 @@ therefore the application may not run smoothly.
 We refer to occlusion as a partial or full coverage of the tracked object by
 another object or leaving the view of the camera.
 
-It might come handy to have a tracker which can recover
-from the occlusion during tracking. It is not easy to keep the object visible in both cameras.
+It might come handy to have a tracker which can recover from the occlusion
+during tracking. It is not easy to keep the object visible in both cameras.
 Therefore, we are interested also in the ability to recover from the occlusion.
 
-To test this ability, we watched the videos with tracking results and decided
-if the tracker can recover or not.
+%To test this ability, we watched the videos with tracking results and decided
+%if the tracker can recover or not.
 
 Another useful ability is to detect if the object is lost. It is better to
 report object loss than providing incorrect results. We tested it together with
 recovering.
+
+Again, we choosed a representative trackers - the tracker which is able to
+detect object loss every time it happen and also can recover from occlusion.
+The \simback tracker performed very well in these tasks too, so we choosed it
+as our representative.
+
+We now describe how we decided if the tracker is able to report object lost.
+Always, when the representative tracker lost the object, we looked at the
+results of the tested tracker. Then we computed ratio between the number of
+reported object lost by tested tracker and the number of reported object lost
+by representative. If this ratio was higher than 90\%, the tracker was able to
+detect object lost reliably. We include the ratio in our results.
+
+The second capability to test is if the tracker can recover from occlusion.
+We took all the images that representative tracker was able to detect an
+object. Then we took the number of images, where the tested tracker was able to
+detect. We filtered out the results, which were further than given threshold
+from the representative tracker (tracking result was not correct). The ratio
+between the number of correct tracking results to the number of the images with
+the obejct (given by representative tracker) is our result. If this ratio is
+higher than 80\%, then we say that the tracker is able to recover.
 
 \subsubsection*{Tracking multiple objects}
 
@@ -453,14 +472,14 @@ trackers may be able to track correctly multiple objects at the same time.
 
 Not many trackers can handle when the tracking objects occlude each other.
 
-To decide if the tracker is able or not to track multiple objects, we watched
-tracker's performance and made a decision based on video.
-\todo[inline]{M: tohle zní jakoby každý tracker uměl sledovat více objektů a některým se to dařilo a některým ne}
+To decide if the tracker is able or not to track multiple objects is easily
+decisable by simple experiment. We created experiment with moving objects and
+observed the tracker's behavior. If the tracker was able to keep tracking both
+objects and if it remained to track same objects after their occlusion.
 
-With tracking multiple objects, the speed of the program may decrease rapidly.
+With tracking multiple objects, the speed of the program may decrease.
 It is important to remember, that each object in each camera view has own
 tracker. Therefore the tracking part takes more time.
-\todo[inline]{M: "rapidly", jsou k tomu nějaká data, je to více než přímo úměrně počtu objektů?}
 
 In the next section, we provide an overview of the experiment used to estimate
 tracker capabilities.
@@ -581,7 +600,10 @@ loss (or returns wrong results) and if it was able to track the object again
 after coming back to camera view. The example of the successful recover from
 the occlusion is displayed in the figure \ref{fig:occlusion}.
 
-\todo[inline]{meratelne vysledky?}
+In the results \ref{table:occlusion-multiple} we display also a ratio how
+successful the tracker was in given situation. We set a threshold for
+successful tracking to 80~px, what is approximately the diameter of the robot
+in the used video.
 
 \begin{figure}
 \centering
@@ -606,8 +628,6 @@ trackers may outperform detection-based trackers. We decided to test their
 ability to keep tracking the same object, the results are listed in the table
 \ref{table:occlusion-multiple} in the fourth and fifth columns.
 
-
-\todo[inline]{Tu to chce prepisat}
 Most of the trackers are not able to recover from mutual occlusion. Denote as
 the first object the object behind and the second the one in front of the
 first. Then the second object approach first, the tracker of the first object
@@ -660,29 +680,27 @@ best tracker:
 \item otherwise, it is worth to try Medianflow, Correlation and sometimes also Mosse and Pattern matching
 \end{itemize}
 
+\todo[inline]{Postavit tunel a urobit experiment s nim}
+\todo[inline]{Viacero sa pohybujucich sa objektov s jednym trackovanym}
+\todo[inline]{Ppopisat posledny experiment v trackroch do dokuemntacie}
+
 \begin{landscape}
 \begin{table}
 \centering
 \begin{tabular}{p{5cm}|p{3cm}|p{4cm}|p{5cm}|p{5cm}}
-Tracker & Report object lost & Recovers from full occlusion & Ability to track multiple objects & Able to track correctly after mutual occlusion of tracked objects \\
+Tracker & Report object lost (ratio of successful detections) & Recovers from full occlusion (ratio of successful tracking)& Ability to track multiple objects & Able to track correctly after mutual occlusion of tracked objects \\
 \hline
-BOOSTING & No & No & Yes & No \\
-CORRELATION & No & No & Yes & No \\
-HSV & Yes & Yes & Only different colors & Yes \\
-MEDIANFLOW & Yes & No & Yes & No \\
-MIL & No & No  & Yes & No \\
-MOSSE & Sometimes & No & Yes & No \\
-PATTERNMATCHING & No & Yes & Only different patterns* & Yes \\
-SIMPLEBACKGROUND & Yes & Yes & No & No \\
-TLD & Sometimes & Yes & Yes* & No \\
+\boost{} & No (0\%)& No (14.89\%) & Yes & No \\
+\corr{} & No (0\%)& No (16.40\%)& Yes & No \\
+\hsv{} & Yes (100\%)& Yes (97.09\%) & Only different colors & Yes \\
+\medflow{} & No (66.67\%)& No (11.11\%)& Yes & No \\
+\mil{} & No (0\%) & No (22.76\%) & Yes & No \\
+\patt{} & No (0\%) & Yes (92.99\%) & Only different patterns & Yes \\
+\simback{} & Yes (100\%) & Yes (100\%) & No & No \\
+\tld{} & No (36.56\%) & Yes (98.71\%) & Yes & No \\
 \end{tabular}
-\vspace{1ex}
-\raggedright *Tracker performed badly
 \caption{Summary of the trackers abilities}
 \label{table:occlusion-multiple}
 \end{table}
 \end{landscape}
 
-\todo[inline]{Ako sa doslo k Yes/No, dat nejake "cetnosti"}
-\todo[inline]{Postavit tunel a urobit experiment s nim}
-\todo[inline]{Viacero sa pohybujucich sa objektov s jednym trackovanym}

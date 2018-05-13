@@ -126,13 +126,13 @@ functions.
 \begin{figure}
 \begin{verbatim}
 class TrackerSample(object):
-def init(self, image, bbox):
-    # Should return True or False
-    pass
-
-def update(self, image):
-    # Should return a tuple (True/False, bbox)
-    pass
+    def init(self, image, bbox):
+        # Should return True or False
+        pass
+    
+    def update(self, image):
+        # Should return a tuple (True/False, bbox)
+        pass
 \end{verbatim}
 \caption{Skelet of the new tracker class}
 \label{fig:new-tracker}

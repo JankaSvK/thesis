@@ -6,4 +6,4 @@ class CustomTracker(object):
 
     # Return status, bbox
     def update(self, image):
-        return (True, ((0, 0, 1, 1)))
+        return True, (0, 0, 1, 1)

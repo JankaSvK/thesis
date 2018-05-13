@@ -10,7 +10,7 @@ def get_tracker_uid(cam_ind, obj_ind):
 
 
 def get_tracker_by_uid(uid):
-    return (int(uid / Config.objects_count), int(uid % Config.objects_count))
+    return int(uid / Config.objects_count), int(uid % Config.objects_count)
 
 
 class TrackersProvider(object):
@@ -109,7 +109,7 @@ class Tracker(object):
             return None
 
         x, y = self.get_bounding_box_center(bbox)
-        return ((x, y), time)
+        return (x, y), time
 
     def get_newest_image(self):
         return self.image_stream[-1]
