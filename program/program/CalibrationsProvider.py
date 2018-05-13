@@ -43,14 +43,16 @@ class CalibrationsProvider(object):
                 try:
                     self.mono_calibration_results[cam_ind] = MonoCameraCalibrationResults(json_file=result)
                 except CalibrationImportError:
-                    self.console_output.append("ERR: Importing saved calibration data for camera {} failed.".format(cam_ind))
+                    self.console_output.append(
+                        "ERR: Importing saved calibration data for camera {} failed.".format(cam_ind))
 
             if self.mono_calibration_results[cam_ind] is not None:
                 to_calibrate.discard(cam_ind)
 
         if to_calibrate:
             self.console_output.append("Starting calibration process. Move with the chessboard in camera view...")
-        queues = {i: QueueIterator(queue, self.input_ended) for i, queue in enumerate(self.image_entries) if i in to_calibrate}
+        queues = {i: QueueIterator(queue, self.input_ended) for i, queue in enumerate(self.image_entries) if
+                  i in to_calibrate}
         images_with_chessboard_per_camera = self.get_images_with_chessboard(queues, self.monocalibration_sample_size)
         for cam_ind in to_calibrate:
             images_with_chessboard = images_with_chessboard_per_camera[cam_ind]
@@ -96,7 +98,8 @@ class CalibrationsProvider(object):
 
         if self.stereo_calibration_results is not None:
             return True
-        self.console_output.append("Starting stereo calibration. Please move wtih a chessboard, but keep it visicble in both cameras...")
+        self.console_output.append(
+            "Starting stereo calibration. Please move wtih a chessboard, but keep it visicble in both cameras...")
         images = self.find_images_for_stereo_calibration(self.stereocalibration_sample_size)
         self.console_output.append("Computing the stereo calibration from a sample of {} images.".format(len(images)))
 

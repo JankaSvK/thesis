@@ -1,11 +1,14 @@
+import os
+
 import cv2
 import numpy as np
-import os
+
 from . import Config
 from . import TrackersProvider
 from .CalibrationResults import get_current_time
 from .QueuesEntries import Point
 from .QueuesProvider import QueuesProvider
+
 
 class Localization(object):
     objects_count = Config.objects_count
@@ -40,8 +43,8 @@ class Localization(object):
         points = [cls.get_undistorted_point(point, i) for i, point in enumerate(points)]
 
         located_points_hom = cv2.triangulatePoints(projMatr1=cls.projection_matrix1, projMatr2=cls.projection_matrix2,
-                                                 projPoints1=points[0],
-                                                 projPoints2=points[1])
+                                                   projPoints1=points[0],
+                                                   projPoints2=points[1])
         return cls.convert_from_homogenous(located_points_hom)
 
     @classmethod
@@ -63,7 +66,7 @@ class Localization(object):
                 return
 
             curr_dir = os.path.dirname(os.path.abspath(__file__))
-            filename = os.path.join(curr_dir, "localization_data", "{}-{}.txt".format(get_current_time(), i+1))
+            filename = os.path.join(curr_dir, "localization_data", "{}-{}.txt".format(get_current_time(), i + 1))
             os.makedirs(os.path.dirname(filename), exist_ok=True)
 
             with open(filename, 'w') as output:

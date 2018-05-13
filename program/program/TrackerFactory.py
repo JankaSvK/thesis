@@ -1,5 +1,6 @@
 import cv2
 
+
 class TrackerFactory(object):
     @classmethod
     def get_tracker(cls, tracker_type):
@@ -31,4 +32,3 @@ class TrackerFactory(object):
         else:
             print("Default tracker will be used")
             return cv2.TrackerKCF_create()
-

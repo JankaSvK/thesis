@@ -1,5 +1,6 @@
 import cv2
 
+
 class TrackerPatternMatching(object):
     name = 'PATTERNMATCHING'
 
@@ -12,6 +13,6 @@ class TrackerPatternMatching(object):
     def update(self, image):
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         res = cv2.matchTemplate(image, self.pattern, cv2.TM_SQDIFF)
-        #_, maxVal, _, maxLoc = cv2.minMaxLoc(res)
+        # _, maxVal, _, maxLoc = cv2.minMaxLoc(res)
         min_val, _, min_loc, _ = cv2.minMaxLoc(res)
         return True, (min_loc[0], min_loc[1], self.width, self.height)

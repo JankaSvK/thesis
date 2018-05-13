@@ -1,5 +1,6 @@
 from optparse import OptionParser
 
+
 def parse_options():
     parser = OptionParser()
 

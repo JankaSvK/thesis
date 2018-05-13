@@ -1,14 +1,17 @@
-import os
 import json
-import numpy
+import os
 from datetime import datetime
+
+import numpy
 
 
 def get_current_time():
     return datetime.now().strftime("%Y-%m-%d-at-%H-%M")
 
+
 class CalibrationImportError(RuntimeError):
     pass
+
 
 def import_json(target, json_file):
     try:
@@ -16,6 +19,7 @@ def import_json(target, json_file):
             target.__dict__ = json.load(i)
     except:
         raise CalibrationImportError
+
 
 class MonoCameraCalibrationResults(object):
     def __init__(self, camera_matrix=None, distortion_coeffs=None, rotation_vecs=None, translation_vecs=None,

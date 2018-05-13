@@ -1,20 +1,18 @@
+import functools
 import random
-import tkinter as tk
 import threading
-import matplotlib
-import numpy as np
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
-from matplotlib.backend_bases import key_press_handler
-import matplotlib.pyplot as plt
-from matplotlib.figure import Figure
-from mpl_toolkits.mplot3d import Axes3D
+import tkinter as tk
+import tkinter.scrolledtext as tkst
+
 import cv2
+import numpy as np
 from PIL import Image, ImageTk
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.figure import Figure
+
 from . import Config
 from .QueuesProvider import QueuesProvider
 from .TrackersProvider import get_tracker_uid, get_tracker_by_uid
-import tkinter.scrolledtext as tkst
-import functools
 
 
 class GUI(object):
@@ -200,7 +198,6 @@ class GUI(object):
                             (10, (obj_id + 1) * 30), cv2.FONT_HERSHEY_COMPLEX, 1, color)
             else:
                 cv2.circle(image, coords, 5, color, -1)
-
 
     def bgr_to_rgb_color_and_scale(self, color):
         return [c * 255 for c in reversed(color)]

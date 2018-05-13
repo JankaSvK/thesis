@@ -1,12 +1,11 @@
-import time
 import threading
+import time
 
-from program.CalibrationResults import CalibrationImportError
+from . import Config
 from .CalibrationsProvider import CalibrationsProvider, UnsuccessfulCalibration
 from .CamerasProvider import CamerasProvider, MissingVideoSources
-from .QueuesProvider import *
-from . import Config
 from .GUI import GUI
+from .QueuesProvider import *
 from .TrackersProvider import TrackersProvider
 
 
@@ -51,8 +50,6 @@ def run_application(stop_event, options):
         print("Video sources could not be opened. Exiting")
         stop_event.set()
         return
-
-
 
     # Starting GUI
     gui = GUI(stop_event=stop_event,

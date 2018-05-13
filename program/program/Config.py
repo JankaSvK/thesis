@@ -12,7 +12,7 @@ chessboard_square_size = 22
 camera_initialize = [0, 1]
 camera_count = len(camera_initialize)
 
-#def camera_count():
+# def camera_count():
 #    return len(camera_initialize)
 
 # Count of the objects to be tracked. May be changed by option provided to the script.
@@ -27,7 +27,8 @@ image_height = 480
 # Therefore it should contains 2 * objects_count entries
 # Bouding box is a [x, y, width, height]
 # Sample value for two objects: [[[0, 0, 1, 1], [150, 100, 100, 100]], [[100, 100, 50, 50], [200, 200, 20, 20]]]
-initial_bounding_boxes = [[[132, 56], [130, 157], [331, 103], [315, 207]], [[133, 53], [135, 194], [426, 64], [404, 196]]]
+initial_bounding_boxes = [[[132, 56], [130, 157], [331, 103], [315, 207]],
+                          [[133, 53], [135, 194], [426, 64], [404, 196]]]
 
 ### Calibration settings
 
@@ -36,7 +37,7 @@ images_for_monocalibration_sampling = 15
 images_for_stereocalibration_sampling = 100
 
 # Stereo calibration considers images as corresponding if their time do not differ more than this threshold.
-time_threshold_for_correspondence = 1/20
+time_threshold_for_correspondence = 1 / 20
 
 # Seconds to skip between the images used for calibration (mono and stereo).
 # Reason: Similar images provides "same" information.

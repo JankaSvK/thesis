@@ -2,6 +2,7 @@ from collections import deque
 
 from . import Config
 
+
 class QueuesProvider(object):
     Images = None
     LocalizatedPoints3D = None
@@ -22,5 +23,3 @@ class QueuesProvider(object):
         cls.MouseClicks[window_index].append((x, y))
 
     Threads = []  # Only for debugging purposes!
-
-

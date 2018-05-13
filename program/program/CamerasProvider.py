@@ -1,9 +1,10 @@
-import cv2
-import time
 import threading as t
+import time
 
-from .QueuesEntries import ImageEntry
+import cv2
+
 from . import Config
+from .QueuesEntries import ImageEntry
 
 
 class MissingVideoSources(RuntimeError):

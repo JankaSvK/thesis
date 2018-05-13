@@ -1,5 +1,5 @@
-import numpy
 import cv2
+
 
 def get_largest_contour(mask, ignored_size):
     if len(mask) == 0:
@@ -16,4 +16,3 @@ def get_largest_contour(mask, ignored_size):
             largest_area = cv2.contourArea(c)
 
     return largest_cnt
-
