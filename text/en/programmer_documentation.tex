@@ -6,14 +6,14 @@ oriented in the code.
 
 \section{Application parts}
 
-The program consists of several components, they are ApplicationProcess,
+The program consists of several components, they are Application Process,
 Graphical User Interface, Cameras Provider, Calibration Provider, Trackers
 Provider, Localization and the Application. Each of this component has own
 file. In the following list, we explain the purpose in each of them.
 
 \subsubsection*{ApplicationProcess.py}
 
-This part of the program is responsible for the running all of the other parts.
+This part of the program is responsible for the running all the other parts.
 It runs them step by step, starting with the initialization of the cameras and
 ending with the localization process. For some of these tasks, it creates a new
 separate thread to run.
@@ -50,25 +50,24 @@ signalize to end their work. Then the application exits.
 \subsubsection*{CalibrationsProvider.py}
 
 We divide calibration process into two separate parts. Mono calibration of each
-camera and stereo calibration. Both calibrations are mostly based just on
-finding pictures with the chessboard and then running OpenCV functions to
-calibrate. To set a number of images to calibrate on, change the value in the
-Config.py
+camera and stereo calibration. Both calibrations find pictures with the
+chessboard and then run OpenCV functions to calibrate. To set a number of
+images to calibrate on, change the value in the Config.py
 
 \subsubsection*{TrackersProvider.py}
 
 Trackers provider takes care of all trackers -- their initialization and also
-tracking. If the initialization of the tracker is asked, then it initializes
-the tracker with the specified bounding box (provided by mouseclicks) on the
+tracking. If the initialization of the tracker is requested, then it initializes
+the tracker with the specified bounding box (provided by mouse clicks) on the
 most recent image.
 
 If the tracker was already initialized, the tracker's provider asks the tracker
-to return the position of the object on given image.
+to return the position of the object in given image.
 
-Since the trackers are usually not able to reinitialize, we encapsulate
-tracking algorithm into Tracker class. On this encapsulated class and init may
-be called multiple times. It that case, it created a new tracker in the
-background and replaced the current one by the new.
+Because the trackers are usually not able to reinitialize, we encapsulate
+tracking algorithm into Tracker class. On this encapsulated class
+initialization may be called multiple times. It that case, it creates a new
+tracker in the background and replaces the current one by the new.
 
 Since we call trackers by name, the class TrackersFactory provide a mapping
 between the names and the classes to create the trackers. Each tracker has to
@@ -76,8 +75,8 @@ be added to this class.
 
 \subsubsection*{Localization.py}
 
-Localization class is a static class. It can on given calibration results
-compute projection matrices, which the Localization class use later when
+Localization class is a static class. It can compute projection matrices on
+given calibration results, which the Localization class use later when
 computing the object position in the 3D space.
 
 Then for receiving a position of the object in 3D point we need to provide
@@ -91,7 +90,7 @@ for exiting the whole application. It creates a thread for the
 \emph{Application}. Also the \emph{GUI} and the \emph{TrackersProvider}
 runs in own thread. All other tasks do \emph{Application} thread.
 
-In the Main.py the stop\_event is created. This event is passed to every
+In Main.py the stop\_event is created. This event is passed to every
 thread. After setting a stop event, every thread should finish its work. The
 stop event is set by closing application windows -- so it is set inside the GUI
 thread.
@@ -105,7 +104,7 @@ All queues are created in \verb+QueuesProvider.py+.
 
 \subsubsection{Image entries Queue}
 
-Images entries queue is the containing captured images with some additional
+Images entries queue contains captured images with some additional
 information. We store only the last 500 pictures for each camera. The oldest
 pictures are automatically thrown away by using \verb+dequeue+. Using common
 web camera with 30 FPS, it stores the last 16 seconds per camera. The image
@@ -116,7 +115,7 @@ displayed by GUI.
 
 Each image entry in Images queue contains this information: 
 \begin{itemize}
-\item timestamp -- the time when the image was captured. The time is seconds
+\item timestamp -- the time when the image was captured. The time in seconds
 since the epoch, \item image -- contains three channel two dimensional arrays
 containing the captured image, \item chessboard -- information about the
 chessboard in the image. Access to chessboard information is provided by
@@ -134,7 +133,7 @@ class TrackerSample(object):
         # Should return a tuple (True/False, bbox)
         pass
 \end{verbatim}
-\caption{Skelet of the new tracker class}
+\caption{Frame of the new tracker class}
 \label{fig:new-tracker}
 \end{figure}
 
@@ -156,7 +155,7 @@ positions to the 3D live view.
 \subsubsection*{Point}
 
 The class Point is used to store tracking results and also localization
-results. Point consists of the timestamp (similar to the Image entry) and
+results. Point consists of the time stamp (similar to the Image entry) and
 coordinates.
 
 \subsection*{Console output}
@@ -199,12 +198,11 @@ Coordinates \verb+(x, y)+ represents top left corner of
 the bounding box and \verb+width+, \verb+height+ its dimension.
 
 The function \verb+init+ should return \verb+True+ or \verb+False+, depending
-if the initialization was finished successfuly.
+if the initialization was finished successfully.
 
-The function \verb+update+ should return tuple \verb+(state, bouding{\_}box)+.
-If the tracker can locate the object, it should return state equal to
-\verb+True+ and corresponding bounding box in the same format as used during
-initialization. However, if the object was not found, a tuple \verb+(False, None)+
+The function \verb+update+ should return tuple \verb+(state, bouding\_box)+.
+If the tracker can locate the object, it should return state \verb+True+ and corresponding bounding box in the same format as used during
+initialization. If the object was not found, a tuple \verb+(False, None)+
 should be returned.
 
 As the last step, we add a new tracker to \verb+program/TrackersFactory.py+.

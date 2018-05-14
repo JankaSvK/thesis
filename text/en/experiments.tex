@@ -1,41 +1,43 @@
 \chapter{Experiments} 
 
-For the designed system we considered multiple experiments to
+For the designed system we haven chosen multiple experiments to
 verify its accuracy. Experiments in this part focus on the localization process
-and overall experiments. The trackers experiments are located in the chapter
-Tracker.
+and overall experiments. The tracker experiments are located in the chapter
+\ref{ch:tracker}.
 
 \section{Calibration and localization}
 
-We decided to exclude errors caused by trackers and firstly test the system
-without them. Therefore, we propose an experiment, which will set fixed points
-in camera views. Then we estimate position in 3D for these fixed points.
+In order to measure a quality of calibration and localization we exclude a
+tracking component. Therefore, we propose an experiment with static points in a
+camera views. Then we estimate a position in 3D for these points.
 
-It is complicated to measure distance from the origin of the coordinate system
-to the point (and also find the "real" coordinates with this origin).
-Therefore, we compute a distances between these points in the real world and
-between the estimated points. Then we compare the results.
- 
-To skip the tracking part, we created a new tracker. This new tracker always
-return the coordinates on which it was initialized. Doing this, we excluded
-tracker from our process.
+It is complicated to measure distance from the origin of the coordinate system,
+i.e. point inside the first camera to any given point. Therefore, we measure
+distances between the static points in the real world and compute the distance
+between their estimated position in 3D coordinates. Then we compare the results.
 
-We choosed a grid (view figure \ref{fig:grid}) as our pattern for experiments.
+To skip the tracking part, we created a new tracker.  The new tracker always
+returns same position.  Doing this, we excluded tracker from our process.
+
+We have chosen the grid as in the figure \ref{fig:grid} as our pattern for experiments.
 The vertical lines are circa 400~mm long and the distance between them is circa
 200~mm. We measured distances between the crossings. We numbered the crossing,
 the left column is from top to the bottom from 1 to 7 and the right column from
 8 to 14 (see the figure \ref{fig:ladder_numbered}).
 
-The setup of the cameras was nearly parralel and the distance between them was
-circa 16~cm. Selected points are displayed in the figure \ref{fig:ladder_ground}. The
-results from this experiment are listed in the table \ref{table:distances}. 
+The setup of the cameras was nearly parallel, which means, the center rays of
+their views were parallel, looking in same direction.The distance between them
+was circa 16~cm. Selected points are displayed in the figure
+\ref{fig:ladder_ground}. The results from this experiment are listed in the
+table \ref{table:distances}. 
 
 From the results we can see that results for horizontal lines (with the length
 400~mm, third part of the table) are very accurate. On the other hand, the
-results for the vertical lines were quite unstable. For the left column it
+results for the vertical lines were quite unstable. Based on the measured
+distances between the points in the left column (first part of the table) it
 seems, that results get worse when, the points are further away from the
-camera. But the results from the right column bring the hypothesis into
-question. 
+camera. But the results computed for the points from right column bring the
+hypothesis into question. 
 
 \begin{table}
 \centering
@@ -62,10 +64,10 @@ distance between the marks. The setup can be seen in the figure
 \ref{fig:tablenumbered}. The results are included in the table
 \ref{table:distances}. 
 
-We did same experiment with another setup, when the cameras were 63~cm away
+We did the same experiment with another setup, when the cameras were 63~cm apart
 from each other. We were interested, if the results are better in parallel
-setup, or not. From the results the is no evidence of the different precision
-and the differences may be still cause by different precision of the
+setup, or not. Based on the results the is no evidence of the different precision
+and the differences may be still caused by different precision of the
 calibration. The results for this second experiment are listed in the appendix
 in the table \ref{table:distances-second}. Same numbering of the marks was used.
 
@@ -101,7 +103,7 @@ in the table \ref{table:distances-second}. Same numbering of the marks was used.
 	\includegraphics[width=\linewidth]{img/experiments/table-right.jpg}
 	\caption{Right view of the camera}
 \end{subfigure}
-\caption{The vies of the camera on the penpedicular plane to the ground}
+\caption{The views of the camera on the perpendicular plane to the ground}
 \label{fig:table}
 \end{figure}
 
@@ -129,31 +131,31 @@ in the table \ref{table:distances-second}. Same numbering of the marks was used.
 \label{fig:grid}
 \end{figure}
 
-\section{Overall experiments}
+\section{Complex experiments}
 
-As the last step, we decided to test whole system in real environment. This
+As the last step, we decided to test whole system in a real environment. This
 time we included all parts of the application -- calibration, tracking and also
 localization. In the previous experiments, we tested the liability of the
 trackers and the precision of the results. Now we test the usability of the
-whole system as the whole.
+system as the whole.
 
 \subsection{Experiment with the one small object}
 
 The most important experiment -- the experiment which decides if the system is
 usable -- is experiment under real conditions. We created for our autonomous
-robot a square to follow, with the lenfth of the side equal 14.5~cm (see figure
+robot a square to follow, with the length of the side equal 14.5~cm (see figure
 \ref{fig:robot-square}). The robot did four laps around the square. The
 results are displayed in the figure \ref{fig:square-results}.
 
-We can see on the left picture, that the drawn line is similar to our shape.
-Not having sharp edges, since our robot make a small ars. On the other hand,
-the results from the another view are not so amazing. the coordinates have a
-lot of noise over Z-ax. The noise is only present, if the robot is following
+We can see in the left picture, that the drawn line is similar to our shape.
+Not having sharp edges, since our robot make a small arc. On the other hand,
+the results from the another view are not so amazing. The coordinates have a
+lot of noise over Z-axis. The noise is only present, if the robot is following
 horizontal lines of the square. As the last step we computed maximum of the
 distances between any two points, which were located. In this case, the ideal
 value would be the length of the diagonal, which is equal to 20.5061~cm. Our
 results are between 18.54~cm to 19.38~cm, depending on the run. That means,
-that the error is only usually between 1-2~cm..
+that the error is only usually between 1 and 2~cm.
 
 \begin{figure}
 \includegraphics[width=\linewidth]{img/experiments/square-robot.png}
@@ -176,21 +178,21 @@ that the error is only usually between 1-2~cm..
 \subsection{Experiment with two objects}
 
 This experiment will test the ability of the system to track multiple objects.
-We decided to choose an environment where Simple background nor HSV tracker can
-be used (since if they can be used they perform very well). The rest of the
-trackers are mostly slower, more problematic.
+This effectively exclude \simback{} tracker as it is not able to track multiple
+objects. Furthermore, we track objects with multicolored surface, making \hsv
+tracker also unusable. The rest of the trackers are mostly slower, more
+problematic.
 
 We can see the setup for the experiment in the figure \ref{fig:two-init}. We
 can see two boxes, both in shades of blue. During testing many trackers failed
-to track and lost the object. We choosed a \corr{} tracker. It is medium
-fast tracker, but when tracking two object -- means 4 \corr{} trackers --
-it too slow. Therefore it sometimes miss the images, which passed while it was
-computing. Hence, sometimes an interaction of the user is needed, to
-reinitialize a tracker.
+to track the object and lost it. We chose the \corr{} tracker as it provided
+best results. It is medium fast tracker. The tracker sometimes lost the
+images, but most of the time it was able to track. Because of the object lost,
+sometimes an interaction of the user is needed, to reinitialize a tracker.
 
 Sample results of the trajectories for two objects is displayed in the figure
 \ref{fig:two-trajectories}. During the experiment, the boxes were moving
-between the yellow marks and swapped place. We can see these four marks also in
+between the yellow marks and swapped places. We can see these four marks also in
 both trajectories quite close to each other. 
 
 \begin{figure}[p]

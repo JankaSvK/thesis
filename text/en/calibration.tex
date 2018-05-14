@@ -38,7 +38,7 @@ Camera matrix will provide us a transformation from
 world coordinates (with the origin in the camera) to image plane coordinates
 (seen in the image taken from the camera). If the coordinates in 3D are
 available, we can obtain 2D coordinates by simple multiplication by camera
-matrix. After multiplicatoin we obtain 2D homogenous coordinates.
+matrix. After multiplication we obtain 2D homogeneous coordinates.
 
 As the next step, we describe the camera matrix obtained by OpenCV calibration
 procedure. In the OpenCV implementation the camera matrix is $3\times3$ matrix of the
@@ -77,7 +77,7 @@ the radial distortion, creating barrel effect and the second one tangential dist
 The radial distortion is caused by the camera lens (the effect of radial
 distortion is displayed in the image \ref{fig:distortion}). It can usually be
 described by three parameters. Highly distorted images (like from fish-eye)
-often need more parameters. Since our system use webcameras, we will use only
+often need more parameters. Since our system use web cameras, we will use only
 three parameters.
 
 In the ideal camera, the lens would be placed parallel to the chip. Since such
@@ -125,7 +125,7 @@ rotating accordingly. Therefore, the position of the second camera can be
 described by six parameters, three as an angle around each ax to rotate and
 three for translation vector in respect to the first camera.
 
-Stereo calibration routine in OpenCV can also perform monocalibration for both
+Stereo calibration routine in OpenCV can also perform mono calibration for both
 cameras, but we pre-calibrate cameras on itself for better precision and better
 convergence of the algorithm.
 

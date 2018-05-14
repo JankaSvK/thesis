@@ -2,16 +2,15 @@
 
 In thesis, we mentioned many different experiments. In this chapter we provide
 a description how to run them. Please, firstly check the dependencies and if
-the application is running correctly (follow User documentation).
+the application is running correctly (follow instructions in the chapter \ref{ch:user-documentation}).
 
 All experiments are located in the directory \texttt{program/experiments}. We
 will use this directory as our root in the following text. Also, every script
-should by executed by Python3. Some of the script may contain results
-processing, therefore may be executable only on specific system.
+should be executed by Python3.
 
 \section{Calibration}
 
-We provide a several calibration scenarios to try. In the directory
+We provide a several calibration scenarios to try out. In the directory
 \verb+localization/+ a script named \verb+calibrate.py+ is
 available. The script sets options to calibrate from different pairs of the
 video. To run calibration on given set of videos, run \verb+calibrate.py {id}+,
@@ -19,16 +18,16 @@ where \verb+{id}+ can be 16, 38, 43, 63. This \verb+{id}+ represents the true
 distance between the cameras. The estimated distance will be outputted in the
 program.
 
-If the calibration cannnot succeed, chech the number of images needed for
-calibration in the \verb+Config.py+ (located in the \verb+~/program/program+)
+If the calibration cannot succeed, check the number of images needed for
+calibration in the \verb+Config.py+ (located in the \verb+program/program+)
 and set it to smaller number.
 
 \section{Localization experiment}
 
 In the same directory, \verb+localization/+ a script to run
-localization on diffent scenarios is available. Run \verb+track.py {distance}{id}+, 
+localization on different scenarios is available. Run \verb+track.py {distance}{id}+, 
 where \verb+{distance}+ represents the distance between the cameras
-(available 16, 38, 43) and the \verb+{id}+ represents the id of the pair fo the
+(available 16, 38, 43) and the \verb+{id}+ represents the id of the pair for the
 videos (for all values of distance available scenarios 1 or 2).
 
 The script also outputs on the first line the command which was called to run
@@ -43,13 +42,14 @@ In the directory \verb+localization_static/+ a script is  available.
 Run the script \verb+get_data_for_ladder.py id+. Allowed \verb+id+ is 1, 2, 3 or 4.
 
 This script create results used to compute distances between the dots. To
-compute the distances, a sciprt \verb+compute_distances.py id+ is available. As
+compute the distances, a script \verb+compute_distances.py id+ is available. As
 \verb+id+ may be used again 1, 2, 3 or 4. 
 
 \section{Tracker's experiments}
 
-All tracker's experiments are located in the directory
-\verb+trackers/+. The experiments can be started by \verb+trackers{\_}experiments.py+. First argument of the script chooses the scenario for the experiment.
+All tracker's experiments are located in the directory \verb+trackers/+. The
+experiments can be started by \verb+trackers\_experiments.py+. First argument
+of the script represents the scenario for the experiment.
 
 \subsection*{Speed and accuracy}
 
@@ -66,15 +66,13 @@ and the third the inaccuracy.
 \subsubsection*{\texttt{trackers{\_}experiments.py 2}}
 
 The second scenario consists of the same experiment, with the orange cap on the
-top of the robot, to provide results also for HSV tracker.
+top of the robot, to provide results also for \hsv{} tracker.
 
 \subsection*{Under occlusion}
 
 \subsubsection*{\texttt{trackers{\_}experiments.py 3 {id}}}
 
 To test a behavior of the trackers under occlusion, we provide an experiment 3.
-The reslts from this experiment were obtained by human eye. If the object is
-lost, the message is outputed to standard output.
 
 Admissible \verb+{id}+ is from \verb+0+ to \verb+8+.
 
@@ -90,5 +88,5 @@ Admissible \verb+{id}+ is from \verb+0+ to \verb+8+.
 \subsubsection*{\texttt{trackers{\_}experiments.py 5}}
 
 The same experiment as previous, now with changed objects to be onecolor for
-the HSV tracker.
+the \hsv{} tracker.
 

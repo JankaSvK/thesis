@@ -1,4 +1,5 @@
 \chapter{Tracker}
+\label{ch:tracker}
 
 We consider a tracker to be an algorithm for detection a position of an object in
 an image. We present a few tested trackers and their results in fulfilling this task.
@@ -97,7 +98,7 @@ too.
 
 \subsection{HSV tracker}
 
-HSV tracker uses the idea of tracking an object by its color. Given an input
+\hsv{} tracker uses the idea of tracking an object by its color. Given an input
 object described by a bounding box, we find the average color within the
 bounding box. On a position request, we return a center of the largest area
 with the color of the object.
@@ -415,7 +416,7 @@ This value is highly dependent on the hardware and the overall load of the
 system.  Therefore, we use the value of FPS as a rough guess.
 
 The results were computed on a system with Intel(R) Core(TM) i5-7300HQ CPU
-(2.50GHz, 2496 Mhz, 4Core), 16GB RAM running Microsoft Windows 10 Enterprise.
+(2.50GHz, 2496 MHz, 4Core), 16GB RAM running Microsoft Windows 10 Enterprise.
 
 %\todo[inline]{M: k tomu měření bych možná napsal i verzi OpenCV (pokud není jinde)
 %a nějaký přesnější release/build těch windowsů, vzhledem k Spectre/Meltdown
@@ -443,9 +444,9 @@ Another useful ability is to detect if the object is lost. It is better to
 report object loss than providing incorrect results. We tested it together with
 recovering.
 
-Again, we choosed a representative trackers - the tracker which is able to
+Again, we chose a representative trackers - the tracker which is able to
 detect object loss every time it happen and also can recover from occlusion.
-The \simback tracker performed very well in these tasks too, so we choosed it
+The \simback tracker performed very well in these tasks too, so we chose it
 as our representative.
 
 We now describe how we decided if the tracker is able to report object lost.
@@ -461,7 +462,7 @@ object. Then we took the number of images, where the tested tracker was able to
 detect. We filtered out the results, which were further than given threshold
 from the representative tracker (tracking result was not correct). The ratio
 between the number of correct tracking results to the number of the images with
-the obejct (given by representative tracker) is our result. If this ratio is
+the object (given by representative tracker) is our result. If this ratio is
 higher than 80\%, then we say that the tracker is able to recover.
 
 \subsubsection*{Tracking multiple objects}
@@ -473,7 +474,7 @@ trackers may be able to track correctly multiple objects at the same time.
 Not many trackers can handle when the tracking objects occlude each other.
 
 To decide if the tracker is able or not to track multiple objects is easily
-decisable by simple experiment. We created experiment with moving objects and
+decidable by simple experiment. We created experiment with moving objects and
 observed the tracker's behavior. If the tracker was able to keep tracking both
 objects and if it remained to track same objects after their occlusion.
 
@@ -506,7 +507,7 @@ trackers which are mentioned in the corresponding experiments.
 
 The goal of the first experiment is to estimate tracker speed and accuracy. We
 used a video of the robot moving along the oval (see the figure
-\ref{fig:robot-oval}). For the accuracy measurement we choosed a Simple
+\ref{fig:robot-oval}). For the accuracy measurement we chose a Simple
 Background tracker as our representative, since it provided an excellent
 example of the correct tracking on this video. The representative tracker is
 always displayed as a red bounding box and the blue is used for the tested
@@ -529,8 +530,8 @@ not change size and the background is very clear.
 
 The results of the experiment are available in the table
 \ref{table:experiment-robot}. We provide sample expected value (denoted
-$\bar{X}$) and sample standard deviaton (denoted $\sigma_X$) of the
-inaccuracy. Both values are in the pixels. For the HSV tracker we choosed to
+$\bar{X}$) and sample standard deviation (denoted $\sigma_X$) of the
+inaccuracy. Both values are in the pixels. For the \hsv{} tracker we chose to
 track the blue battery which has one-color area.
 
 \begin{table}
@@ -566,22 +567,22 @@ Tracker	& Speed [FPS] & $\bar{X}$ [px] & $\sigma_X$ [px] \\
 \hline
 \input{experiments/hsv.txt}
 \end{tabular}
-\caption{Estimation of the trackers spped and inaccuracy in the experiment with orange cap.}
+\caption{Estimation of the trackers speed and inaccuracy in the experiment with orange cap.}
 \label{table:hsv}
 \end{table}
 
-From the results, we can see that MIL, Boosting and TLD trackers are too slow
+From the results, we can see that MIL, Boosting and \tld{} trackers are too slow
 for our application which runs live.
 
-We can also see that, althouth the MIL and BOOSTING trackers were slow, they
+We can also see that, although the MIL and BOOSTING trackers were slow, they
 performed quite well regarding accuracy. The trackers which have mean value of
 inaccuracy more than 100 px lost the object at some point and were not aware of
 it.
 
 As a result from this experiment, we consider Correlation, Simple background,
-Medianflow, Pattern matching as usable for our purposes.
+\medflow{}, Pattern matching as usable for our purposes.
 
-To test HSV tracker, we modified the experiment by placing an orange paper to
+To test \hsv{} tracker, we modified the experiment by placing an orange paper to
 mark the top of the robot (see figure \ref{fig:hsv-bbox}). The obtained
 values for this tracker and the others are listed in the table \ref{table:hsv}.
 For improving the performance of the HSV tracker, it is better to select
@@ -621,7 +622,7 @@ in the used video.
 
 The last test for the trackers is ability to track multiple objects. Simple
 detection-based trackers usually choose the best position with the biggest area
-satisfing a given condition therefore tracking multiple object may not be possible.
+satisfying a given condition therefore tracking multiple object may not be possible.
 
 In a situation, when tracking multiple objects is needed, sequence-based
 trackers may outperform detection-based trackers. We decided to test their
@@ -645,7 +646,7 @@ trackers correctly.
 \includegraphics[width=\linewidth]{img/experiments/occlusion.png}
 \caption{Unsuccessful (MIL)}
 \end{subfigure}
-\caption{Example of recoverings from the full occlusion}
+\caption{Example of recovers from the full occlusion}
 \label{fig:occlusion}
 \end{figure}
 
@@ -665,7 +666,7 @@ object to have one-colored area, but also this color should not be present in
 the background.
 
 If an object is moving autonomously and the only moving object in the view of
-the cameras is the tracked object, then we can use SimpleBackground tracker.
+the cameras is the tracked object, then we can use \simback{} tracker.
 
 Pattern Matching tracker works well with objects which preserve the shape
 and the size during the tracking.
@@ -677,7 +678,7 @@ best tracker:
 \item if the object the only moving object -- use Simple background
 \item if the object has onecolor area -- use HSV
 \item if the mutual occlusion of the objects may appear -- try TLD
-\item otherwise, it is worth to try Medianflow, Correlation and sometimes also Mosse and Pattern matching
+\item otherwise, it is worth to try \medflow{}, Correlation and sometimes also \mosse{} and Pattern matching
 \end{itemize}
 
 \todo[inline]{Postavit tunel a urobit experiment s nim}
@@ -695,6 +696,7 @@ Tracker & Report object lost (ratio of successful detections) & Recovers from fu
 \hsv{} & Yes (100\%)& Yes (97.09\%) & Only different colors & Yes \\
 \medflow{} & No (66.67\%)& No (11.11\%)& Yes & No \\
 \mil{} & No (0\%) & No (22.76\%) & Yes & No \\
+\mosse{} & No (0\%) & No (12.08\%) & Yes & No \\
 \patt{} & No (0\%) & Yes (92.99\%) & Only different patterns & Yes \\
 \simback{} & Yes (100\%) & Yes (100\%) & No & No \\
 \tld{} & No (36.56\%) & Yes (98.71\%) & Yes & No \\

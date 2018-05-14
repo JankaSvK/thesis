@@ -81,26 +81,26 @@ B = \begin{pmatrix}
 \end{pmatrix}
 \]
 
-\subsubsection*{Homogenous coordinates}
+\subsubsection*{Homogeneous coordinates}
 
-In computer vision, homogenous coordinates are used frequently instead of
+In computer vision, homogeneous coordinates are used frequently instead of
 Cartesian coordinates. Cartesian coordinates are the most common coordinate
-system.  Homogenous coordinates have one element added. This element is a
+system.  Homogeneous coordinates have one element added. This element is a
 scaling factor. As an example, vector $(2x, 2y, 2z, 2)^T$ represents same point
-as $(x, y, z, 1)^T$ in homogenous coordinates. The same point is equal to $(x,
+as $(x, y, z, 1)^T$ in homogeneous coordinates. The same point is equal to $(x,
 y, z)^T$ in Cartesian coordinates. Unlike the Cartesian coordinates, a single
-point can be represented by infinitely many homogenous coordinates.
+point can be represented by infinitely many homogeneous coordinates.
 
 Similarly it works for coordinates in any n-dimensional space. In conversion
-from Cartesian to homogenous coordinates we simply add a new element at the end
+from Cartesian to homogeneous coordinates we simply add a new element at the end
 equal to one. In the opposite direction, we divide first $n-1$ values by the
 $n$th.
 
-In homogenous coordinates the origin is ommited. Homogenous coordinates provide
+In homogeneous coordinates the origin is left out. Homogeneous coordinates provide
 us also a way how to represent a point in the infinity by finite coordinates.
 These points in the infinity are represented with the scale factor equal to 0.
 
 This coordinates representation is tightly bounded to a projective plane, on
 which the mathematical theory behind is based. For us, it is just important to
-know how to convert them to Cartesian coodinates and that algorithms for
+know how to convert them to Cartesian coordinates and that algorithms for
 computer vision often use them.
