@@ -6,12 +6,13 @@ computers and their abilities. Since the beginning of the era of computers,
 people have been creating machines and programs that solve problems more
 efficiently than humans.
 
-From the beginning, a human has two eyes. Two eyes provide stereo vision, which
-is useful to estimate how far and where exactly an object in 3D space is.
+Starting from the beginning each human has two eyes. which provide stereo
+vision. This allows us to estimate how far and where exactly an object in 3D
+space is.
 
 Our goal is to propose a system that will have similar capabilities using a
-computer and two web cameras. The system can be used to monitor and track movement
-of objects. For example, it can provide a trajectory of the quadcopter
+computer and two web cameras. The system can be used to monitor and track
+movement of objects. For example, it can provide a trajectory of the quadcopter
 flight, or another autonomous robot. These obtained data can be used for
 additional analysis.
 
@@ -30,16 +31,18 @@ We set as our technical goals the following requirements:
 \item displaying results live.
 \end{itemize}
 
+\todo[inline]{to next}
 Thesis starts with an overview of the work done in the area of computer vision
-and object localization. As the next step, the thesis covers three steps of the
-object localization. The first step is to obtain information about the cameras.
-The Calibration chapter covers the process of obtaining parameters to describe
-the camera model by viewing a specific pattern. Enough images of the pattern
-provide enough information to get the parameters describing the camera.
-Furthermore, positions of the pattern, where both cameras see the pattern, can
-be used for stereo calibration. The stereo calibration provides information
-about the relative positions of cameras to each other. We will later use this
-relative position and the camera parameters in the localization process.
+and object localization. Then the thesis covers three steps of the object
+localization. The first step of the localization is to obtain information about
+the cameras.  The Calibration chapter covers the process of obtaining
+parameters to describe the camera model by viewing a specific pattern. Enough
+images of the pattern provide enough information to get the parameters
+describing the camera.  Furthermore, positions of the pattern, where both
+cameras see the pattern, can be used for stereo calibration. The stereo
+calibration provides information about the relative positions of cameras to
+each other. We will later use this relative position and the camera parameters
+in the localization process.
 
 The second step is to track an object. Firstly, the user marks an object in
 camera's views. Then the object position estimation is provided by a tracker

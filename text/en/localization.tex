@@ -44,10 +44,9 @@ camera matrix and $(R|T)$ is extrinsic matrix. $R$ is a rotation matrix and
 $T$ is a translation vector. We use this composition to compute the projection
 matrices.
 
-\emph{First camera}
-Since we set the origin of the world coordinate system in the first camera,
-the camera has no rotation nor translation to the coordinate system. Therefore
-we compute the projection matrix as:
+\emph{First camera} -- Since we set the origin of the world coordinate system
+in the first camera, the camera has no rotation nor translation to the
+coordinate system. Therefore we compute the projection matrix as:
 
 \[
  P = K_1 \cdot \begin{pmatrix}
@@ -59,10 +58,10 @@ Where $K_1$ denotes intrinsic parameters matrix of the first camera, $I_{3,3}$ i
 matrix 3$\times$3 and $0_3$ zero vector. Only intristic parameters matrix take
 effect on given coordinates, computing from world coordinates in the image plane of the camera.
 
-\emph{Second camera}
-For the second camera's projection matrix, stereo calibration results will be
-used. We know the rotation matrix and the translation vector between the cameras,
-being able to get coordinates of the second camera relative to the first one.
+\emph{Second camera} -- For the second camera's projection matrix, stereo
+calibration results will be used. We know the rotation matrix and the
+translation vector between the cameras, being able to get coordinates of the
+second camera relative to the first one.
 
 We now use this information in construction of the projection matrix, $Q = K_2
 \dot (R | T)$, where $K_2$ is intristic parameters matrix of the second camera, $R$
@@ -94,7 +93,7 @@ of the point $X$ (homogenous).
 
 \subsection{Simple linear triangulation}
 
-We will now shortly describe how the triangulation is working under the hood.
+We will now shortly describe how the triangulation works under the hood.
 
 We start from the single equation $x = PX$ and try to rearrange it. Since we do
 have two such equations (for each camera, see \ref{projection-statements}), we
@@ -149,7 +148,7 @@ n(q^{3T}) - (q^{2T}) \\
 \]
 
 We can easily check, that multipling the matrix $AX$ gives us the same equation
-desribed earlier. Now we analyze what we got.
+desribed earlier. Now we analyze what we obtained.
 
 For each image two equations were included, giving a total of four equations in
 four homogeneous unknowns.
@@ -160,7 +159,7 @@ this equation cannot be find easily. This problem can be solved by direct
 linear transformation algorithm (DLT), which will estimate $X$. More about the
 method could be found in \citet*{multiple-view-geometry}.
 
-\section{Implementation note}
+\section*{Implementation note}
 For the triangulation we used OpenCV function triangulatePoints($P$, $Q$,
 $\mathrm{x}$, $\mathrm{y}$), which is based on simple triangulation method with use of DLT
 method for solving equations.

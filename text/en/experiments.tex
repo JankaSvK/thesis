@@ -6,6 +6,7 @@ and overall experiments. The tracker experiments are located in the chapter
 \ref{ch:tracker}.
 
 \section{Calibration and localization}
+\label{s:experiment-static}
 
 In order to measure a quality of calibration and localization we exclude a
 tracking component. Therefore, we propose an experiment with static points in a
@@ -17,7 +18,7 @@ distances between the static points in the real world and compute the distance
 between their estimated position in 3D coordinates. Then we compare the results.
 
 To skip the tracking part, we created a new tracker.  The new tracker always
-returns same position.  Doing this, we excluded tracker from our process.
+returns the same position.  Doing this, we excluded tracker from our process.
 
 We have chosen the grid as in the figure \ref{fig:grid} as our pattern for experiments.
 The vertical lines are circa 400~mm long and the distance between them is circa
@@ -53,23 +54,24 @@ From	& To	& Real length (mm) & Computed length(mm) & Error (\%) \\
 \label{table:distances}
 \end{table}
 
-We were interested, if the results are good not only on the one plane -- in our
+We were interested if the results are good not only on the one plane -- in our
 case the ground -- but also in the others. Now we have tested the precision in
-two axis, which were perpendicular to each other (vertical and horizontal
+two axes, which were perpendicular to each other (vertical and horizontal
 lines). We have noticed, that the results for the vertical lines are less
-precise. Therefore, we decided to test the last ax and its precision. We places
+precise. Therefore, we decided to test the last axis and its precision. We places
 a wall with the marks, which is perpendicular to the ground and measured the
 distance between the marks. The setup can be seen in the figure
 \ref{fig:table}. The marks are numbered as displayed in the image
 \ref{fig:tablenumbered}. The results are included in the table
 \ref{table:distances}. 
 
-We did the same experiment with another setup, when the cameras were 63~cm apart
-from each other. We were interested, if the results are better in parallel
-setup, or not. Based on the results the is no evidence of the different precision
-and the differences may be still caused by different precision of the
-calibration. The results for this second experiment are listed in the appendix
-in the table \ref{table:distances-second}. Same numbering of the marks was used.
+We did the same experiment with another setup, when the cameras were 63~cm
+apart from each other. We were interested, if the results are better in
+parallel setup, or not. Based on the results there is no evidence of the
+different precision and the differences may be still caused by different
+precision of the calibration. The results for this second experiment are listed
+in the appendix in the table \ref{table:distances-second}. Same numbering of
+the marks was used.
 
 \begin{figure}
 \centering

@@ -55,7 +55,7 @@ following format:
 Where $f_x$, $f_y$ denote focal lengths expressed in pixel units. It is usual
 to introduce two of them, separately for both axes, since pixels usually are
 not perfect squares but rather rectangles. Therefore the same focal length, has
-different length in pixel units over a given ax.
+different length in pixel units over a given axis.
 
 We refer the ray of the view of the camera as the principal ray. The point
 where this ray intersects the image plane is called principal
@@ -103,7 +103,7 @@ of the parameters could be found in the book by \citet*{bradski2008learning}.
 These nine parameters (four for camera matrix and five for distortion
 coefficients) describe the camera model. They may be used for example for
 projecting a point from 3D space to image coordinates in the camera (OpenCV
-function \verb+projectPoints+). We will use them, to get better results for
+function \verb+projectPoints+). We will use them to get better results for
 stereo calibration and for localization, since they provide us a more accurate
 model of the camera.
 

@@ -17,11 +17,11 @@ environment with one-color background.
 The paper by \citet*{black2002multi} tries to solve a problem of the prediction
 the object position under full occlusion. The authors of the
 \citet*{yonemoto1998tracking} solve a problem of correct localization of the
-object consisting of multiple parts. Such objects often fall apart when
-trying to include them in virtual reality (for example a snowman can be mapped
-as three balls apart of each other). The proposed system estimated parameters and
-fixed points for each part independently. Then the system uses correspondence
-of the points within the movements.
+object consisting of multiple parts. These parts of the object often fall apart
+when trying to include them in virtual reality (for example a snowman can be
+mapped as three balls apart of each other). The proposed system estimated
+parameters and fixed points for each part independently. Then the system uses
+correspondence of the points within the movements.
 
 The system for the object tracking and localization in the garage was introduced
 in the paper \citet*{ibisch2015arbitrary}. The proposed system uses a few cameras
@@ -46,18 +46,18 @@ high price.
 \section{Use of the systems in robotics}
 
 The principles described in previous sections have an extensive usage in
-robotics, for better navigation, object manipulating and so on. For example,
-for the robotic competition
-RoboCup, the category Soccer many systems for ball tracking were developed. Robots
-competing in this category are usually equipped with an omnidirectional camera.
-This camera is pointing vertically up, where the image reflects in a mirror.
-This principle provides a full 360\degree image of the environment provided by
-only one camera. In this case, it is possible to track an object by single
-camera, since additional information about the ball (such as color and size)
-is provided in advance. On the other hand, such a system is not static, the
-background changes with every movement of the robot. Nevertheless, usage of
-additional camera may significantly improve the precision. For more information
-about it, we refer to the paper \citet*{kappeler20103d}.
+robotics, for better navigation, object manipulating and so on. For example, in
+the robotic competition RoboCup, competitors of the Soccer category developed
+many systems for ball tracking. Robots competing in this category are usually
+equipped with an omnidirectional camera.  This camera is pointing vertically
+up, where the image reflects in a mirror.  This principle provides a full
+360\degree image of the environment provided by only one camera. In this case,
+it is possible to track an object by single camera, since additional
+information about the ball (such as color and size) is provided in advance. On
+the other hand, such a system is not static, the background changes with every
+movement of the robot. Nevertheless, usage of additional camera may
+significantly improve the precision. For more information about it, we refer to
+the paper \citet*{kappeler20103d}.
 
 
 \section{Dove-eye}

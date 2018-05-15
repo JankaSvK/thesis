@@ -5,48 +5,48 @@ This thesis proposed a system for object localization in the 3D space.
 
 The primary goal of the thesis was to provide a step by step guide for the task
 of the localization of the object in 3D. We achieved the goal by the describing
-whole problem and solving it step by step in this thesis.
+a whole problem and solving it step by step in this thesis.
 
 The thesis started with an overview of the calibration process, explaining the
 essential elements of the calibration. We presented a short introduction to
-calibration routines used by the OpenCV, and we also described the results
+calibration routines used by the OpenCV and we also described the results
 obtained by this process.
 
 We implemented detection-based trackers such as \simback{}, \hsv{} and \patt{}. We
 explored available trackers in the open-source libraries. These trackers from
 the OpenCV and Dlib are sequence-based. We proposed several statistics for
 comparison of the trackers. We tested all trackers on several setups, measuring their
-speed and accuracy. Also, we explored their abilities to track multiple objects
-and to recover from occlusion. We presented the results in the few
+speed and accuracy. We also explored their abilities to track multiple objects
+and to recover from occlusion. We presented the results in 
 well-organized tables and provided images for better understanding concepts.
 
 As a next step, we explained how the projection matrices are computed. We
 explained their importance in the projection of a point from 3D space to 2D
 view of each camera. The chapter also contains a description of simple
-triangulation method.  The method shows us, how to obtain a position of the
+triangulation method.  The method shows us how to obtain a position of the
 object in 3D space if the projection matrices and the positions in the images
 are available.
 
-When all steps were covered, we tested proposed system in several environments
-and the settings. We studied the accuracy of the system by static experiments
-and computing the estimated distances between the points and comparing it to
-real values. In the end, we also provided experiments focusing on overall
-experience when using the application.
+When all previous steps were covered, we tested the proposed system in several
+environments and the settings. We studied the accuracy of the system by static
+experiments and computing the estimated distances between the points and
+comparing it to real values. In the end, we also provided experiments focusing
+on overall experience when using the application.
 
 The application can calibrate automatically using a chessboard pattern, track
 one or more objects with a chosen tracker, display the results of the localization
 live. Furthermore, it can work with the recordings instead of the live camera views.
 The data from the calibration and localization are automatically saved.
 
-There are several areas that can be explored in further work. When testing the
-whole application, we discovered noise in some specific axe. Would be worth to
-explore, what is causing this noise. Also, we explored, that the precision for
-the objects further away from the camera is lower compared to precision of the
-closer ones. The question remains, which parameters of our setup influence this
-precision and how much. As nice extension to this project would be an idea to
-use more cameras, and test if the precision improves.
+There are several areas that can be explored in further work. While testing the
+application, we noticed a noise in some specific axis. Additional work could
+explore the cause of the noise and possible methods to eliminate it. We also
+explored, that the precision for the objects further away from the camera is
+lower compared to precision of the closer ones. The question remains, which
+parameters of our setup influence this precision and how much. A suitable
+extension to this project would be the use of more cameras and exploring if
+this setup improves the precision.
 
-In the end, we consider an application as usable in practice. The results are
-not precise enough to provide us reliable results in a precision of
-millimeters, but usable in many cases. Finally, it can provide a record of the
-trajectory.
+In the end, we consider the application usable in practice. The results are not
+precise enough to provide reliable results in a precision of millimeters, but
+usable in many cases.

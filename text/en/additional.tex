@@ -1,5 +1,11 @@
 \chapter{Additional results}
 
+\section{Experiment with static point}
+
+Same experiment described in the section \ref{s:experiment-static} we tried
+with another camera setup. Same numbering of the grid points is used. The
+results are displayed in the table \ref{table:partial-occlusion}.
+
 \begin{table}[h!]
 \centering
 \begin{tabular}{|r|r|r|r|r|}
@@ -13,3 +19,76 @@ From    & To    & Real length (mm) & Computed length(mm) & Error (\%) \\
 \caption{Results of the experiment focused on the distances -- setup with the cameras distance between the cameras equal to 63~cm}
 \label{table:distances-second}
 \end{table}
+
+\section{Experiment with partial occlusion}
+
+In the experiment we tested trackers under partial occlusion. The results are
+displayed in the table \ref{table:partial-occlusion} and the setup is shown in
+the figure \ref{fig:partial-occlusion}. We remind that the $X$ means the
+inacuraccy between the representative tracker and tested tracker. We compute
+its sample mean and sample standart deviation. In this experiment the \hsv{}
+tracker performed best so we choose it as representative tracker. The
+\simback{} background had many problems wiht changing light.
+
+\begin{table}
+\centering
+\begin{tabular}{l|r|r|r|p{4cm}}
+Tracker & Speed [FPS] & $\bar{X}$ [px] & $\sigma_X$ [px] &  Recovers from occlusion (ratio of successful tracking) \\
+\hline
+\boost{} & 19.65 & 208.14 & 153.63 & No (18.60\%) \\
+\corr{} & 110.34 & 168.71 & 94.59 & No (23.75\%)\\
+\hsv{} & 507.25 & 0.00 & 0.00 & Yes (100.00\%) \\
+\medflow{} & 339.23 & 139.48 & 102.12 & No (40.34\%) \\
+\mil{} & 12.67 & 164.94 & 89.61 &  No (21.75\%)\\
+\mosse{} & 522.00 & 157.59 & 144.83 & No (32.55\%) \\
+\patt{} & 151.22 & 47.72 & 20.77 & Yes (91.56\%)\\
+\simback{} & 120.96 & 42.15 & 12.29 & Yes (100\%)\\
+\tld{} & 16.72 & 43.46 & 18.08 & Yes (96.92\%)\\
+\end{tabular}
+\caption{Comparison of trackers under partial occlusion}
+\label{table:partial-occlusion}
+\end{table}
+
+
+\section{Experiment under full occlusion}
+
+Similarly to the experiment mentioned in the chapter \ref{ch:tracker} we did
+another experiment with full occlusion. This time, the direction of the robot
+is preserved. The results are listed in the table \ref{fig:full-occlusion} and
+the setup is displayed in the image \ref{fig:full-occlusion}. The \hsv{}
+tracker is choosed as representative tracker.
+
+\begin{table}
+\centering
+\begin{tabular}{l|p{1.2cm}|r|r|p{2.5cm}|p{3.5cm}}
+Tracker & Speed [FPS] & $\bar{X}$ [px] & $\sigma_X$ [px]&  Report occlusion (ratio of reported) & Recovers from full occlusion (ratio of successful tracking) \\
+\hline
+\boost{} & 15.61 & 137.07 & 91.90 & No (0\%) & No (17.46\%) \\
+\corr{} & 108.89 & 123.82 & 75.17 & No (0\%) & No (16.42\%) \\
+\hsv{} & 498.31 & 0.00 & 0.00 & Yes (100\%) & Yes (100\%) \\
+\medflow{} & 318.07 & 121.08 & 74.70 & No (2.90\%) & No (16.22\%) \\
+\mil{} & 10.50 & 122.69 & 87.34 & No (0\%) & No (16.84\%) \\
+\mosse{} & 789.96 & 106.57 & 89.99 & No (0\%) & No (33.78\%) \\
+Pattern m. & 149.14 & 26.53 & 7.81 & No (0\%) & Yes (100\%) \\
+Simple b. & 118.94 & 84.59 & 67.21 & No (0\%) & No (41.68\%) \\
+\tld{} & 15.66 & 30.39 & 10.94 & No (0\%) & Yes (100\%) \\
+\end{tabular}
+\caption{Comparison of trackers under full occlusion}
+\label{table:full-occlusion}
+\end{table}
+
+\begin{figure}
+\centering
+\begin{subfigure}{0.48\linewidth}
+\includegraphics[width=\linewidth]{img/experiments/partial-occlusion.jpg}
+\caption{Setup for partial occlusion}
+\label{fig:partial-occlusion}
+\end{subfigure}
+\begin{subfigure}{0.48\linewidth}
+\includegraphics[width=\linewidth]{img/experiments/full-occlusion.jpg}
+\caption{Setup for full occlusion}
+\label{fig:full-occlusion}
+\end{subfigure}
+\caption{Setups used for testing trackers performance under occlusion}
+\label{fig:occlusion}
+\end{figure}
