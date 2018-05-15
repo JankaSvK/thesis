@@ -44,7 +44,7 @@ At this point, we will find a contour with the biggest area using OpenCV
 library\footnote{used OpenCV functions: \verb+cv2.findCountours+ and
 \verb+cv2.countourArea+}. The center point of the bounding box of this contour
 will be our estimation of the position of our object in the image. The whole
-process is illustrated in the figure \ref{fig:simple-background-tracker}.
+process is illustrated in the Figure \ref{fig:simple-background-tracker}.
 
 It is shown in the image that lighting slightly changed between the background
 photography and the object photography (at the edge of the puzzle pieces). It
@@ -113,7 +113,7 @@ to a single value (hue).
 
 \begin{figure}[h!]\centering
 \includegraphics[width=0.65\textwidth]{img/hsv-cylinder.png}
-\caption[Blah]{"HSV cylinder" by SharkD is licensed under CC BY 3.0 \footnotemark}
+\caption["HSV cylinder" by SharkD is licensed under CC BY 3.0]{"HSV cylinder" by SharkD is licensed under CC BY 3.0 \protect\footnotemark}
 \end{figure}
 \footnotetext{source: \url{https://commons.wikimedia.org/wiki/File:HSV\_color\_solid\_cylinder.png}}
 
@@ -145,7 +145,7 @@ y &= \sum_\alpha \sin \alpha \\
 \end{aligned}
 $$
 
-The use of this algorithm for one-colored object is displayed in the figure
+The use of this algorithm for one-colored object is displayed in the Figure
 \ref{fig:hsv-tracker}. We consider as a disadvantage that no other object of
 the same color can be placed in the view of the camera.
 
@@ -176,7 +176,7 @@ the same color can be placed in the view of the camera.
 The pattern (or template) matching algorithm slides over the input image and
 compares the template with a patch in the input image. By \emph{patch} we
 understand an region in the image with the same size as the template
-(displayed in the figure \ref{fig:patternmatching-naming}).
+(displayed in the Figure \ref{fig:patternmatching-naming}).
 
 For a comparison between the template and the patch we look for a function which
 tells us how different the subimages are. Such a function is usually called
@@ -210,14 +210,12 @@ precisely $T(x, y)$ and $I(x, y)$ stand for). In general, we can choose any
 reasonable vector (such as a tuple of RGB channels). We choose to use a
 standard OpenCV conversion to grayscale\footnote{see \url{https://docs.opencv.org/3.4/de/d25/imgproc\_color\_conversions.html}}
 ($T(x, y)$ and $I(x, y)$ thus give an intensity after such conversion).
-%\todo[inline]{M: tenhle odstavec bych dal před ten vzorec, viz má předchozí
-%poznímka}
 
 Because this algorithm works with grayscale images, much information is
 lost during conversion. This disadvantage summed up with no ability to
 recognize rotated or slightly changed objects results in unsatisfying tracking
 results. An example of a correct match and also an incorrect one is displayed in the
-figure \ref{fig:pattern-matching-tracker}. We can see the masks which display
+Figure \ref{fig:pattern-matching-tracker}. We can see the masks which display
 the value of the loss function. The pixel color represent the value of the loss
 function for the template and the patch which has top left corner in it. Lower
 values of the loss functions are displayed as darker points. Therefore, the
@@ -241,7 +239,7 @@ black spots indicate patches which are similar to the pattern.
   \end{subfigure}
   \begin{subfigure}[t]{0.48\linewidth}
     \includegraphics[width=\linewidth]{img/pattern_matching/result-correct.jpg}
-    \caption{Darkest point (lowest value) from mask is choosed}
+    \caption{Darkest point (lowest value) from mask is chosen}
   \end{subfigure}\\
   \begin{subfigure}[t]{0.48\linewidth}
     \vspace{-52mm}%hack 1/2 na svisle zarovnani
@@ -281,7 +279,7 @@ Examples of the information we can obtain from the sequence of the images are:
 An algorithm using this information can cope with occlusion (one object covers
 another) -- what detection algorithms are usually not able to do.
 
-In the next sections, we will present a few trackers implemented in the OpenCV. We
+In the next sections, we will present a few trackers implemented in OpenCV. We
 provide a short overview of the trackers available.
 
 \subsection*{Boosting tracker}
@@ -321,7 +319,6 @@ The convolution then is performed between the images and the result is
 inverted by Inverse Fast Fourier Transform (IFFT). The position is estimated by
 the highest value of the IFFT response. More about the tracker is available in
 the paper by \citet*{mosse}.
-\todo[inline]{M: IIUC je tohle efektivně stejné jako pattern matching tracker, nemělo by to být v detection trackers?}
 
 \subsection*{OpenCV note}
 OpenCV-contribute implements all above-described sequence-based trackers. An
@@ -495,7 +492,7 @@ we decided to test the trackers under similar circumstances.
 
 In some experiments we use an autonomous robot which has oval shape, 3~cm
 in height and 6~cm in diameter. This robot is able to follow a black line.
-We used an oval as the shape of the line (see the figure \ref{fig:robot-oval}).
+We used an oval as the shape of the line (see the Figure \ref{fig:robot-oval}).
 
 In order to test the trackers under same conditions, we recorded a video of the
 robot. We then found the bounding box for the object at the start and
@@ -506,7 +503,7 @@ trackers which are mentioned in the corresponding experiments.
 \subsubsection{Speed and accuracy}
 
 The goal of the first experiment is to estimate tracker speed and accuracy. We
-used a video of the robot moving along the oval (see the figure
+used a video of the robot moving along the oval (see the Figure
 \ref{fig:robot-oval}). For the accuracy measurement we chose a Simple
 Background tracker as our representative, since it provided an excellent
 example of the correct tracking on this video. The representative tracker is
@@ -583,12 +580,12 @@ As a result from this experiment, we consider Correlation, Simple background,
 \medflow{}, Pattern matching as usable for our purposes.
 
 To test \hsv{} tracker, we modified the experiment by placing an orange paper to
-mark the top of the robot (see figure \ref{fig:hsv-bbox}). The obtained
+mark the top of the robot (see Figure \ref{fig:hsv-bbox}). The obtained
 values for this tracker and the others are listed in the table \ref{table:hsv}.
 For improving the performance of the HSV tracker, it is better to select
 smaller area with the same color. Therefore, the tracker will track only this
 are, not the whole object. The difference between tracked are by Simple
-Background tracker and the HSV tracker is displayed in the figure
+Background tracker and the HSV tracker is displayed in the Figure
 \ref{fig:hsv-diff}. The red line symbolises Simple Background tracker and the
 blue one the HSV tracker.
 
@@ -599,7 +596,7 @@ able to recover from occlusion. We prepared an experiment which lost the
 robot from the view. We were interested if the tracker is able to report object
 loss (or returns wrong results) and if it was able to track the object again
 after coming back to camera view. The example of the successful recover from
-the occlusion is displayed in the figure \ref{fig:occlusion}.
+the occlusion is displayed in the Figure \ref{fig:occlusion}.
 
 In the results \ref{table:occlusion-multiple} we display also a ratio how
 successful the tracker was in given situation. We set a threshold for
@@ -680,9 +677,6 @@ best tracker:
 \item if the mutual occlusion of the objects may appear -- try TLD
 \item otherwise, it is worth to try \medflow{}, Correlation and sometimes also \mosse{} and Pattern matching
 \end{itemize}
-
-\todo[inline]{Viacero sa pohybujucich sa objektov s jednym trackovanym}
-\todo[inline]{Ppopisat posledny experiment v trackroch do dokuemntacie}
 
 \begin{landscape}
 \begin{table}

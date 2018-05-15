@@ -6,9 +6,9 @@ oriented in the code.
 
 \section{Application parts}
 
-The program consists of several components, they are Application Process,
+The program consists of several components, namely Application Process,
 Graphical User Interface, Cameras Provider, Calibration Provider, Trackers
-Provider, Localization and the Application. Each of this component has own
+Provider and Localization. Each of this component has own
 file. In the following list, we explain the purpose in each of them.
 
 \subsubsection*{ApplicationProcess.py}
@@ -190,7 +190,7 @@ It is important to remember, that for each object in each camera view a new
 instance of the tracker will be initialized.
 
 Tracker is expected to be a class which implements two methods. The skeleton
-for the new tracker is displayed in the figure \ref{fig:new-tracker}.
+for the new tracker is displayed in the Figure \ref{fig:new-tracker}.
 
 The image will be provided as a three channel two dimensional NumPy array. The
 bounding box is represented by four numbers, in the following order: \verb+(x, y, width, height)+.

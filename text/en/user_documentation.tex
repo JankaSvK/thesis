@@ -54,7 +54,7 @@ the directory \verb+helpers/+, which is located in the root of the repository.
 In the folder \verb+program/+ we find an entry point for our application
 \verb+Main.py+. The text in this chapter is written with assumption that
 current directory is the directory \verb+program/+. After starting the
-application a window will show up (displayed in figure \ref{fig:application}).
+application a window will show up (displayed in Figure \ref{fig:application}).
 With no options provided, the program will run on the first two cameras
 available.
 
@@ -66,7 +66,7 @@ available.
 
 \subsection{Calibration}
 As a first step, calibration is expected. We need a calibration pattern --
-chessboard (example in the figure \ref{fig:chessboard}), which could be
+chessboard (example in the Figure \ref{fig:chessboard}), which could be
 printed. For given chessboard, edit values in \verb+program/Config.py+. Change
 the value of \verb+chessboard_inner_corners+ to a number of \emph{inner}
 corners of your chessboard. For example, classic chessboard 8 $\times$ 8
@@ -92,7 +92,7 @@ If the calibration finished successfully, the calibration results will be
 automatically saved in \verb+program/calib_results/+. The files will be saved
 into three directories, regarding if it is stereo or mono calibration. In case
 of mono calibration, it will be stored in the folder of corresponding camera.
-The hierarchy is displayed in the figure \ref{fig:hierarchy-calib}. The naming
+The hierarchy is displayed in the Figure \ref{fig:hierarchy-calib}. The naming
 convention for these files is
 \verb+{year}-{month}-{day}-at-{hour}-{minute}.json+, where the date and time
 specify the moment when the calibration finished.

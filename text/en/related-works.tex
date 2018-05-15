@@ -23,13 +23,14 @@ mapped as three balls apart of each other). The proposed system estimated
 parameters and fixed points for each part independently. Then the system uses
 correspondence of the points within the movements.
 
-The system for the object tracking and localization in the garage was introduced
-in the paper \citet*{ibisch2015arbitrary}. The proposed system uses a few cameras
-that share parts of their views. For object detection, they use a method of the
-background subtraction. Since the system's primary use is in the garage, they
-also propose a method to cope with the change of lighting caused by car
-lights. Their primary goal is to predict possible car collisions and therefore
-to provide a data for a warning system.
+The system for the object tracking and localization in the garage was
+introduced in the paper \citet*{ibisch2015arbitrary}. The proposed system uses
+a few cameras that share parts of their views. For object detection, they use a
+method of the background subtraction. We use a similar method in our work and
+compare it with other methods. Because the system's primary use is in the
+garage, they also propose a method to cope with the change of lighting caused
+by car lights. Their primary goal is to predict possible car collisions and
+therefore to provide a data for a warning system.
 
 \section{Use of the systems in sports}
 
@@ -41,7 +42,7 @@ access to the trajectory of the ball and can replay it to referees.
 Furthermore, even the most popular soccer competitions are experimenting with
 the system for detecting if the ball crosses the goal line or not.  This system needs
 an expensive setup equipped with high-speed cameras and the software itself is of
-high price.
+high price. On the contrary, we propose a low cost alternative using web cameras.
 
 \section{Use of the systems in robotics}
 
@@ -54,7 +55,7 @@ up, where the image reflects in a mirror.  This principle provides a full
 360\degree image of the environment provided by only one camera. In this case,
 it is possible to track an object by single camera, since additional
 information about the ball (such as color and size) is provided in advance. On
-the other hand, such a system is not static, the background changes with every
+the other hand, such system is not static, the background changes with every
 movement of the robot. Nevertheless, usage of additional camera may
 significantly improve the precision. For more information about it, we refer to
 the paper \citet*{kappeler20103d}.
@@ -89,5 +90,3 @@ multiple objects.
 
 We conclude the thesis with several experiments, including ones with autonomous
 robot, to test the system suitability for applications in robotics.
-
-\todo[inline]{Chyba analyza z pohladu toho, co budete delat, co jste si z tech systemu vzala jako motivaci, v cem se hodi, ci nehodi pro vase zadani}

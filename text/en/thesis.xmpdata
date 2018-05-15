@@ -1,7 +1,13 @@
 % Metadata to be stored in PDF, see documentation of the pdfx package for more details.
 
-\Author{Jana Batoryova}
+\Author{Jana Bátoryová}
 \Title{Visual Localization of an Object in 3D Space}
-\Keywords{localization\sep opencv\sep tracking\sep 3D}
-\Subject{Abstract of thesis}
+\Keywords{localization\sep opencv\sep tracking\sep 3D\sep stereovision}
+\Subject{The purpose of this project is to propose and implement a system for object
+localization using a stereo vision -- two cameras. The system computes the
+position of the cameras relatively to each other using a calibration pattern.
+Then a user selects an object to track. Different algorithms can be used for
+tracking.  Both detection-based and sequence-based approaches can be used.
+When the object is found in the view of both cameras, the system estimates a
+position of the object in three-dimensional space using triangulation.}
 \Publisher{Charles University}

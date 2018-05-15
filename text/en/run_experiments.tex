@@ -2,7 +2,7 @@
 
 In thesis, we mentioned many different experiments. In this chapter we provide
 a description how to run them. Please, firstly check the dependencies and if
-the application is running correctly (follow instructions in the chapter \ref{ch:user-documentation}).
+the application is running correctly (follow instructions in the Chapter \ref{ch:user-documentation}).
 
 All experiments are located in the directory \texttt{program/experiments}. We
 will use this directory as our root in the following text. Also, every script
@@ -10,11 +10,11 @@ should be executed by Python3.
 
 \section{Calibration}
 
-We provide a several calibration scenarios to try out. In the directory
-\verb+localization/+ a script named \verb+calibrate.py+ is
-available. The script sets options to calibrate from different pairs of the
-video. To run calibration on given set of videos, run \verb+calibrate.py {id}+,
-where \verb+{id}+ can be 16, 38, 43, 63. This \verb+{id}+ represents the true
+We provide several calibration scenarios to try out. A script named
+\verb+calibrate.py+ is available in  the directory \verb+localization/+. The
+script sets options to calibrate from different pairs of the video. To run
+calibration on given set of videos, run \verb+calibrate.py {id}+, where
+\verb+{id}+ can be 16, 38, 43, 63. This \verb+{id}+ represents the true
 distance between the cameras. The estimated distance will be outputted in the
 program.
 
@@ -76,17 +76,28 @@ To test a behavior of the trackers under occlusion, we provide an experiment 3.
 
 Admissible \verb+{id}+ is from \verb+0+ to \verb+8+.
 
+\subsubsection*{\texttt{trackers{\_}experiments.py 6}}
+
+Tests all trackers under occlusion -- same as experiment 3, but it use all trackers.
+
+\subsubsection*{\texttt{trackers{\_}experiments.py 7}}
+
+Test with thin tunnel to test trackers under partial occlusion.
+
+\subsubsection*{\texttt{trackers{\_}experiments.py 8}}
+
+Test with wide tunnel to test tracker under full occlusion.
+
 \subsection*{Tracking multiple objects}
 
 \subsubsection*{\texttt{trackers{\_}experiments.py 4 {id}}}
 
 The fourth experiment focuses on tracking multiple objects. Again, the results were
-evaluated by the human. 
-
-Admissible \verb+{id}+ is from \verb+0+ to \verb+8+.
+evaluated by the human. Admissible \verb+{id}+ is from \verb+0+ to \verb+8+.
 
 \subsubsection*{\texttt{trackers{\_}experiments.py 5}}
 
 The same experiment as previous, now with changed objects to be onecolor for
 the \hsv{} tracker.
+
 
