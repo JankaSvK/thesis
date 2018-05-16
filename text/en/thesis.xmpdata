@@ -2,7 +2,7 @@
 
 \Author{Jana Bátoryová}
 \Title{Visual Localization of an Object in 3D Space}
-\Keywords{localization\sep opencv\sep tracking\sep 3D\sep stereovision}
+\Keywords{localization \sep opencv \sep tracking \sep 3D \sep stereovision}
 \Subject{The purpose of this project is to propose and implement a system for object
 localization using a stereo vision -- two cameras. The system computes the
 position of the cameras relatively to each other using a calibration pattern.

@@ -1,0 +1,7 @@
+Cieľom tejto práce je navrhnúť a implementovať riešenie pre lokalizáciu objektu
+pomocou dvoch kamier. Navrhnuté riešenie zistí vzájomnú polohu kamier pomocou
+kalibrácie. Následne užívateľ vyberie objekt v záberoch kamier, ktorý bude
+systém sledovať. Pre túto úlohu preskúmame rôzne algoritmy, ktoré rozdeľujeme
+do dvoch skupín -- algoritmy založené na detekcii a algoritmy založené na
+sledovaní z viacerých obrázkov. Po obrdžaní polohy objektu v oboch kamerách,
+vypočítame polohu objektu v 3D pomocou triangulácie.
