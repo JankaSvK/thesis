@@ -12,7 +12,7 @@ a tuple of coordinates from the images taken by cameras.
 
 \section{Projection matrices}
 Projection matrices provide a way to transform world coordinates to image
-coordinates. The first step is to find out projection matrices for both
+coordinates. The first step is to find projection matrices for both
 cameras, and then we will use them for solving the triangulation problem.
 
 We define a projection matrix as a transformation matrix $P$, such that: $x = P
@@ -87,7 +87,7 @@ at once).
 We describe simple linear triangulation, which rewrites the equations
 \ref{projection-statements} into format $AX = 0$. A solution for this equation
 for unknown $X$ will be the position of the object in world coodinates. This
-approach provides a way how to determine four unknowns -- coordinates
+approach provides a way to determine four unknowns -- coordinates
 of the point $X$ (homogenous).
 
 
@@ -108,8 +108,8 @@ Then we use the fact, that the cross product of the vector itself is equal to
 zero vector. Therefore $x \times PX = 0$ from the previous fact. We rewrite it
 to three equations using crossproduct rules:
 
-$$ c(p^{3T}X) - a(p^{2T}X) = 0 $$
-$$ b(p^{3T}X) - c(p^{1T}X) = 0 $$
+$$ c(p^{1T}X) - a(p^{3T}X) = 0 $$
+$$ b(p^{3T}X) - c(p^{2T}X) = 0 $$
 $$ a(p^{2T}X) - b(p^{1T}X) = 0 $$
 
 Where $p^{iT}$ denotes ith row of $P$. Since $c = 1$ we can equally write:
