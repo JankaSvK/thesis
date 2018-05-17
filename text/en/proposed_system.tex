@@ -1,11 +1,11 @@
-\chapter{Proposed system}
+\chapter{The proposed system}
 
 To be able to locate an object in 3D with no previous knowledge of the object (such
 as its size, color and so on), two views of the same object are needed. The
 views can be obtained by one moving camera or by multiple cameras. In this
 thesis, we take a closer look at the second approach.
 
-We propose a system with two cameras, connected via USB to a computer.
+We propose a system with two cameras, connected to a computer via USB.
 Two cameras provide enough information for object localization and make the
 project usable also on low-budget. The placement of the cameras is important,
 but no precise alignment is required. The cameras should share a significant part
@@ -24,15 +24,15 @@ distance to each other and the rotation between them.
 
 After this calibration, the user marks the objects in both views of the
 cameras. At this point, the tracker will start to estimate an object position
-in camera view based on the images. We provide different tracker, so the user
+in camera view based on the images. We provide several trackers, so the user
 can choose one to work with.
 
 When we obtain information from calibration and the object position from both
 images, we will estimate the object position in 3D space by simple linear
 triangulation.
 
-The each described step is crucial to get a system, which will be able to
-localize point in 3D space. Each step is discussed separately in the following
+Each described step is crucial to get a system, which will be able to
+localize a point in 3D space. Each step is discussed separately in the following
 chapter.
 
 Now we provide a short insight into used tools and the notations, which are
@@ -48,14 +48,14 @@ visit their webpage\footnote{\url{https://opencv.org/}}.
 
 To provide a comparison of trackers, we also include one tracker from
 \emph{Dlib}\footnote{\url{http://dlib.net/}} library. It is also open source
-and an interface for the Python is provided.  Since this library focus is on
+and an interface for Python is provided.  Since this library focus is on
 machine learning, it does not contain as many functions for computer vision
 as the OpenCV library yet.
 
 \section{Notations}
 
-The following section describes some procedures using math notion. To avoid
-ambiguity we provide the overview of the used notation here.
+The following section describes some procedures using mathematical notion. To
+avoid ambiguity we provide the overview of the used notation here.
 
 \subsubsection*{Vector}
 A word \emph{vector} denotes a column vector in a shape of $n\times1$.

@@ -27,24 +27,66 @@ the left column is from top to the bottom from 1 to 7 and the right column from
 8 to 14 (see the Figure \ref{fig:ladder_numbered}).
 
 The setup of the cameras was nearly parallel, which means, the center rays of
-their views were parallel, looking in same direction.The distance between them
+their views were parallel, looking in same direction. The distance between them
 was circa 16~cm. Selected points are displayed in the Figure
-\ref{fig:ladder_ground}. The results from this experiment are listed in the
-table \ref{table:distances}. 
+\ref{fig:ladder_ground}. 
 
-From the results we can see that results for horizontal lines (with the length
-400~mm, third part of the table) are very accurate. On the other hand, the
-results for the vertical lines were quite unstable. Based on the measured
-distances between the points in the left column (first part of the table) it
-seems, that results get worse when, the points are further away from the
-camera. But the results computed for the points from right column bring the
-hypothesis into question. 
+We repeated the experiment ten times, with exactly same setup in order to get
+more reliable results. The only difference was the frames chosen for the
+calibration (frames for the calibration were randomly chosen from the same
+video). The number of the frames was same in each run. Therefore, we obtained
+slightly different calibration data on the same setup.
+
+With each set of calibration data we estimated position of the static points.
+Then we computed distances between them. From such results from ten runs, we
+computed average errors.
+
+The results are listed in the table \ref{table:distances}. First two columns
+define the pair of point between which are the results in corresponding row.
+Third column denote the real length. The first column of the rests display the
+average absolute error. Next columns display its relative value. The last
+column displays the sample standard deviation for absolute error. 
+
+To observe the results better, we have used also box plot displayed in the
+Figure \ref{fig:horizontal-boxplot}. This box plot represents same results from the
+same experiment. The orange line for each pair of points represent median of
+the results. The 50\% of the results lies within the box. We denote height of
+the this box as interquartile range (IQR). The whiskers represents all other
+measurements, which lies at most one and half of the IQR away from the box. All
+measurement which do not belong in previously mentioned groups are considered
+as outliers and  will be displayed as circles.
+
+\begin{figure}
+\includegraphics[width=\linewidth]{experiments/horizontal.eps}
+\caption{Box plot of relative errors of estimated horizontal distances between the columns}
+\label{fig:horizontal-boxplot}
+\end{figure}
+
+Based on the results displayed in the table \ref{table:distances} and the box
+plot \ref{fig:horizontal-boxplot} we can see that estimated results are least accurate
+for the points furthest from the cameras. Movement by few pixels so far away
+from the camera means great real movement.  On the other hand, the
+movement by same amount pixels closer to the camera means far smaller
+real distance. Because of that, the error is expected to increase for
+further points.
+
+On the contrary, we can see that results too close to the camera are actually a
+bit less accurate than the results close to the center of the view. The points
+close to the camera are at the edge of the view. These less accurate results
+may be caused by wrongly estimated distortion coefficients, as distortion
+coefficients have major effect at the edges of the image.
+
+Other box plots for the same setup with displayed results for the left and
+right column, and for the perpendicular plane are displayed in the Appendix
+\ref{ss:16results}.
 
 \begin{table}
 \centering
-\begin{tabular}{|r|r|r|r|r|}
+\begin{tabular}{|r|r|r|r|r|r|}
 \hline
-From	& To	& Real length (mm) & Computed length(mm) & Error (\%) \\
+\multicolumn{2}{|c|}{Points} & \multicolumn{1}{c|}{Real} & \multicolumn{3}{c|}{Error} \\ 
+\cline{1-2} \cline{4-6}
+From & To & length [mm] & Average [mm] & Average [\%] & Std. dev. [mm]\\
 \hline
 \hline
 \input{distances.txt}
@@ -58,7 +100,7 @@ We were interested if the results are good not only on the one plane -- in our
 case the ground -- but also in the others. Now we have tested the precision in
 two axes, which were perpendicular to each other (vertical and horizontal
 lines). We have noticed, that the results for the vertical lines are less
-precise. Therefore, we decided to test the last axis and its precision. We places
+precise. Therefore, we decided to test the last axis and its precision. We place
 a wall with the marks, which is perpendicular to the ground and measured the
 distance between the marks. The setup can be seen in the Figure
 \ref{fig:table}. The marks are numbered as displayed in the image
@@ -67,11 +109,15 @@ distance between the marks. The setup can be seen in the Figure
 
 We did the same experiment with another setup, when the cameras were 63~cm
 apart from each other. We were interested, if the results are better in
-parallel setup, or not. Based on the results there is no evidence of the
-different precision and the differences may be still caused by different
-precision of the calibration. The results for this second experiment are listed
-in the appendix in the table \ref{table:distances-second}. Same numbering of
-the marks was used.
+parallel setup, or not. Based on the results, the parralel setup performed
+better when the lines were parrlalel to the camera X-axis (i.e. horizontal). On
+the other hand, the setup with cameras far from each other and not having
+parralel view performed better in measuring non-horizontal lines. 
+
+\todo[inline]{A preco?}
+
+The results for this second experiment are listed in the appendix in the
+section \ref{ss:63results}. Same numbering of the marks was used.
 
 \begin{figure}
 \centering
@@ -135,7 +181,7 @@ the marks was used.
 
 \section{Complex experiments}
 
-As the last step, we decided to test whole system in a real environment. This
+As the last step, we decided to test the whole system in a real environment. This
 time we included all parts of the application -- calibration, tracking and also
 localization. In the previous experiments, we tested the liability of the
 trackers and the precision of the results. Now we test the usability of the
@@ -144,20 +190,28 @@ system as the whole.
 \subsection{Experiment with the one small object}
 
 The most important experiment -- the experiment which decides if the system is
-usable -- is experiment under real conditions. We created for our autonomous
-robot a square to follow, with the length of the side equal 14.5~cm (see Figure
-\ref{fig:robot-square}). The robot did four laps around the square. The
-results are displayed in the Figure \ref{fig:square-results}.
+usable -- is experiment under real conditions. We created a square to follow by
+autonomous robot. This square have the length of the side equal 14.5~cm (see
+Figure \ref{fig:robot-square}). The robot did four laps around the square. It
+speed was circa \todo[inline]{Aky rychly robot}. For tracking we used \hsv{}
+tracker. The results are displayed in the Figure \ref{fig:square-results}.
 
 We can see in the left picture, that the drawn line is similar to our shape.
-Not having sharp edges, since our robot make a small arc. On the other hand,
-the results from the another view are not so amazing. The coordinates have a
-lot of noise over Z-axis. The noise is only present, if the robot is following
-horizontal lines of the square. As the last step we computed maximum of the
-distances between any two points, which were located. In this case, the ideal
-value would be the length of the diagonal, which is equal to 20.5061~cm. Our
-results are between 18.54~cm to 19.38~cm, depending on the run. That means,
-that the error is only usually between 1 and 2~cm.
+Not having sharp edges, since our robot turns in the bends over the inner
+wheel. On the other hand, the results from the another view are not so amazing.
+The coordinates have a lot of noise over Z-axis. This noise is under 5~cm, on
+average 1.4~cm. The noise is only present, if the robot is following horizontal
+lines of the square. This corresponds to our theory mentioned in the Section
+\ref{s:}, since the camera views are not parralel, so the horizontal lines are
+less precise.
+\todo[inline]{Odkaz na section}
+
+As the last step we computed maximum of the distances between any two points,
+which were located. In this case, the expected value the length of the
+diagonal, which is equal to 20.5061~cm. Our results are between 18.54~cm to
+19.38~cm, depending on the run. That means, that the error is only usually
+between 1 and 2~cm. This corresponds to previously measured inaccuracy in
+non-parralel alignment.
 
 \begin{figure}
 \includegraphics[width=\linewidth]{img/experiments/square-robot.png}
@@ -192,10 +246,10 @@ best results. It is medium fast tracker. The tracker sometimes lost the
 images, but most of the time it was able to track. Because of the object lost,
 sometimes an interaction of the user is needed, to reinitialize a tracker.
 
-Sample results of the trajectories for two objects is displayed in the Figure
+Sample results of the trajectories for two objects are displayed in the Figure
 \ref{fig:two-trajectories}. During the experiment, the boxes were moving
-between the yellow marks and swapped places. We can see these four marks also in
-both trajectories quite close to each other. 
+between the yellow marks and swapped places. We can see these four marks easily
+as the points, where the trajectories significantly changed directions. 
 
 \begin{figure}[p]
 \includegraphics[width=\linewidth]{img/experiments/two-objects.png}
@@ -213,22 +267,4 @@ both trajectories quite close to each other.
 \end{subfigure}
 \caption{Sample trajectories from tracking two objects}
 \label{fig:two-trajectories}
-\end{figure}
-
-\begin{figure}
-\includegraphics[width=\linewidth]{experiments/leftcolumn.eps}
-\caption{Boxplot of relative errors of estimated vertical distances in the left column}
-\label{fig:verticalleft-boxplot}
-\end{figure}
-
-\begin{figure}
-\includegraphics[width=\linewidth]{experiments/rightcolumn.eps}
-\caption{Boxplot of relative errors of estimated vertical distances in the right column}
-\label{fig:verticalright-boxplot}
-\end{figure}
-
-\begin{figure}
-\includegraphics[width=\linewidth]{experiments/horizontal.eps}
-\caption{Boxplot of relative errors of estimated horizontal distances between the columns}
-\label{fig:horizontal-boxplot}
 \end{figure}

@@ -1,24 +1,89 @@
-\chapter{Additional results}
+\chapter{Additional experiments}
 
 \section{Experiment with static point}
 
-Same experiment described in the section \ref{s:experiment-static} we tried
-with another camera setup. Same numbering of the grid points is used. The
-results are displayed in the table \ref{table:partial-occlusion}.
+\subsection*{16~cm setup}
+\label{ss:16results}
+Here we provide additional results for the experiment mentioned in the Section
+\ref{s:experiment-static}. The box plots for distances from the left column
+(\ref{fig:verticalleft-boxplot}), from the right column
+(\ref{fig:verticalright-boxplot}) and for the perpendicular plane
+(\ref{fig:table-boxplot}) are available.
 
-\begin{table}[h!]
+\begin{figure}
+\includegraphics[width=\linewidth]{experiments/leftcolumn.eps}
+\caption{Boxplot of relative errors of estimated vertical distances in the left column}
+\label{fig:verticalleft-boxplot}
+\end{figure}
+
+\begin{figure}
+\includegraphics[width=\linewidth]{experiments/rightcolumn.eps}
+\caption{Boxplot of relative errors of estimated vertical distances in the right column}
+\label{fig:verticalright-boxplot}
+\end{figure}
+
+\begin{figure}
+\includegraphics[width=\linewidth]{experiments/table.eps}
+\caption{Boxplot of relative errors of estimated distances for perpendicular plane}
+\label{fig:table-boxplot}
+\end{figure}
+
+
+\subsection*{63~cm setup}
+\label{ss:63results}
+
+Same experiment described in the Section \ref{s:experiment-static} we tried
+with another camera setup. Same numbering of the grid points is used in
+non-parralel alignment of the cameras.
+\newline
+Results include:
+\begin{itemize}
+\item table summarizing an average error and its standart deviation for all distances (\ref{table:63}),
+\item box plot for distances of the horizontal lines (\ref{table:63horizontal}),
+\item box plot for distances of the vertical lines in the left column (\ref{table:63left}),
+\item box plot for distances of the vertical lines in the right column (\ref{table:63right}),
+\item box plot for distances of the lines in perpendicular plane (\ref{table:63table}).
+\end{itemize}
+
+\begin{table}
 \centering
-\begin{tabular}{|r|r|r|r|r|}
+\begin{tabular}{|r|r|r|r|r|r|}
 \hline
-From    & To    & Real length (mm) & Computed length(mm) & Error (\%) \\
+\multicolumn{2}{|c|}{Points} & \multicolumn{1}{c|}{Real} & \multicolumn{3}{c|}{Error} \\
+\cline{1-2} \cline{4-6}
+From & To & length [mm] & Average [mm] & Average [\%] & Std. dev. [mm]\\
 \hline
 \hline
-\input{distances-2.txt}
+\input{experiments/63/distances.txt}
 \hline
 \end{tabular}
-\caption{Results of the experiment focused on the distances -- setup with the cameras distance between the cameras equal to 63~cm}
-\label{table:distances-second}
+\caption{Results of the experiment focused on the distances}
+\label{table:63}
 \end{table}
+
+\begin{figure}
+\includegraphics[width=\linewidth]{experiments/63/horizontal.eps}
+\caption{Box plot of relative errors of estimated horizontal distances between the columns}
+\label{table:63horizontal}
+\end{figure}
+
+\begin{figure}
+\includegraphics[width=\linewidth]{experiments/63/leftcolumn.eps}
+\caption{Boxplot of relative errors of estimated vertical distances in the left column}
+\label{table:63left}
+\end{figure}
+
+\begin{figure}
+\includegraphics[width=\linewidth]{experiments/63/rightcolumn.eps}
+\caption{Boxplot of relative errors of estimated vertical distances in the right column}
+\label{table:63right}
+\end{figure}
+
+\begin{figure}
+\includegraphics[width=\linewidth]{experiments/63/table.eps}
+\caption{Boxplot of relative errors of estimated distances in the perpendicular plane}
+\label{table:63table}
+\end{figure}
 
 \section{Experiment with partial occlusion}
 

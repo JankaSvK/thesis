@@ -1,0 +1,9 @@
+SIMPLEBACKGROUND & Yes & Yes & No & No \\
+MIL & No & No  & Yes & No \\
+BOOSTING & No & No & Yes & No \\
+TLD & Sometimes & Yes & Yes* & No \\
+MEDIANFLOW & Yes & No & Yes & No \\
+HSV & Yes & Yes & Only different colors & Yes \\
+PATTERNMATCHING & No & Yes & Only different patterns* & Yes \\
+CORRELATION & No & No & Yes & No \\
+MOSSE & Sometimes & No & Yes & No \\
