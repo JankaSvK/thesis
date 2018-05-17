@@ -9,6 +9,7 @@ import numpy as np
 from PIL import Image, ImageTk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
+from mpl_toolkits.mplot3d import Axes3D  # this import is important, even if the IDE is telling you something else
 
 from . import Config
 from .QueuesProvider import QueuesProvider

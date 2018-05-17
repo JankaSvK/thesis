@@ -20,7 +20,7 @@ def get_average_angle(angles):
 class TrackerHSV(object):
     name = 'HSV'
 
-    def __init__(self, color_tolerancy=10, ignored_countours=10):
+    def __init__(self, color_tolerancy=5, ignored_countours=10):
         self.ignored_countours = ignored_countours
         self.color_tolerancy = color_tolerancy
 

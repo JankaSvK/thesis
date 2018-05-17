@@ -1,9 +1,13 @@
+"""Provides a mapping between a name of the tracker and its instance"""
+
 import cv2
 
 
 class TrackerFactory(object):
+    """Provides a mapping from name of the tracker to its instance"""
     @classmethod
     def get_tracker(cls, tracker_type):
+        """Returns an instance of specified tracker by its name."""
         if tracker_type == 'MIL':
             return cv2.TrackerMIL_create()
         if tracker_type == 'BOOSTING':

@@ -1,7 +1,11 @@
+"""Parses options provided to application"""
+
 from optparse import OptionParser
 
 
 def parse_options():
+    """Parse all options"""
+
     parser = OptionParser()
 
     # Setting cameras
@@ -38,11 +42,12 @@ def parse_options():
                       help="The algorithm used for tracking", metavar="TRACKER")
 
     parser.add_option("--chessboard", dest="chessboard",
-                      help="Calibration chessboard parameters inner_cornersX,inner_cornersY,size", metavar="TRIPLE")
+                      help="Calibration chessboard parameters inner_cornersX,inner_cornersY,size",
+                      metavar="TRIPLE")
 
     parser.add_option("--bbox", dest="bbox",
                       help="Bounding boxes")
 
-    (options, args) = parser.parse_args()
+    (options, _) = parser.parse_args()
 
     return options

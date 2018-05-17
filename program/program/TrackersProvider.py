@@ -1,3 +1,5 @@
+"""Provides an access to all trackers"""
+
 import time
 
 from . import Config
@@ -14,7 +16,8 @@ def get_tracker_by_uid(uid):
 
 
 class TrackersProvider(object):
-    def __init__(self, images1, images2, mouse_clicks, coordinates, stop_event, initialization_events, console_output,
+    def __init__(self, images1, images2, mouse_clicks, coordinates, stop_event,
+                 initialization_events, console_output,
                  tracker_type='KCF', number_of_tracked_objects=1):
         self.image_entries = [images1, images2]
         self.object_count = number_of_tracked_objects
@@ -60,8 +63,13 @@ class TrackersProvider(object):
             time.sleep(0)
 
 
+def get_bounding_box_center(bbox):
+    return int(bbox[0] + bbox[2] / 2), int(bbox[1] + bbox[3] / 2)
+
+
 class Tracker(object):
-    def __init__(self, tracker_type, cam_ind, obj_ind, coordinates, image_stream, initialization_event, console_output):
+    def __init__(self, tracker_type, cam_ind, obj_ind, coordinates,
+                 image_stream, initialization_event, console_output):
         self.tracker = None
         self.coordinates = coordinates
         self.image_stream = image_stream
@@ -75,7 +83,8 @@ class Tracker(object):
         self.console_output = console_output
 
     def initialize_tracker(self, bbox, image=None):
-        print("Initializing tracker on camera {} at object {}".format(self.camera_id, self.object_id))
+        print("Initializing tracker on camera {} at object {}".format(
+            self.camera_id, self.object_id))
         try:
             if image is None:
                 image = self.get_newest_image().image
@@ -108,16 +117,14 @@ class Tracker(object):
         if not ok:
             return None
 
-        x, y = self.get_bounding_box_center(bbox)
+        x, y = get_bounding_box_center(bbox)
         return (x, y), time
 
     def get_newest_image(self):
         return self.image_stream[-1]
 
-    def get_bounding_box_center(self, bbox):
-        return int(bbox[0] + bbox[2] / 2), int(bbox[1] + bbox[3] / 2)
-
     def create_bounding_box(self, corner1, corner2):
+        """Creates bounding box by providing two corners of the rectangle"""
         x1, y1 = corner1
         x2, y2 = corner2
         return min(x1, x2), min(y1, y2), abs(x1 - x2), abs(y1 - y2)

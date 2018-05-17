@@ -120,13 +120,16 @@ def can_recover(log, representative_count):
     # Second number is how many images were as found
     threshold = 0.8
     succ = sum(l <= 80 for l in log)
-    print("  {} - {}% - {} / {}, representative {}".format(succ / representative_count >= threshold, succ / representative_count, succ, len(log), representative_count))
+    print("  {:.2f}% - {}% - {} / {}, representative {}".format(succ / representative_count * 100, succ / representative_count >= threshold,  succ, len(log), representative_count))
 
 def compute_confusion_matrix(representative, results, count):
     x = [True] * count
     y = [True] * count
 
     if len(results) == 0 or len(representative) == 0:
+        if len(results) == 0:
+            print("  Tracker never reported object lost")
+
         return
 
 
@@ -145,4 +148,4 @@ def compute_confusion_matrix(representative, results, count):
         succ = 1
     else:
         succ = cnf_matrix[0][0] / lost_object_count
-    print("  {} - able to detect object lost - {}".format(succ > threshold, succ))
+    print("  {:.2f}% - able to detect object lost - {}".format(succ * 100, succ > threshold))

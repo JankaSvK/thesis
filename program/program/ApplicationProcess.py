@@ -1,7 +1,6 @@
 import threading
 import time
 
-from . import Config
 from .CalibrationsProvider import CalibrationsProvider, UnsuccessfulCalibration
 from .CamerasProvider import CamerasProvider, MissingVideoSources
 from .GUI import GUI
@@ -124,7 +123,7 @@ def run_application(stop_event, options):
     # Computing matrices for localization
     from .Localization import Localization
 
-    Localization.compute_projection_matrices(
+    Localization.prepare_projection_matrices(
         calibration_provider.mono_calibration_results[0],
         calibration_provider.mono_calibration_results[1],
         calibration_provider.stereo_calibration_results

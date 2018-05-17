@@ -11,6 +11,8 @@ from .QueuesProvider import QueuesProvider
 
 
 class Localization(object):
+    '''Provides localizattion process'''
+
     objects_count = Config.objects_count
     rotation_matrix1 = None
     rotation_matrix2 = None
@@ -25,7 +27,8 @@ class Localization(object):
     time_threshold_correspondence = 1 / 10
 
     @classmethod
-    def compute_projection_matrices(cls, calibration_results1, calibration_results2, stereo_calibration_results):
+    def prepare_projection_matrices(cls, calibration_results1, calibration_results2, stereo_calibration_results):
+        '''Prepares projeciton matrices for localization'''
         cls.mono_calibration_results = [calibration_results1, calibration_results2]
         rt = np.append(stereo_calibration_results.rotation_matrix, stereo_calibration_results.translation_vector,
                        axis=1)
@@ -34,6 +37,7 @@ class Localization(object):
 
     @classmethod
     def get_3d_coordinates(cls, *points):
+        '''Undistort points and then compute the estimated 3D position'''
         if any(point is None for point in points) or len(points) != 2:
             return None
 
@@ -49,6 +53,7 @@ class Localization(object):
 
     @classmethod
     def get_undistorted_point(cls, point, cam_ind):
+        '''Undistort point by using saved calibration data'''
         calib_results = cls.mono_calibration_results[cam_ind]
         undistorted = cv2.undistortPoints(point, calib_results.camera_matrix, calib_results.distortion_coeffs,
                                           P=calib_results.camera_matrix)  # without setting P normalized points would be returned
@@ -56,6 +61,7 @@ class Localization(object):
 
     @classmethod
     def save_localization_data(cls):
+        '''Saves all localization data of all objects'''
         times = [x[0].timestamp for x in QueuesProvider.LocalizatedPoints3D if x]
         if not times:
             return
@@ -76,6 +82,7 @@ class Localization(object):
 
     @classmethod
     def localize_point(cls, object_id):
+        '''Localize point in 3D and save it to corresponding queue'''
         points1 = QueuesProvider.TrackedPoints2D[(TrackersProvider.get_tracker_uid(0, object_id))]
         points2 = QueuesProvider.TrackedPoints2D[(TrackersProvider.get_tracker_uid(1, object_id))]
 

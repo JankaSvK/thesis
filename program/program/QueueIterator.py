@@ -1,3 +1,5 @@
+import random
+
 class QueueIteratorManager(object):
     def __init__(self, queues, queue_finished):
         self.queue_iters = [QueueIterator(queue, queue_finished) for queue in queues]
@@ -19,7 +21,7 @@ class QueueIterator(object):
         while True:
             try:
                 p = next(self.sub_iterator)
-                while p.timestamp <= self.last_timestamp:
+                while p.timestamp <= self.last_timestamp or random.randint(0,1):
                     p = next(self.sub_iterator)
                 return p
             except StopIteration:

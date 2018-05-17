@@ -27,14 +27,15 @@ image_height = 480
 # Therefore it should contains 2 * objects_count entries
 # Bouding box is a [x, y, width, height]
 # Sample value for two objects: [[[0, 0, 1, 1], [150, 100, 100, 100]], [[100, 100, 50, 50], [200, 200, 20, 20]]]
-initial_bounding_boxes = [[[132, 56], [130, 157], [331, 103], [315, 207]],
-                          [[133, 53], [135, 194], [426, 64], [404, 196]]]
+initial_bounding_boxes = [[[296, 99], [270, 118], [237, 138], [199, 168], [146, 200], [82, 244], [0, 301], [412, 126], [398, 147], [378, 175], [354, 208], [321, 249], [279, 304], [220, 381], [132, 56], [130, 157], [331, 103], [315, 207]], [[155, 59], [155, 90], [146, 125], [147, 173], [138, 233], [132, 309], [124, 418], [318, 66], [333, 95], [347, 132], [370, 176], [396, 232], [431, 306], [481, 411], [133, 53], [135, 194], [426, 64], [404, 196]]]
 
 ### Calibration settings
 
-images_for_monocalibration_sampling = 15
+# number of images required for mono calibration - per each camera
+images_for_monocalibration_sampling = 20
 
-images_for_stereocalibration_sampling = 100
+# Number of images required for stereo calibration
+images_for_stereocalibration_sampling = 12
 
 # Stereo calibration considers images as corresponding if their time do not differ more than this threshold.
 time_threshold_for_correspondence = 1 / 20

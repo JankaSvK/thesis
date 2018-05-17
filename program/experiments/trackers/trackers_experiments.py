@@ -68,25 +68,29 @@ elif experiment_id == 6:
     # Experiment to test occlusion
     video = prefix + 'robot-occlusion.avi'
     empty = prefix + 'empty-occlusion.jpg'
-    bbox = (354, 47, 121, 98)
     hsv_bbox = (345, 226, 7, 28)
+    bbox = (369, 40, 101, 104)
     trackers = all_trackers
 
 elif experiment_id == 7:
-    #
-    video = prefix + 'robot-occlusion.avi'
-    empty = prefix + 'empty-occlusion.jpg'
-    bbox = (366, 43, 108, 101)#(354, 47, 121, 98)
-    trackers = all_trackers
+    # Experiment with partial occlusion
+    video = prefix + '1.mp4'
+    empty = prefix + '1.jpg'
+    bbox = (420, 179, 183, 175) #(417, 169, 187, 179)
+    hsv_bbox = (460, 215, 48, 22)
+    tracker_id = 0
+    all_trackers.remove('HSV')
+    trackers = ['HSV'] + all_trackers
 
 elif experiment_id == 8:
-    # Multiple objects tracking
-    video = prefix + 'two-objects.avi'
-    empty = None
-    bbox = [(432, 251, 9, 17), (412, 220, 34, 6), (371, 190, 116, 11), (376, 256, 19, 20)]
-    tracker_id = 2
-    tracker = all_trackers[tracker_id]
-    trackers = ['PATTERNMATCHING'] * 4
+    # Experiment with full occlusion -- tunnel
+    video = prefix + '3.mp4'
+    empty = prefix + '3.jpg'
+    bbox = (356, 177, 153, 135) #(417, 169, 187, 179)
+    hsv_bbox = (393, 201, 33, 18)
+    tracker_id = 0
+    all_trackers.remove('HSV')
+    trackers = ['HSV'] + all_trackers
 
 run_trackers_experiment(gui_on, trackers, empty, bbox, video, hsvbbox=hsv_bbox)
 

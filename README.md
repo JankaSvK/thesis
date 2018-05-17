@@ -1,7 +1,7 @@
 # thesis: Visual localization of the object in 3D space
 [Dove-eye](https://github.com/Werkov/dove-eye) changed and rewritten to Python.
 
-# Requirements
+## Requirements
 
 | package | version |
 |---------|-----------:
@@ -13,10 +13,10 @@
 |PIL (with ImageTk module)       |       1.1.7           |
 |dlib    |       19.10.0
 
-# User documentation
+## User documentation
 
 Available generated as PDF [here](./text/generated/user_documentation.pdf).
 
-# Implementation internals
+## Implementation internals
 
 Available generated as PDF [here](./text/generated/implementation_internals.pdf).
