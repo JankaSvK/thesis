@@ -21,7 +21,7 @@ class QueueIterator(object):
         while True:
             try:
                 p = next(self.sub_iterator)
-                while p.timestamp <= self.last_timestamp or random.randint(0,1):
+                while p.timestamp <= self.last_timestamp:
                     p = next(self.sub_iterator)
                 return p
             except StopIteration:

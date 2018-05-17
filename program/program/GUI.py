@@ -213,12 +213,7 @@ class GUI(object):
                             "Object {} was not found".format(obj_id + 1),
                             (10, (obj_id + 1) * 30), cv2.FONT_HERSHEY_COMPLEX, 1, color)
             else:
-                if self.displayed_image_size_factor != 1:
-                    coords = self.update_coords_by_factor(self.displayed_image_size_factor, *coords)
                 cv2.circle(image, coords, 5, color, -1)
-
-    def update_coords_by_factor(self, factor, x, y):
-        return (int(x * factor), int(y * factor))
 
     def bgr_to_rgb_color_and_scale(self, color):
         return [c * 255 for c in reversed(color)]
