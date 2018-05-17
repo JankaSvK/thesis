@@ -1,5 +1,6 @@
 text/tex/pdfx
-./trash/
+text/en/pdfa.xmpi
+trash/**
 
 ## Core latex/pdflatex auxiliary files:
 *.aux
