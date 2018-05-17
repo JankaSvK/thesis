@@ -35,4 +35,4 @@ class TrackerFactory(object):
             return TrackerExperiments()
         else:
             print("Default tracker will be used")
-            return cv2.TrackerKCF_create()
+            return cv2.TrackerMedianFlow_create()

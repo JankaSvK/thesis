@@ -27,7 +27,7 @@ image_height = 480
 # Therefore it should contains 2 * objects_count entries
 # Bouding box is a [x, y, width, height]
 # Sample value for two objects: [[[0, 0, 1, 1], [150, 100, 100, 100]], [[100, 100, 50, 50], [200, 200, 20, 20]]]
-initial_bounding_boxes = [[[296, 99], [270, 118], [237, 138], [199, 168], [146, 200], [82, 244], [0, 301], [412, 126], [398, 147], [378, 175], [354, 208], [321, 249], [279, 304], [220, 381], [132, 56], [130, 157], [331, 103], [315, 207]], [[155, 59], [155, 90], [146, 125], [147, 173], [138, 233], [132, 309], [124, 418], [318, 66], [333, 95], [347, 132], [370, 176], [396, 232], [431, 306], [481, 411], [133, 53], [135, 194], [426, 64], [404, 196]]]
+initial_bounding_boxes = None
 
 ### Calibration settings
 
@@ -43,3 +43,10 @@ time_threshold_for_correspondence = 1 / 20
 # Seconds to skip between the images used for calibration (mono and stereo).
 # Reason: Similar images provides "same" information.
 skipping_time = 0.2
+
+
+#### Memory ####
+# Since in 32bit system less memory is available, it might not be possible to save 2 * 500 snapshots.
+# We introduce two variables to set the default number of saved images per camera based on architecture
+images32bit = 200
+images64bit = 500

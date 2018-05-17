@@ -89,11 +89,16 @@ class CalibrationsProvider(object):
         return self.object_points
 
     def stereo_calibrate(self, saved_results=None):
+        successful_import = None
         if saved_results is not None:
             try:
                 self.stereo_calibration_results = StereoCameraCalibrationResults(json_file=saved_results)
+                successful_import = True
             except CalibrationImportError:
+                successful_import = False
                 self.console_output.append("ERR: Importing saved calibration data for stereo calibration failed.")
+
+        if successful_import:
             return True
 
         if self.stereo_calibration_results is not None:

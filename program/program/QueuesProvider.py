@@ -1,7 +1,14 @@
 from collections import deque
 
 from . import Config
+import platform
 
+def get_number_of_images():
+    if '64' in platform.architecture()[0]:
+        return Config.images64bit
+    else:
+        print("WA: working on 32bit architecture, only {} images stored per camera.".format(Config.images32bit))
+        return Config.images32bit
 
 class QueuesProvider(object):
     Images = None
@@ -12,7 +19,7 @@ class QueuesProvider(object):
 
     @classmethod
     def initialize(cls):
-        cls.Images = [deque([], maxlen=500) for _ in range(Config.camera_count)]
+        cls.Images = [deque([], maxlen=get_number_of_images()) for _ in range(Config.camera_count)]
         cls.LocalizatedPoints3D = [[] for _ in range(Config.objects_count)]
         cls.TrackedPoints2D = [[] for _ in range(Config.camera_count * Config.objects_count)]
         cls.MouseClicks = [[] for _ in range(Config.camera_count + 1)]

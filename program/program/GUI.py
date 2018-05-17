@@ -32,6 +32,9 @@ class GUI(object):
         self.tracked_points = tracked_points
         self.initialization_buttons = []
 
+        self.displayed_image_size_factor = 1/2
+        self.size_to_display = None
+
         self.localization_data = localization_data
         self.last_drawn_points = [(None, None) for _ in range(self.objects_count)]
         self.minimal_distance = 20  # between points to be scattered, in millimeters
@@ -48,16 +51,27 @@ class GUI(object):
             for _ in range(self.objects_count - len(self.rgb_colors_for_objects)):
                 self.rgb_colors_for_objects.append(tuple(random.random() for _ in range(3)))
 
+
+    def set_scale_factor(self, window_size):
+        if (window_size[0] > 1900):
+            self.displayed_image_size_factor = 1
+        else:
+            self.displayed_image_size_factor = 0.60
+
+        self.size_to_display = (int(Config.image_width * self.displayed_image_size_factor),
+                                int(Config.image_height * self.displayed_image_size_factor))
+
     def create_gui_objects(self):
         self.root = tk.Tk()
         self.root.protocol("WM_DELETE_WINDOW", self.quit)
         self.root.title("Thesis")
+        self.set_scale_factor((self.root.winfo_screenwidth(), self.root.winfo_screenheight()))
 
         for cam_ind in range(self.camera_count):
 
             # Create camera view windows
             video_view = tk.Label(self.root)
-            click_bind = functools.partial(self.click_callback, id=cam_ind)
+            click_bind = functools.partial(self.click_callback, view_id=cam_ind)
             mouse_left_button = "<Button-1>"
             video_view.bind(mouse_left_button, click_bind)
             self.video_views.append(video_view)
@@ -72,7 +86,8 @@ class GUI(object):
             self.initialization_buttons.append({'frame': buttons_frame, 'buttons': buttons})
 
         # Create graph
-        self.graph_figure = Figure(figsize=(5, 4), dpi=100)
+        graph_new_size = (5 * self.displayed_image_size_factor, 4 * self.displayed_image_size_factor)
+        self.graph_figure = Figure(figsize=graph_new_size, dpi=100)
         self.graph = FigureCanvasTkAgg(self.graph_figure, master=self.root)
 
         self.subplot = self.graph_figure.add_subplot(111, projection='3d')
@@ -198,16 +213,23 @@ class GUI(object):
                             "Object {} was not found".format(obj_id + 1),
                             (10, (obj_id + 1) * 30), cv2.FONT_HERSHEY_COMPLEX, 1, color)
             else:
+                if self.displayed_image_size_factor != 1:
+                    coords = self.update_coords_by_factor(self.displayed_image_size_factor, *coords)
                 cv2.circle(image, coords, 5, color, -1)
+
+    def update_coords_by_factor(self, factor, x, y):
+        return (int(x * factor), int(y * factor))
 
     def bgr_to_rgb_color_and_scale(self, color):
         return [c * 255 for c in reversed(color)]
 
     def process_image_for_displaying(self, image):
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        if self.displayed_image_size_factor != 1:
+            image = cv2.resize(image, self.size_to_display)
         image = Image.fromarray(image)
         return ImageTk.PhotoImage(image)
 
     def create_empty_image(self):  # TODO fix resolution
-        img = Image.new("RGB", (640, 480), "white")
+        img = Image.new("RGB", self.size_to_display, "white")
         return ImageTk.PhotoImage(image=img)
