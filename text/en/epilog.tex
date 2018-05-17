@@ -9,7 +9,7 @@ the whole problem and solving it step by step.
 
 \bigskip
 
-The thesis started with an overview of the related works in the are, continued
+The thesis started with an overview of the related works in the area, continued
 with calibration process, explaining the essential elements of the calibration.
 We presented a short introduction to calibration routines used by OpenCV, and
 we also described the results obtained by this process.
@@ -20,19 +20,20 @@ from the OpenCV and Dlib are sequence-based. We proposed several statistics for
 comparison of the trackers. We tested all trackers on several setups, measuring
 their speed and accuracy. We also explored their abilities to track multiple
 objects and to recover from occlusion. We presented the results in
-tables and provided images for better understanding of concepts.
+tables and provided images for a better understanding of the concepts.
 
-Based on the results, for environment with only one moving object is \simback{}
-tracker most suitable. If the object has onecolored area, of the color which is
-not present in the background, then the \hsv{} tracker is the best option. Both
-these trackers are accurate and fast. These trackers also recover from
-occlusion in contrary to the most of the others. On the other hand, if the
+Based on the results, for environment with only one moving object the most
+suitable tracker is \simback{}. If the object has one-colored area, of the color
+which is not present in the background, then the \hsv{} tracker is the best
+option. Both these trackers are accurate and fast. These trackers also recover
+from an occlusion in contrary to the most of the others. On the other hand, if the
 environment does not satisfy conditions for using \simback{} or \hsv{} tracker,
-it is possible to use \medflow{}, \corr{} or \tld{} tracker. These trackers
-performed well. If none of the trackers performed good enough, the last step is
-to try the rest of the trackers (\mil{}, \boost{}, \mosse{} or \patt{}).
+it is possible to use \medflow{}, \corr{}, \mosse{} or \tld{} tracker. These
+trackers usually perform well. If none of the trackers performed well enough,
+the last step is to try the rest of the trackers (i.e., \mil{}, \boost{} or
+\patt{}).
 
-\todo[inline]{Zhoduju sa tieto vysledky s tymi v trackeri}
+\bigskip
 
 As the next step, we explained how projection matrices are computed. We
 explained their importance in the projection of a point from 3D space to a 2D
@@ -44,24 +45,23 @@ are available.
 When all previous steps were covered, we tested the proposed system in several
 environments and settings. We studied the accuracy of the system by static
 experiments, and by computing the estimated distances between the points and
-comparing them to real values. In the end, we also provided experiments focusing
-on overall experience when using the application.
+comparing them to the real values. In the end, we also provided experiments
+focusing on overall experience when using the application.
 
-The results shows that the precision over specific axes depends on the
-alignment of the cameras. Parallel alignment outperformed non-parallel in the
-accuracy horizontal lines (i.e. parallel to the X-axis). On the other hand,
-non-parallel alignment outperformed parallel in most of the situation, when the
-lines were not parallel to X-axis. The measured error for the distances was
-usually under 10\%. We noticed and also explored, that the accuracy is lower,
-when the points are further away from the camera. Also the points in the edge
-of camera view tend to have worse accuracy.
+The results show that the precision over specific axes depends on the alignment
+of the cameras. Parallel camera setup outperformed non-parallel camera in the
+accuracy of horizontal lines (i.e., parallel to the X-axis). On the other hand,
+non-parallel setup outperformed parallel setup in most of the situation, when
+the measured lines were not parallel to X-axis.
 
-\todo[inline]{Hrozne velakrat parallel}
-\todo[inline]{staci taketo zhrnutie ci este nieco?}
+The measured error for the distances was usually under 10\%. We noticed and
+also explored, that the accuracy is lower when the points are further away
+from the camera. Also, the points on the edge of camera view tend to have worse
+accuracy.
 
 \bigskip
 
-We consider also our technical goals as fulfilled. The application can
+We also consider our technical goals as fulfilled. The application can
 calibrate automatically using a chessboard pattern, track one or more objects
 with a chosen tracker, display the results of the localization live.
 Furthermore, it can work with the recordings instead of the live camera views.
@@ -72,17 +72,17 @@ adding a new tracker is possible.
 
 Several areas can be explored in further work. While testing the application,
 we noticed a noise in some specific axis. Additional work could explore the
-cause of the noise and possible methods to eliminate it. We also noticed, that
+cause of the noise and possible methods to eliminate it. We also noticed that
 the precision for the objects further away from the cameras is lower compared to
 the precision of the closer ones. The question remains, which parameters of our
 setup influence this precision and how much. A suitable extension of this
 project would be the use of more cameras and explore if this setup improves the
 precision.
 
-
 \bigskip
+
 As a conclusion, we consider the application usable in practice. The results
 are perfectly usable for many purposes, although not fully reliable up to
-millimeters. The systems provides an easy access to a trajectory of the object.
+millimeters. The systems provide easy access to a trajectory of the object.
 The project is suitable for all situation, where the trajectory log is needed
 with only limited precision.

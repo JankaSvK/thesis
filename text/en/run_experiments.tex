@@ -8,7 +8,7 @@ All experiments are located in the directory \texttt{program/experiments}. We
 will use this directory as our root in the following text. Also, every script
 should be executed by Python3.
 
-\section{Calibration}
+\section{Sample calibration}
 
 We provide several calibration scenarios to try out. A script named
 \verb+calibrate.py+ is available in  the directory \verb+localization/+. The
@@ -22,7 +22,7 @@ If the calibration cannot succeed, check the number of images needed for
 calibration in the \verb+Config.py+ (located in the \verb+program/program+)
 and set it to smaller number.
 
-\section{Localization experiment}
+\section{Sample localization}
 
 In the same directory, \verb+localization/+ a script to run
 localization on different scenarios is available. Run \verb+track.py {distance}{id}+, 
@@ -33,7 +33,7 @@ videos (for all values of distance available scenarios 1 or 2).
 The script also outputs on the first line the command which was called to run
 the application.
 
-\section{Static localization}
+\section{Static localization experiments}
 
 Experiments providing the results for localization without tracking are only
 executable under Linux based systems.
@@ -45,7 +45,7 @@ This script create results used to compute distances between the dots. To
 compute the distances, a script \verb+compute_distances.py id+ is available. As
 \verb+id+ may be used again 1, 2, 3 or 4. 
 
-\section{Tracker's experiments}
+\section{Tracker experiments}
 
 All tracker's experiments are located in the directory \verb+trackers/+. The
 experiments can be started by \verb+trackers\_experiments.py+. First argument

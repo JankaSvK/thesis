@@ -26,6 +26,37 @@ The vertical lines are circa 400~mm long and the distance between them is circa
 the left column is from top to the bottom from 1 to 7 and the right column from
 8 to 14 (see the Figure \ref{fig:ladder_numbered}).
 
+\begin{figure}
+\centering
+\begin{tikzpicture}[]
+	\draw (0, 0) -- (12, 0);
+	\draw (0, 4) -- (12, 4);	
+	\draw (0, 0) -- (0, 4);
+	\draw (2, 0) -- (2, 4);
+	\draw (4, 0) -- (4, 4);
+	\draw (6, 0) -- (6, 4);
+	\draw (8, 0) -- (8, 4);
+	\draw (10, 0) -- (10, 4);
+	\draw (12, 0) -- (12, 4);
+	\node [right] at (0.1, -0.25) {200mm};
+	\node [right] at (2.1, -0.25) {200mm};
+	\node [right] at (4.1, -0.25) {200mm};
+	\node [right] at (6.1, -0.25) {200mm};
+	\node [right] at (8.1, -0.25) {200mm};
+	\node [right] at (10.1, -0.25) {200mm};
+	\node [right] at (12.1, 2) {400mm};
+\end{tikzpicture}
+\caption{Pattern used for experiments}
+\label{fig:grid}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.8\linewidth]{img/experiments/right-ladder-numbered.png}
+\caption{Numbering the points}
+\label{fig:ladder_numbered}
+\end{figure}
+
 The setup of the cameras was nearly parallel, which means, the center rays of
 their views were parallel, looking in same direction. The distance between them
 was circa 16~cm. Selected points are displayed in the Figure
@@ -41,7 +72,7 @@ With each set of calibration data we estimated position of the static points.
 Then we computed distances between them. From such results from ten runs, we
 computed average errors.
 
-The results are listed in the table \ref{table:distances}. First two columns
+The results are listed in the Table \ref{table:distances}. First two columns
 define the pair of point between which are the results in corresponding row.
 Third column denote the real length. The first column of the rests display the
 average absolute error. Next columns display its relative value. The last
@@ -57,12 +88,12 @@ measurement which do not belong in previously mentioned groups are considered
 as outliers and  will be displayed as circles.
 
 \begin{figure}
-\includegraphics[width=\linewidth]{experiments/horizontal.eps}
-\caption{Box plot of relative errors of estimated horizontal distances between the columns}
+\includegraphics[width=\linewidth]{experiments/horizontal1.eps}
+\caption{Box plot of relative errors of estimated horizontal distances between the columns (parallel setup)}
 \label{fig:horizontal-boxplot}
 \end{figure}
 
-Based on the results displayed in the table \ref{table:distances} and the box
+Based on the results displayed in the Table \ref{table:distances} and the box
 plot \ref{fig:horizontal-boxplot} we can see that estimated results are least accurate
 for the points furthest from the cameras. Movement by few pixels so far away
 from the camera means great real movement.  On the other hand, the
@@ -104,27 +135,27 @@ precise. Therefore, we decided to test the last axis and its precision. We place
 a wall with the marks, which is perpendicular to the ground and measured the
 distance between the marks. The setup can be seen in the Figure
 \ref{fig:table}. The marks are numbered as displayed in the image
-\ref{fig:tablenumbered}. The results are included in the table
+\ref{fig:tablenumbered}. The results are included in the Table
 \ref{table:distances}. 
 
 We did the same experiment with another setup, when the cameras were 63~cm
 apart from each other. We were interested, if the results are better in
-parallel setup, or not. Based on the results, the parralel setup performed
-better when the lines were parrlalel to the camera X-axis (i.e. horizontal). On
+parallel setup, or not. Based on the results, the parallel setup performed
+better when the lines were parallel to the camera X-axis (i.e. horizontal). On
 the other hand, the setup with cameras far from each other and not having
-parralel view performed better in measuring non-horizontal lines. 
+parallel view performed better in measuring non-horizontal lines. 
 
-\todo[inline]{A preco?}
+Even though we explored this fact, we were not able to find out the cause. In
+general, the mathematical background for parallel setup is more
+straight-forward and thus provide more stable results. It also provides almost
+full correspondence of the views, therefore it is preferable to use for depth
+maps. On the other hand, the non-parallel setup should provide better precision
+for closer objects. Similar results (parallel setup performing better in some
+cases and non-parallel setup in others) were observed also for example
+by \citet*{cardenas19953d}.
 
 The results for this second experiment are listed in the appendix in the
-section \ref{ss:63results}. Same numbering of the marks was used.
-
-\begin{figure}
-\centering
-\includegraphics[width=0.8\linewidth]{img/experiments/right-ladder-numbered.png}
-\caption{Numbering the points}
-\label{fig:ladder_numbered}
-\end{figure}
+Section \ref{ss:63results}. Same numbering of the marks was used.
 
 \begin{figure}
 \centering
@@ -155,30 +186,6 @@ section \ref{ss:63results}. Same numbering of the marks was used.
 \label{fig:table}
 \end{figure}
 
-\begin{figure}
-\centering
-\begin{tikzpicture}[]
-	\draw (0, 0) -- (12, 0);
-	\draw (0, 4) -- (12, 4);	
-	\draw (0, 0) -- (0, 4);
-	\draw (2, 0) -- (2, 4);
-	\draw (4, 0) -- (4, 4);
-	\draw (6, 0) -- (6, 4);
-	\draw (8, 0) -- (8, 4);
-	\draw (10, 0) -- (10, 4);
-	\draw (12, 0) -- (12, 4);
-	\node [right] at (0.1, -0.25) {200mm};
-	\node [right] at (2.1, -0.25) {200mm};
-	\node [right] at (4.1, -0.25) {200mm};
-	\node [right] at (6.1, -0.25) {200mm};
-	\node [right] at (8.1, -0.25) {200mm};
-	\node [right] at (10.1, -0.25) {200mm};
-	\node [right] at (12.1, 2) {400mm};
-\end{tikzpicture}
-\caption{Pattern used for experiments}
-\label{fig:grid}
-\end{figure}
-
 \section{Complex experiments}
 
 As the last step, we decided to test the whole system in a real environment. This
@@ -192,8 +199,8 @@ system as the whole.
 The most important experiment -- the experiment which decides if the system is
 usable -- is experiment under real conditions. We created a square to follow by
 autonomous robot. This square have the length of the side equal 14.5~cm (see
-Figure \ref{fig:robot-square}). The robot did four laps around the square. It
-speed was circa \todo[inline]{Aky rychly robot}. For tracking we used \hsv{}
+Figure \ref{fig:robot-square}). The robot did four laps around the square. Its
+speed was approximately $0.2 \text{ ms}^{-1}$. For tracking we used \hsv{}
 tracker. The results are displayed in the Figure \ref{fig:square-results}.
 
 We can see in the left picture, that the drawn line is similar to our shape.
@@ -201,10 +208,9 @@ Not having sharp edges, since our robot turns in the bends over the inner
 wheel. On the other hand, the results from the another view are not so amazing.
 The coordinates have a lot of noise over Z-axis. This noise is under 5~cm, on
 average 1.4~cm. The noise is only present, if the robot is following horizontal
-lines of the square. This corresponds to our theory mentioned in the Section
-\ref{s:}, since the camera views are not parralel, so the horizontal lines are
-less precise.
-\todo[inline]{Odkaz na section}
+lines of the square. This corresponds to our results mentioned in the Section
+\ref{s:experiment-static} -- the horizontal lines are less precise, because
+the camera views are not parralel.
 
 As the last step we computed maximum of the distances between any two points,
 which were located. In this case, the expected value the length of the

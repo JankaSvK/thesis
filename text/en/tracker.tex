@@ -36,15 +36,16 @@ the colors of the \emph{pattern} and the \emph{image} at given pixel. We assume 
 is caused by an object in front of the camera.
 
 One may expect to get the mask by \emph{thresholding} (see the results in
-\ref{fig:simple-background-first-threshold}). There is still a lot of noise.
-The noise is in the form of small dots and lines. Therefore we use
+Figure \ref{fig:simple-background-first-threshold}). There is still a lot of
+noise.  The noise is in the form of small dots and lines. Therefore we use
 \emph{blurring} to remove the noise. We \emph{threshold} it again to get the
-binary mask (see the results in \ref{fig:simple-background-second-threshold}).
-At this point, we will find a contour with the biggest area using OpenCV
-library\footnote{used OpenCV functions: \verb+cv2.findCountours+ and
-\verb+cv2.countourArea+}. The center point of the bounding box of this contour
-will be our estimation of the position of our object in the image. The whole
-process is illustrated in the Figure \ref{fig:simple-background-tracker}.
+binary mask (see the results in Figure
+\ref{fig:simple-background-second-threshold}).  At this point, we will find a
+contour with the biggest area using OpenCV library\footnote{used OpenCV
+functions: \verb+cv2.findCountours+ and \verb+cv2.countourArea+}. The center
+point of the bounding box of this contour will be our estimation of the
+position of our object in the image. The whole process is illustrated in the
+Figure \ref{fig:simple-background-tracker}.
 
 It is shown in the image that lighting slightly changed between the background
 photography and the object photography (at the edge of the puzzle pieces). It
@@ -113,7 +114,7 @@ to a single value (hue).
 
 \begin{figure}[h!]\centering
 \includegraphics[width=0.65\textwidth]{img/hsv-cylinder.png}
-\caption["HSV cylinder" by SharkD is licensed under CC BY 3.0]{"HSV cylinder" by SharkD is licensed under CC BY 3.0 \protect\footnotemark}
+\caption[``HSV cylinder'' by SharkD is licensed under CC BY 3.0]{``HSV cylinder'' by SharkD is licensed under CC BY 3.0 \protect\footnotemark}
 \end{figure}
 \footnotetext{source: \url{https://commons.wikimedia.org/wiki/File:HSV\_color\_solid\_cylinder.png}}
 
@@ -290,11 +291,11 @@ location, scoring every pixel. The location with the highest score is chosen as
 a new location. The implementation in OpenCV is based on \citet*{boosting}.
 
 \subsection*{MIL tracker}
-The MIL is an abbreviation for Multiple Instance Learning. In comparison with
-the BOOSTING tracker, it does not keep only one image of the positive example
-but a set of images. The tracker considers a small neighborhood of the current
-position as possible positive examples. It helps the tracker to cope with the
-occlusion. OpenCV implementation is based on \citet*{mil}.
+The \mil{} is an abbreviation for Multiple Instance Learning. In comparison
+with the \boost{} tracker, it does not keep only one image of the positive
+example but a set of images. The tracker considers a small neighborhood of the
+current position as possible positive examples. It helps the tracker to cope
+with the occlusion. OpenCV implementation is based on \citet*{mil}.
 
 \subsection*{KCF tracker}
 KCF stands for Kernelized Correlation Filters. Similarly, as the MIL tracker,
@@ -464,23 +465,23 @@ higher than 80\%, then we say that the tracker is able to recover.
 
 \subsubsection*{Tracking multiple objects}
 
-In addition to our project, our program can localize multiple objects. When
+As an addition to our project, the program can localize multiple objects. When
 working with multiple objects, it is important to remember that not all
 trackers may be able to track correctly multiple objects at the same time.
+Furthermore, not many trackers can handle when the tracking objects occlude
+each other.
 
-Not many trackers can handle when the tracking objects occlude each other.
-
-To decide if the tracker is able or not to track multiple objects is easily
+%asdf
+To decide if the tracker is able to track multiple objects or not is easily
 decidable by simple experiment. We created experiment with moving objects and
-observed the tracker's behavior. If the tracker was able to keep tracking both
-objects and if it remained to track same objects after their occlusion.
+observed the tracker's behavior. We observed, if the tracker was able to keep
+tracking both objects and if it remained to track same objects after their
+occlusion. An example of successful and unsuccessful tracker is displayed in
+the Figure \ref{fig:tracking-multiple}.
 
 With tracking multiple objects, the speed of the program may decrease.
 It is important to remember, that each object in each camera view has own
 tracker. Therefore the tracking part takes more time.
-
-In the next section, we provide an overview of the experiment used to estimate
-tracker capabilities.
 
 %%%%%%%%%%%%
 
@@ -525,7 +526,7 @@ robot is not only moving but also changing its appearance quite fast. In a
 second or two, its top platform is mirrored. On the other hand, the object does
 not change size and the background is very clear.
 
-The results of the experiment are available in the table
+The results of the experiment are available in the Table
 \ref{table:experiment-robot}. We provide sample expected value (denoted
 $\bar{X}$) and sample standard deviation (denoted $\sigma_X$) of the
 inaccuracy. Both values are in the pixels. For the \hsv{} tracker we chose to
@@ -581,7 +582,7 @@ As a result from this experiment, we consider Correlation, Simple background,
 
 To test \hsv{} tracker, we modified the experiment by placing an orange paper to
 mark the top of the robot (see Figure \ref{fig:hsv-bbox}). The obtained
-values for this tracker and the others are listed in the table \ref{table:hsv}.
+values for this tracker and the others are listed in the Table \ref{table:hsv}.
 For improving the performance of the HSV tracker, it is better to select
 smaller area with the same color. Therefore, the tracker will track only this
 are, not the whole object. The difference between tracked are by Simple
@@ -616,22 +617,27 @@ in the used video.
 \end{figure}
 
 \subsection{Tracking multiple objects}
+%qwer
 
-The last test for the trackers is ability to track multiple objects. Simple
+The last test for the trackers is to checht their ability to track multiple objects. Simple
 detection-based trackers usually choose the best position with the biggest area
 satisfying a given condition therefore tracking multiple object may not be possible.
 
 In a situation, when tracking multiple objects is needed, sequence-based
 trackers may outperform detection-based trackers. We decided to test their
-ability to keep tracking the same object, the results are listed in the table
+ability to keep tracking the same object, the results are listed in the Table
 \ref{table:occlusion-multiple} in the fourth and fifth columns.
 
-Most of the trackers are not able to recover from mutual occlusion. Denote as
-the first object the object behind and the second the one in front of the
-first. Then the second object approach first, the tracker of the first object
-learn falsely of the changing shape of the object and therefore the tracker start
-to track the second object. This situation could not resolve most of the
-trackers correctly.
+The \simback{} tracker was not able to track multiple objects at all. When
+using other trackers, there was no difference when tracking the objects
+separately, or together. 
+
+Most of the trackers are not able to recover from mutual occlusion. In the
+video we observed a situation, when one object covered most of the other one.
+In such situation it often occured, that tracker originally tracking covered
+object started to track the object in front and continue to do so even when the
+covered object was visible again.
+
 
 \begin{figure}
 \centering
@@ -643,8 +649,8 @@ trackers correctly.
 \includegraphics[width=\linewidth]{img/experiments/occlusion.png}
 \caption{Unsuccessful (MIL)}
 \end{subfigure}
-\caption{Example of recovers from the full occlusion}
-\label{fig:occlusion}
+\caption{Example of tracking multiple objects}
+\label{fig:tracking-multiple}
 \end{figure}
 
 \subsection{Summary}
