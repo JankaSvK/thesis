@@ -1,4 +1,6 @@
 text/tex/pdfx
+./trash/
+
 ## Core latex/pdflatex auxiliary files:
 *.aux
 *.lof
