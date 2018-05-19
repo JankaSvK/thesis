@@ -1,7 +1,6 @@
 import cv2
 import cv2
 import numpy as np
-from sklearn.metrics import confusion_matrix
 
 from program.TrackerFactory import TrackerFactory
 
@@ -33,9 +32,14 @@ def run_trackers_experiment(gui_on, trackers_to_evaluate, empty_background = Non
         trackers.append(TrackerFactory.get_tracker(tracker))
         if tracker == 'SIMPLEBACKGROUND':
             if empty_background is None:
-                raise RuntimeError("For SIMPLEBACKGROUND tracker an image of the background is need to be provided.")
-            image = cv2.imread(empty_background)
-            trackers[-1].init(image, bbox)
+                print("For SIMPLEBACKGROUND tracker an image of the background is need to be provided.")
+                simbbox = bbox
+                if isinstance(bbox, list):
+                    simbbox = bbox[i]
+                trackers[-1].init(frame, simbbox)
+            else:
+                image = cv2.imread(empty_background)
+                trackers[-1].init(image, bbox)
             continue
         elif tracker == 'HSV' and hsvbbox is not None:
             trackers[-1].init(frame, hsvbbox)
@@ -120,7 +124,7 @@ def can_recover(log, representative_count):
     # Second number is how many images were as found
     threshold = 0.8
     succ = sum(l <= 80 for l in log)
-    print("  {:.2f}% - {}% - {} / {}, representative {}".format(succ / representative_count * 100, succ / representative_count >= threshold,  succ, len(log), representative_count))
+    print("  {:.2f}% - {} - {} / {}, representative {}".format(succ / representative_count * 100, succ / representative_count >= threshold,  succ, len(log), representative_count))
 
 def compute_confusion_matrix(representative, results, count):
     x = [True] * count
@@ -129,9 +133,7 @@ def compute_confusion_matrix(representative, results, count):
     if len(results) == 0 or len(representative) == 0:
         if len(results) == 0:
             print("  Tracker never reported object lost")
-
         return
-
 
     for res in representative:
         x[res - 1] = False
@@ -139,13 +141,16 @@ def compute_confusion_matrix(representative, results, count):
     for res in results:
         y[res - 1] = False
 
-    cnf_matrix  = confusion_matrix(x, y)
-    print("{}".format(cnf_matrix))
+    rejects = [0, 0]
+
+    for i, repre in enumerate(x):
+        if repre == False:
+            rejects[y[i]] += 1
 
     threshold = 0.9
-    lost_object_count =(cnf_matrix[0][0] + cnf_matrix[0][1])
+    lost_object_count = rejects[0] + rejects[1]
     if lost_object_count == 0:
         succ = 1
     else:
-        succ = cnf_matrix[0][0] / lost_object_count
+        succ = rejects[0] / lost_object_count
     print("  {:.2f}% - able to detect object lost - {}".format(succ * 100, succ > threshold))

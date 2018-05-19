@@ -27,7 +27,7 @@ image_height = 480
 # Therefore it should contains 2 * objects_count entries
 # Bouding box is a [x, y, width, height]
 # Sample value for two objects: [[[0, 0, 1, 1], [150, 100, 100, 100]], [[100, 100, 50, 50], [200, 200, 20, 20]]]
-initial_bounding_boxes = None
+initial_bounding_boxes = [[[132, 56], [130, 157], [331, 103], [315, 207]], [[133, 53], [135, 194], [426, 64], [404, 196]]]
 
 ### Calibration settings
 

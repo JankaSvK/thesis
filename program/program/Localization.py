@@ -11,7 +11,7 @@ from .QueuesProvider import QueuesProvider
 
 
 class Localization(object):
-    '''Provides localizattion process'''
+    """Provides localizattion process"""
 
     objects_count = Config.objects_count
     rotation_matrix1 = None
@@ -96,8 +96,13 @@ class Localization(object):
             return
 
         time = (point1.timestamp + point2.timestamp) / 2
-        if time - cls.last_located_point_time[object_id] < cls.time_threshold_skip:
+
+        try:
+            if time - cls.last_located_point_time[object_id] < cls.time_threshold_skip:
+                return
+        except IndexError:
             return
+
         cls.last_located_point_time[object_id] = time
 
         located_point = Localization.get_3d_coordinates(point1.coordinates,

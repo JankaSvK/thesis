@@ -90,7 +90,8 @@ elif experiment_id == 8:
     hsv_bbox = (393, 201, 33, 18)
     tracker_id = 0
     all_trackers.remove('HSV')
-    trackers = ['HSV'] + all_trackers
+    #trackers = ['HSV'] + all_trackers
+    trackers = ['HSV', 'MEDIANFLOW']
 
 run_trackers_experiment(gui_on, trackers, empty, bbox, video, hsvbbox=hsv_bbox)
 

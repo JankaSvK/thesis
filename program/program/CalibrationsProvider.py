@@ -169,15 +169,6 @@ class CalibrationsProvider(object):
         criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
         return cv2.cornerSubPix(gray, corners, (5, 5), (-1, -1), criteria)
 
-    def threadsafe_list_copy(self, iterable):
-        while True:
-            try:
-                res = list(iterable)
-            except RuntimeError:
-                pass
-            else:
-                return res
-
     def find_images_for_stereo_calibration(self, sample_size):
         def may_contain_chessboard(image):
             return not image.chessboard_checked() or image.contains_chessboard()

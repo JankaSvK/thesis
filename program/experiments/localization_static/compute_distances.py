@@ -5,7 +5,10 @@
 import os
 from sys import argv
 
-scenario = int(argv[1])
+try:
+	scenario = int(argv[1])
+except:
+	scenario = 1
 
 # We are interested in these tuples
 if scenario == 1:
